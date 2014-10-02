@@ -48,14 +48,16 @@ public class LevelManager : MonoBehaviour
 	private GameObject terrainC;
 	private GameObject terrainD;
 	
-	private float terrainPosInitNEG = -1000f;		// this set places edge to edge and shows seams
+	private float terrainPosInitNEG = -1000f;
 	private float terrainPosInitPOS = 0f;
 	private float terrainSideLength = 1000f;
 	private float terrainShiftDistance = 2000f;
-	//private float terrainPosInitNEG = -999.5f;		// this set overlaps edges a bit to hide seams
-	//private float terrainPosInitPOS = -0.5f;
-	//private float terrainSideLength = 999f;
-	//private float terrainShiftDistance = 1998f;
+	
+	// ROADS
+	
+	public GameObject road1;
+	public GameObject road2;
+	public GameObject road3;
 	
 	// PUMA
 
@@ -181,6 +183,21 @@ public class LevelManager : MonoBehaviour
 		fawn.gameObj = GameObject.Find("Fawn");
 		
 		InitLevel(0);
+		
+		Instantiate(road1, new Vector3(1000, 0, 0), Quaternion.identity);
+		Instantiate(road1, new Vector3(0, 0, 0), Quaternion.identity);
+		Instantiate(road1, new Vector3(1000, 0, -1000), Quaternion.identity);
+		Instantiate(road1, new Vector3(0, 0, -1000), Quaternion.identity);
+		
+		Instantiate(road2, new Vector3(1000, 0, 0), Quaternion.identity);
+		Instantiate(road2, new Vector3(0, 0, 0), Quaternion.identity);
+		Instantiate(road2, new Vector3(1000, 0, -1000), Quaternion.identity);
+		Instantiate(road2, new Vector3(0, 0, -1000), Quaternion.identity);
+		
+		Instantiate(road3, new Vector3(1000, 0, 0), Quaternion.identity);
+		Instantiate(road3, new Vector3(0, 0, 0), Quaternion.identity);
+		Instantiate(road3, new Vector3(1000, 0, -1000), Quaternion.identity);
+		Instantiate(road3, new Vector3(0, 0, -1000), Quaternion.identity);
 	}
 	
 	public void InitLevel(int level)
