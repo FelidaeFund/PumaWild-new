@@ -103,41 +103,6 @@ public class TrafficManager : MonoBehaviour {
 	{
 		// connect to external modules
 		levelManager = GetComponent<LevelManager>();
-		
-
-
-
-
-		
-
-		// TEMP -- scale positions due to terrain resize
-		for (int i = 0; i < road1Nodes.Length; i++) {
-			float newX = road1Nodes[i].transform.position.x * 0.5f;
-			float newY = road1Nodes[i].transform.position.y * 0.5f * (35f/30f);
-			float newZ = road1Nodes[i].transform.position.z * 0.5f;
-			road1Nodes[i].transform.position = new Vector3(newX, newY, newZ);
-		}
-		for (int i = 0; i < road2Nodes.Length; i++) {
-			float newX = road2Nodes[i].transform.position.x * 0.5f;
-			float newY = road2Nodes[i].transform.position.y * 0.5f * (35f/30f);
-			float newZ = road2Nodes[i].transform.position.z * 0.5f;
-			road2Nodes[i].transform.position = new Vector3(newX, newY, newZ);
-		}
-		for (int i = 0; i < road3Nodes.Length; i++) {
-			float newX = road3Nodes[i].transform.position.x * 0.5f;
-			float newY = road3Nodes[i].transform.position.y * 0.5f * (35f/30f);
-			float newZ = road3Nodes[i].transform.position.z * 0.5f;
-			road3Nodes[i].transform.position = new Vector3(newX, newY, newZ);
-		}
-
-				
-
-
-
-
-
-
-
 
 		// create NodeArrays with extra nodes for node -1 and node n+1
 		nodeArray1Ascending = InitNodeArray(road1Nodes, true, false);
