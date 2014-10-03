@@ -210,7 +210,7 @@ public class LevelManager : MonoBehaviour
 		doe.gameObj = GameObject.Find("Doe");
 		fawn.gameObj = GameObject.Find("Fawn");
 		
-		InitLevel(1);
+		InitLevel(3);
 	}
 	
 	public void InitLevel(int level)
@@ -250,30 +250,18 @@ public class LevelManager : MonoBehaviour
 		case 0:
 			terrainA = terrain1;
 			terrainMaster = terrain1.GetComponent<Terrain>();
-			road1A = null;
-			road2A = null;
-			road3A = null;
 			break;
 		case 1:
 			terrainA = terrain2;
 			terrainMaster = terrain2.GetComponent<Terrain>();
-			road1A = L2Road1;
-			road2A = L2Road2;
-			road3A = L2Road3;
 			break;
 		case 2:
 			terrainA = terrain3;
 			terrainMaster = terrain3.GetComponent<Terrain>();
-			road1A = L3Road1;
-			road2A = L3Road2;
-			road3A = L3Road3;
 			break;
 		case 3:
 			terrainA = terrain4;
 			terrainMaster = terrain4.GetComponent<Terrain>();
-			road1A = L4Road1;
-			road2A = L4Road2;
-			road3A = L4Road3;
 			break;
 		case 4:
 			terrainA = terrain5;
@@ -295,26 +283,87 @@ public class LevelManager : MonoBehaviour
 		
 		SetTerrainNeighbors();
 		
-		
+		//================================
+		// Set Up Road Objects
+		//================================
 	
-		road1A.transform.position = new Vector3(1000, 0, 0);
-		road1B = (GameObject)Instantiate(road1A, new Vector3(0, 0, 0), Quaternion.identity);
-		road1C = (GameObject)Instantiate(road1A, new Vector3(1000, 0, -1000), Quaternion.identity);
-		road1D = (GameObject)Instantiate(road1A, new Vector3(0, 0, -1000), Quaternion.identity);
-		
-		road2A.transform.position = new Vector3(1000, 0, 0);
-		road2B = (GameObject)Instantiate(road2A, new Vector3(0, 0, 0), Quaternion.identity);
-		road2C = (GameObject)Instantiate(road2A, new Vector3(1000, 0, -1000), Quaternion.identity);
-		road2D = (GameObject)Instantiate(road2A, new Vector3(0, 0, -1000), Quaternion.identity);
-		
-		road3A.transform.position = new Vector3(1000, 0, 0);
-		road3B = (GameObject)Instantiate(road3A, new Vector3(0, 0, 0), Quaternion.identity);
-		road3C = (GameObject)Instantiate(road3A, new Vector3(1000, 0, -1000), Quaternion.identity);
-		road3D = (GameObject)Instantiate(road3A, new Vector3(0, 0, -1000), Quaternion.identity);
-		
-		
-		
-		
+		if (road1A != null) {
+			road1A = null;
+			road2A = null;
+			road3A = null;
+			Destroy(road1B);
+			road1B = null;
+			Destroy(road2B);
+			road2B = null;
+			Destroy(road3B);
+			road3B = null;
+			Destroy(road1C);
+			road1C = null;
+			Destroy(road2C);
+			road2C = null;
+			Destroy(road3C);
+			road3C = null;
+			Destroy(road1D);
+			road1D = null;
+			Destroy(road2D);
+			road2D = null;
+			Destroy(road3D);
+			road3D = null;
+		}
+
+		switch (currentLevel) {
+		case 0:
+			road1A = null;
+			road2A = null;
+			road3A = null;
+			road1B = null;
+			road2B = null;
+			road3B = null;
+			road1C = null;
+			road2C = null;
+			road3C = null;
+			road1D = null;
+			road2D = null;
+			road3D = null;
+			break;
+		case 1:
+			road1A = L2Road1;
+			road2A = L2Road2;
+			road3A = L2Road3;
+			break;
+		case 2:
+			road1A = L3Road1;
+			road2A = L3Road2;
+			road3A = L3Road3;
+			break;
+		case 3:
+			road1A = L4Road1;
+			road2A = L4Road2;
+			road3A = L4Road3;
+			break;
+		case 4:
+			road1A = L5Road1;
+			road2A = L5Road2;
+			road3A = L5Road3;
+			break;		
+		}
+
+		if (road1A != null) {
+			road1A.transform.position = new Vector3(0, 0, 0);
+			road1B = (GameObject)Instantiate(road1A, new Vector3(1000, 0, 0), Quaternion.identity);
+			road1C = (GameObject)Instantiate(road1A, new Vector3(0, 0, -1000), Quaternion.identity);
+			road1D = (GameObject)Instantiate(road1A, new Vector3(1000, 0, -1000), Quaternion.identity);
+			
+			road2A.transform.position = new Vector3(0, 0, 0);
+			road2B = (GameObject)Instantiate(road2A, new Vector3(1000, 0, 0), Quaternion.identity);
+			road2C = (GameObject)Instantiate(road2A, new Vector3(0, 0, -1000), Quaternion.identity);
+			road2D = (GameObject)Instantiate(road2A, new Vector3(0, 0, -1000), Quaternion.identity);
+			
+			road3A.transform.position = new Vector3(0, 0, 0);
+			road3B = (GameObject)Instantiate(road3A, new Vector3(1000, 0, 0), Quaternion.identity);
+			road3C = (GameObject)Instantiate(road3A, new Vector3(0, 0, -1000), Quaternion.identity);
+			road3D = (GameObject)Instantiate(road3A, new Vector3(1000, 0, -1000), Quaternion.identity);
+		}
 	}
 	
 	public void SwapLevel(int level)
@@ -382,6 +431,88 @@ public class LevelManager : MonoBehaviour
 		terrainD.transform.position = new Vector3(terrainDx, 0, terrainDz);
 		
 		SetTerrainNeighbors();
+		
+		//================================
+		// Set Up Road Objects
+		//================================
+	
+		if (road1A != null) {
+			road1A = null;
+			road2A = null;
+			road3A = null;
+			Destroy(road1B);
+			road1B = null;
+			Destroy(road2B);
+			road2B = null;
+			Destroy(road3B);
+			road3B = null;
+			Destroy(road1C);
+			road1C = null;
+			Destroy(road2C);
+			road2C = null;
+			Destroy(road3C);
+			road3C = null;
+			Destroy(road1D);
+			road1D = null;
+			Destroy(road2D);
+			road2D = null;
+			Destroy(road3D);
+			road3D = null;
+		}
+
+		switch (currentLevel) {
+		case 0:
+			road1A = null;
+			road2A = null;
+			road3A = null;
+			road1B = null;
+			road2B = null;
+			road3B = null;
+			road1C = null;
+			road2C = null;
+			road3C = null;
+			road1D = null;
+			road2D = null;
+			road3D = null;
+			break;
+		case 1:
+			road1A = L2Road1;
+			road2A = L2Road2;
+			road3A = L2Road3;
+			break;
+		case 2:
+			road1A = L3Road1;
+			road2A = L3Road2;
+			road3A = L3Road3;
+			break;
+		case 3:
+			road1A = L4Road1;
+			road2A = L4Road2;
+			road3A = L4Road3;
+			break;
+		case 4:
+			road1A = L5Road1;
+			road2A = L5Road2;
+			road3A = L5Road3;
+			break;		
+		}
+
+		if (road1A != null) {
+			road1A.transform.position = new Vector3(0, 0, 0);
+			road1B = (GameObject)Instantiate(road1A, new Vector3(1000, 0, 0), Quaternion.identity);
+			road1C = (GameObject)Instantiate(road1A, new Vector3(0, 0, -1000), Quaternion.identity);
+			road1D = (GameObject)Instantiate(road1A, new Vector3(1000, 0, -1000), Quaternion.identity);
+			
+			road2A.transform.position = new Vector3(0, 0, 0);
+			road2B = (GameObject)Instantiate(road2A, new Vector3(1000, 0, 0), Quaternion.identity);
+			road2C = (GameObject)Instantiate(road2A, new Vector3(0, 0, -1000), Quaternion.identity);
+			road2D = (GameObject)Instantiate(road2A, new Vector3(0, 0, -1000), Quaternion.identity);
+			
+			road3A.transform.position = new Vector3(0, 0, 0);
+			road3B = (GameObject)Instantiate(road3A, new Vector3(1000, 0, 0), Quaternion.identity);
+			road3C = (GameObject)Instantiate(road3A, new Vector3(0, 0, -1000), Quaternion.identity);
+			road3D = (GameObject)Instantiate(road3A, new Vector3(1000, 0, -1000), Quaternion.identity);
+		}
 	}
 
 	public int GetCurrentLevel()

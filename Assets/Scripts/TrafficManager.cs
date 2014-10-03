@@ -14,7 +14,10 @@ public class TrafficManager : MonoBehaviour {
 	//===================================
 
 	// NODES
-	
+
+	private float laneWidth = 4f;
+	private float centerWidth = 1f;
+
 	// external nodes created in the terrain
 	public GameObject[] road1Nodes;
 	public GameObject[] road2Nodes;
@@ -179,7 +182,6 @@ public class TrafficManager : MonoBehaviour {
 		nodeArray[arraySize-1].position = roadNodes[0].transform.position - nodeOffsetVector;
 
 		// initialize node data
-		float laneWidth = 5f;
 		
 		for (int i = 0; i < arraySize-1; i++) {
 			// static info for each segment
@@ -204,7 +206,7 @@ public class TrafficManager : MonoBehaviour {
 				Debug.Log("vNodeOffsetDirection is " + (int)vNodeOffsetDirection + " for item " + i);
 				
 				// now create the vNode for this lane		
-				float laneOffset = (laneWidth * 0.6f) + laneWidth * lane;
+				float laneOffset = centerWidth + laneWidth/2 + laneWidth * lane;
 				float vNodeX = nodeArray[i].position.x + (Mathf.Sin(vNodeOffsetDirection*Mathf.PI/180) * laneOffset);
 				float vNodeZ = nodeArray[i].position.z + (Mathf.Cos(vNodeOffsetDirection*Mathf.PI/180) * laneOffset);
 				nodeArray[i].vNodes[lane].position = new Vector3(vNodeX, nodeArray[i].position.y, vNodeZ);
@@ -225,7 +227,7 @@ public class TrafficManager : MonoBehaviour {
 				Debug.Log("vNodeOffsetDirection is " + (int)vNodeOffsetDirection + " for item " + i);
 				
 				// now create the vNode for this lane		
-				float laneOffset = (laneWidth * 0.6f) + laneWidth * lane;
+				float laneOffset = centerWidth + laneWidth/2 + laneWidth * lane;
 				float vNodeX = nodeArray[i].position.x + (Mathf.Sin(vNodeOffsetDirection*Mathf.PI/180) * laneOffset);
 				float vNodeZ = nodeArray[i].position.z + (Mathf.Cos(vNodeOffsetDirection*Mathf.PI/180) * laneOffset);
 				nodeArray[i].vNodes[lane].position = new Vector3(vNodeX, nodeArray[i].position.y, vNodeZ);
@@ -441,7 +443,28 @@ public class TrafficManager : MonoBehaviour {
 	//		SELECT ROAD CONFIG
 	//===================================
 	//===================================
+	
+	//===================================
+	//===================================
+	//
+	//	EasyRoads3D config per road type
+	//
+	//	Dirt Road
+	//
+	//
+	//	Two-Lane
+	//
+	//
+	//	Four-Lane
+	//	
+	//
+	//	Six-Lane
+	//		width: 
+	//
+	//===================================
+	//===================================
 
+	
 	private void SelectRoadConfig(int levelNum)
 	{
 		switch (levelNum) {
