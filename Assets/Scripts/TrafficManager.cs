@@ -10,24 +10,32 @@ public class TrafficManager : MonoBehaviour {
 	//===================================
 	//===================================
 	//
-	//	EasyRoads3D config per road type
+	//	EasyRoads3D config
 	//
-	//	Dirt Road - road width: 10, surrounding: 1
-	//	Two-Lane - road width: 11, surrounding: 2
-	//	Four-Lane - road width: 19, surrounding: 3
-	//	Six-Lane - road width: 26, surrounding: 5
+	//	Level2 - dirt; dirt; dirt
+	//	Level3 - 4-lane; 2-lane; 2-lane
+	//	Level4 - 6-lane; 2-lane; 4-lane
+	//	Level5 - 6-lane; 2-lane; 4-lane
 	//
-	//	ROAD 1 - bridge markers: 12, 18; adjoining marker surround distances: 6, 5, 4
+	//	dirt   - width: 6.5, surrounding: 2
+	//	2-Lane - width: 11, surrounding: 3
+	//	4-Lane - width: 19, surrounding: 4
+	//	6-Lane - width: 26, surrounding: 5
+	//
+	//	Road1 - 23 markers
+	//	Road2 - 26 markers
+	//	Road3 - 28 markers
+	//
+	//	ROAD 1 - bridge markers: 12, 18; adjoining marker surround distances: +2, +1
 	//	ROAD 3 - marker 3: surround L/R 7 and left-indent 3; marker 4: surround L 7 and left-indent 3
-	//
-	//	Level 2 - road1 dirt, road2 dirt, road3 dirt
-	//	Level 3 - road1 four-lane; road2 two-lane; road3 two-lane
-	//	Level 4 - road1 six-lane; road2 two-lane; road3 four-lane
-	//	Level 5 - road1 six-lane; road2 two-lane; road3 four-lane
 	//
 	//	Special case for Road 1 Level 2 (road 1 is flat not bridged)
 	//		- set all middle markers y to terrain height (press ctrl)
 	//		- set markers 11 and 12 y to 2.0
+	//
+	//	Set new roads for IOS
+	//
+	//	Tie new roads into LevelManager
 	
 	//===================================
 	//===================================
@@ -41,7 +49,8 @@ public class TrafficManager : MonoBehaviour {
 	// NODES
 
 	private float laneWidth = 4f;
-	private float centerWidth = 0.75f;
+	private float pavedRoadCenterWidth = 0.75f;
+	private float dirtRoadCenterWidth = -0.65f;
 
 	// external nodes created in the terrain
 	public GameObject[] road1Nodes;
@@ -51,13 +60,20 @@ public class TrafficManager : MonoBehaviour {
 
 	// internal arrays includes extra nodes for node -1 and node n+1
 	private NodeInfo[] nodeArray1Ascending;  
-	private NodeInfo[] nodeArray1L2Ascending;  
 	private NodeInfo[] nodeArray2Ascending;
 	private NodeInfo[] nodeArray3Ascending;
+
 	private NodeInfo[] nodeArray1Descending;  
-	private NodeInfo[] nodeArray1L2Descending;  
 	private NodeInfo[] nodeArray2Descending;
 	private NodeInfo[] nodeArray3Descending;
+
+	private NodeInfo[] nodeArray1L2Ascending;  
+	private NodeInfo[] nodeArray2L2Ascending;  
+	private NodeInfo[] nodeArray3L2Ascending;  
+
+	private NodeInfo[] nodeArray1L2Descending;  
+	private NodeInfo[] nodeArray2L2Descending;  
+	private NodeInfo[] nodeArray3L2Descending;  
 	
 	// data structures for creating lane grids
 	private class NodeInfo {
@@ -136,14 +152,25 @@ public class TrafficManager : MonoBehaviour {
 		levelManager = GetComponent<LevelManager>();
 
 		// create NodeArrays with extra nodes for node -1 and node n+1
-		nodeArray1Ascending = InitNodeArray(road1Nodes, true, false);
-		nodeArray1L2Ascending = InitNodeArray(road1L2Nodes, true, false);
-		nodeArray2Ascending = InitNodeArray(road2Nodes, true, true);
-		nodeArray3Ascending = InitNodeArray(road3Nodes, true, true);
-		nodeArray1Descending = InitNodeArray(road1Nodes, false, false);
-		nodeArray1L2Descending = InitNodeArray(road1L2Nodes, false, false);
-		nodeArray2Descending = InitNodeArray(road2Nodes, false, true);
-		nodeArray3Descending = InitNodeArray(road3Nodes, false, true);
+		
+		// paved roads
+		nodeArray1Ascending = InitNodeArray(road1Nodes, true, false, pavedRoadCenterWidth);
+		nodeArray2Ascending = InitNodeArray(road2Nodes, true, true, pavedRoadCenterWidth);
+		nodeArray3Ascending = InitNodeArray(road3Nodes, true, true, pavedRoadCenterWidth);
+
+		nodeArray1Descending = InitNodeArray(road1Nodes, false, false, pavedRoadCenterWidth);
+		nodeArray2Descending = InitNodeArray(road2Nodes, false, true, pavedRoadCenterWidth);
+		nodeArray3Descending = InitNodeArray(road3Nodes, false, true, pavedRoadCenterWidth);
+
+		// dirt roads
+		nodeArray1L2Ascending = InitNodeArray(road1L2Nodes, true, false, dirtRoadCenterWidth);
+		nodeArray2L2Ascending = InitNodeArray(road2Nodes, true, true, dirtRoadCenterWidth);
+		nodeArray3L2Ascending = InitNodeArray(road3Nodes, true, true, dirtRoadCenterWidth);
+
+		nodeArray1L2Descending = InitNodeArray(road1L2Nodes, false, false, dirtRoadCenterWidth);
+		nodeArray2L2Descending = InitNodeArray(road2Nodes, false, true, dirtRoadCenterWidth);
+		nodeArray3L2Descending = InitNodeArray(road3Nodes, false, true, dirtRoadCenterWidth);
+	
 	
 		// create array of RoadInfo data structures
 		roadArray = new RoadInfo[3];
@@ -173,7 +200,7 @@ public class TrafficManager : MonoBehaviour {
 	
 	// initialize the NodeArrays with extra nodes for node -1 and node n+1
 	
-	private NodeInfo[] InitNodeArray(GameObject[] roadNodesAscending, bool ascendingFlag, bool orientationIsX)
+	private NodeInfo[] InitNodeArray(GameObject[] roadNodesAscending, bool ascendingFlag, bool orientationIsX, float centerWidth)
 	{
 		GameObject[] roadNodes = null;
 		Vector3 nodeOffsetVector = new Vector3(0f, 0f, 0f);
@@ -236,7 +263,7 @@ public class TrafficManager : MonoBehaviour {
 				float currentSegmentHeading = nodeArray[i].segmentHeading;
 				float vNodeOffsetDirection = InterpolateAngles(previousSegmentHeading, currentSegmentHeading, 0.5f) + 90f;
 				
-				Debug.Log("vNodeOffsetDirection is " + (int)vNodeOffsetDirection + " for item " + i);
+				//Debug.Log("vNodeOffsetDirection is " + (int)vNodeOffsetDirection + " for item " + i);
 				
 				// now create the vNode for this lane		
 				float laneOffset = centerWidth + laneWidth/2 + laneWidth * lane;
@@ -257,7 +284,7 @@ public class TrafficManager : MonoBehaviour {
 				float currentSegmentHeading = nodeArray[1].segmentHeading;
 				float vNodeOffsetDirection = InterpolateAngles(previousSegmentHeading, currentSegmentHeading, 0.5f) + 90f;
 				
-				Debug.Log("vNodeOffsetDirection is " + (int)vNodeOffsetDirection + " for item " + i);
+				//Debug.Log("vNodeOffsetDirection is " + (int)vNodeOffsetDirection + " for item " + i);
 				
 				// now create the vNode for this lane		
 				float laneOffset = centerWidth + laneWidth/2 + laneWidth * lane;
@@ -326,8 +353,13 @@ public class TrafficManager : MonoBehaviour {
 				
 		// special casing for flat road 1 in level 2
 		roadArray[0].nodeArrayAscending = (levelNum != 1) ? nodeArray1Ascending : nodeArray1L2Ascending;
-		roadArray[0].nodeArrayDescending = (levelNum != 1) ? nodeArray1Descending : nodeArray1L2Descending;
+		roadArray[1].nodeArrayAscending = (levelNum != 1) ? nodeArray2Ascending : nodeArray2L2Ascending;
+		roadArray[2].nodeArrayAscending = (levelNum != 1) ? nodeArray3Ascending : nodeArray3L2Ascending;
 
+		roadArray[0].nodeArrayDescending = (levelNum != 1) ? nodeArray1Descending : nodeArray1L2Descending;
+		roadArray[1].nodeArrayDescending = (levelNum != 1) ? nodeArray2Descending : nodeArray2L2Descending;
+		roadArray[2].nodeArrayDescending = (levelNum != 1) ? nodeArray3Descending : nodeArray3L2Descending;
+		
 		// configure the roads for the desired level
 		SelectRoadConfig(levelNum);
 		
@@ -499,7 +531,7 @@ public class TrafficManager : MonoBehaviour {
 			roadArray[0].laneSpeed1 = 40;
 			roadArray[0].laneSpeed2 = 43;
 			roadArray[0].laneSpeed3 = 46;
-			roadArray[0].followDistance1 = 30;
+			roadArray[0].followDistance1 = 200;
 			roadArray[0].followDistance2 = 35;
 			roadArray[0].followDistance3 = 40;
 			////////////
@@ -507,7 +539,7 @@ public class TrafficManager : MonoBehaviour {
 			roadArray[1].laneSpeed1 = 40;
 			roadArray[1].laneSpeed2 = 43;
 			roadArray[1].laneSpeed3 = 46;
-			roadArray[1].followDistance1 = 30;
+			roadArray[1].followDistance1 = 150;
 			roadArray[1].followDistance2 = 35;
 			roadArray[1].followDistance3 = 40;
 			////////////
@@ -515,7 +547,7 @@ public class TrafficManager : MonoBehaviour {
 			roadArray[2].laneSpeed1 = 40;
 			roadArray[2].laneSpeed2 = 43;
 			roadArray[2].laneSpeed3 = 46;
-			roadArray[2].followDistance1 = 30;
+			roadArray[2].followDistance1 = 175;
 			roadArray[2].followDistance2 = 35;
 			roadArray[2].followDistance3 = 40;
 			break;
@@ -525,15 +557,15 @@ public class TrafficManager : MonoBehaviour {
 			roadArray[0].laneSpeed1 = 40;
 			roadArray[0].laneSpeed2 = 43;
 			roadArray[0].laneSpeed3 = 46;
-			roadArray[0].followDistance1 = 30;
-			roadArray[0].followDistance2 = 35;
+			roadArray[0].followDistance1 = 100;
+			roadArray[0].followDistance2 = 120;
 			roadArray[0].followDistance3 = 40;
 			////////////
 			roadArray[1].lanesPerSide = 1;
 			roadArray[1].laneSpeed1 = 40;
 			roadArray[1].laneSpeed2 = 43;
 			roadArray[1].laneSpeed3 = 46;
-			roadArray[1].followDistance1 = 30;
+			roadArray[1].followDistance1 = 75;
 			roadArray[1].followDistance2 = 35;
 			roadArray[1].followDistance3 = 40;
 			////////////
@@ -541,7 +573,7 @@ public class TrafficManager : MonoBehaviour {
 			roadArray[2].laneSpeed1 = 40;
 			roadArray[2].laneSpeed2 = 43;
 			roadArray[2].laneSpeed3 = 46;
-			roadArray[2].followDistance1 = 30;
+			roadArray[2].followDistance1 = 90;
 			roadArray[2].followDistance2 = 35;
 			roadArray[2].followDistance3 = 40;
 			break;

@@ -810,7 +810,7 @@ public class GuiManager : MonoBehaviour
 		guiState = newState;
 		guiStateStartTime = Time.time;
 		Update();
-		Debug.Log("NEW GUI STATE: " + newState);
+		//Debug.Log("NEW GUI STATE: " + newState);
 	}
 
 	public void OpenInfoPanel(int newPageNum)
