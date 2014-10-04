@@ -35,6 +35,9 @@ public class TrafficManager : MonoBehaviour {
 	//===================================
 	//===================================
 
+	private bool moduleInitialized = false;
+	private int preInitLevelSelection = 0;
+	
 	// NODES
 
 	private float laneWidth = 4f;
@@ -42,14 +45,17 @@ public class TrafficManager : MonoBehaviour {
 
 	// external nodes created in the terrain
 	public GameObject[] road1Nodes;
+	public GameObject[] road1L2Nodes; // special case for flat road1-level2
 	public GameObject[] road2Nodes;
 	public GameObject[] road3Nodes;
 
 	// internal arrays includes extra nodes for node -1 and node n+1
 	private NodeInfo[] nodeArray1Ascending;  
+	private NodeInfo[] nodeArray1L2Ascending;  
 	private NodeInfo[] nodeArray2Ascending;
 	private NodeInfo[] nodeArray3Ascending;
 	private NodeInfo[] nodeArray1Descending;  
+	private NodeInfo[] nodeArray1L2Descending;  
 	private NodeInfo[] nodeArray2Descending;
 	private NodeInfo[] nodeArray3Descending;
 	
@@ -131,9 +137,11 @@ public class TrafficManager : MonoBehaviour {
 
 		// create NodeArrays with extra nodes for node -1 and node n+1
 		nodeArray1Ascending = InitNodeArray(road1Nodes, true, false);
+		nodeArray1L2Ascending = InitNodeArray(road1L2Nodes, true, false);
 		nodeArray2Ascending = InitNodeArray(road2Nodes, true, true);
 		nodeArray3Ascending = InitNodeArray(road3Nodes, true, true);
 		nodeArray1Descending = InitNodeArray(road1Nodes, false, false);
+		nodeArray1L2Descending = InitNodeArray(road1L2Nodes, false, false);
 		nodeArray2Descending = InitNodeArray(road2Nodes, false, true);
 		nodeArray3Descending = InitNodeArray(road3Nodes, false, true);
 	
@@ -154,6 +162,12 @@ public class TrafficManager : MonoBehaviour {
 		
 		// create empty vehicleList
 		vehicleList = new List<VehicleInfo>();
+
+		moduleInitialized = true;
+		
+		if (preInitLevelSelection != 0) {
+			InitLevel(preInitLevelSelection);
+		}		
 	}
 	
 	
@@ -293,6 +307,11 @@ public class TrafficManager : MonoBehaviour {
 
 	public void InitLevel(int levelNum)
 	{
+		if (moduleInitialized == false) {
+			preInitLevelSelection = levelNum;
+			return;
+		}
+	
 		// remove any previously created vehicles
 		for(int i=0; i<vehicleList.Count; i++)
 			Destroy(vehicleList[i].vehicle);
@@ -305,6 +324,10 @@ public class TrafficManager : MonoBehaviour {
 			return;
 		}
 				
+		// special casing for flat road 1 in level 2
+		roadArray[0].nodeArrayAscending = (levelNum != 1) ? nodeArray1Ascending : nodeArray1L2Ascending;
+		roadArray[0].nodeArrayDescending = (levelNum != 1) ? nodeArray1Descending : nodeArray1L2Descending;
+
 		// configure the roads for the desired level
 		SelectRoadConfig(levelNum);
 		

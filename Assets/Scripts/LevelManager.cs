@@ -212,7 +212,7 @@ public class LevelManager : MonoBehaviour
 		doe.gameObj = GameObject.Find("Doe");
 		fawn.gameObj = GameObject.Find("Fawn");
 		
-		InitLevel(0);
+		InitLevel(1);
 	}
 	
 	public void InitLevel(int level)
