@@ -9,6 +9,29 @@ public class TrafficManager : MonoBehaviour {
 
 	//===================================
 	//===================================
+	//
+	//	EasyRoads3D config per road type
+	//
+	//	Dirt Road - road width: 10, surrounding: 1
+	//	Two-Lane - road width: 11, surrounding: 2
+	//	Four-Lane - road width: 19, surrounding: 3
+	//	Six-Lane - road width: 26, surrounding: 5
+	//
+	//	ROAD 1 - bridge markers: 12, 18; adjoining marker surround distances: 6, 5, 4
+	//	ROAD 3 - marker 3: surround L/R 7 and left-indent 3; marker 4: surround L 7 and left-indent 3
+	//
+	//	Level 2 - road1 dirt, road2 dirt, road3 dirt
+	//	Level 3 - road1 four-lane; road2 two-lane; road3 two-lane
+	//	Level 4 - road1 six-lane; road2 two-lane; road3 four-lane
+	//	Level 5 - road1 six-lane; road2 two-lane; road3 four-lane
+	//
+	//	Special case for Level 2 (road 1 is flat not bridged)
+	//		- Road 1: set all middle markers y to terrain height (press ctrl)
+	//		- Road 1: set markers 11 and 12 y to 2.0
+	//		- Road 2: set markers 11 and 12 y to 2.0
+	
+	//===================================
+	//===================================
 	//		MODULE VARIABLES
 	//===================================
 	//===================================
@@ -16,7 +39,7 @@ public class TrafficManager : MonoBehaviour {
 	// NODES
 
 	private float laneWidth = 4f;
-	private float centerWidth = 1f;
+	private float centerWidth = 0.75f;
 
 	// external nodes created in the terrain
 	public GameObject[] road1Nodes;
@@ -134,7 +157,7 @@ public class TrafficManager : MonoBehaviour {
 		vehicleList = new List<VehicleInfo>();
 
 		
-		InitLevel(3);	// TEMP !!!!!
+		InitLevel(1);	// TEMP !!!!!
 	}
 	
 	
@@ -444,26 +467,6 @@ public class TrafficManager : MonoBehaviour {
 	//===================================
 	//===================================
 	
-	//===================================
-	//===================================
-	//
-	//	EasyRoads3D config per road type
-	//
-	//	Dirt Road
-	//
-	//
-	//	Two-Lane
-	//
-	//
-	//	Four-Lane
-	//	
-	//
-	//	Six-Lane
-	//		width: 
-	//
-	//===================================
-	//===================================
-
 	
 	private void SelectRoadConfig(int levelNum)
 	{
@@ -471,28 +474,28 @@ public class TrafficManager : MonoBehaviour {
 
 		case 1:  // level 2
 			roadArray[0].lanesPerSide = 1;
-			roadArray[0].laneSpeed1 = 20;
-			roadArray[0].laneSpeed2 = 90;
-			roadArray[0].laneSpeed3 = 110;
-			roadArray[0].followDistance1 = 40;
-			roadArray[0].followDistance2 = 50;
-			roadArray[0].followDistance3 = 60;
+			roadArray[0].laneSpeed1 = 40;
+			roadArray[0].laneSpeed2 = 43;
+			roadArray[0].laneSpeed3 = 46;
+			roadArray[0].followDistance1 = 30;
+			roadArray[0].followDistance2 = 35;
+			roadArray[0].followDistance3 = 40;
 			////////////
 			roadArray[1].lanesPerSide = 1;
-			roadArray[1].laneSpeed1 = 70;
-			roadArray[1].laneSpeed2 = 90;
-			roadArray[1].laneSpeed3 = 110;
-			roadArray[1].followDistance1 = 40;
-			roadArray[1].followDistance2 = 50;
-			roadArray[1].followDistance3 = 60;
+			roadArray[1].laneSpeed1 = 40;
+			roadArray[1].laneSpeed2 = 43;
+			roadArray[1].laneSpeed3 = 46;
+			roadArray[1].followDistance1 = 30;
+			roadArray[1].followDistance2 = 35;
+			roadArray[1].followDistance3 = 40;
 			////////////
 			roadArray[2].lanesPerSide = 1;
-			roadArray[2].laneSpeed1 = 70;
-			roadArray[2].laneSpeed2 = 90;
-			roadArray[2].laneSpeed3 = 110;
-			roadArray[2].followDistance1 = 40;
-			roadArray[2].followDistance2 = 50;
-			roadArray[2].followDistance3 = 60;
+			roadArray[2].laneSpeed1 = 40;
+			roadArray[2].laneSpeed2 = 43;
+			roadArray[2].laneSpeed3 = 46;
+			roadArray[2].followDistance1 = 30;
+			roadArray[2].followDistance2 = 35;
+			roadArray[2].followDistance3 = 40;
 			break;
 		
 		case 2:  // level 3
@@ -530,21 +533,21 @@ public class TrafficManager : MonoBehaviour {
 			roadArray[0].followDistance2 = 35;
 			roadArray[0].followDistance3 = 40;
 			////////////
-			roadArray[1].lanesPerSide = 2;
-			roadArray[1].laneSpeed1 = 20;
-			roadArray[1].laneSpeed2 = 23;
-			roadArray[1].laneSpeed3 = 26;
-			roadArray[1].followDistance1 = 150;
-			roadArray[1].followDistance2 = 180;
-			roadArray[1].followDistance3 = 210;
+			roadArray[1].lanesPerSide = 1;
+			roadArray[1].laneSpeed1 = 40;
+			roadArray[1].laneSpeed2 = 43;
+			roadArray[1].laneSpeed3 = 46;
+			roadArray[1].followDistance1 = 30;
+			roadArray[1].followDistance2 = 35;
+			roadArray[1].followDistance3 = 40;
 			////////////
 			roadArray[2].lanesPerSide = 2;
-			roadArray[2].laneSpeed1 = 30;
-			roadArray[2].laneSpeed2 = 33;
-			roadArray[2].laneSpeed3 = 36;
-			roadArray[2].followDistance1 = 80;
-			roadArray[2].followDistance2 = 100;
-			roadArray[2].followDistance3 = 120;
+			roadArray[2].laneSpeed1 = 40;
+			roadArray[2].laneSpeed2 = 43;
+			roadArray[2].laneSpeed3 = 46;
+			roadArray[2].followDistance1 = 30;
+			roadArray[2].followDistance2 = 35;
+			roadArray[2].followDistance3 = 40;
 			break;
 		
 		case 4:  // level 5

@@ -210,7 +210,7 @@ public class LevelManager : MonoBehaviour
 		doe.gameObj = GameObject.Find("Doe");
 		fawn.gameObj = GameObject.Find("Fawn");
 		
-		InitLevel(3);
+		InitLevel(1);
 	}
 	
 	public void InitLevel(int level)
@@ -357,7 +357,7 @@ public class LevelManager : MonoBehaviour
 			road2A.transform.position = new Vector3(0, 0, 0);
 			road2B = (GameObject)Instantiate(road2A, new Vector3(1000, 0, 0), Quaternion.identity);
 			road2C = (GameObject)Instantiate(road2A, new Vector3(0, 0, -1000), Quaternion.identity);
-			road2D = (GameObject)Instantiate(road2A, new Vector3(0, 0, -1000), Quaternion.identity);
+			road2D = (GameObject)Instantiate(road2A, new Vector3(1000, 0, -1000), Quaternion.identity);
 			
 			road3A.transform.position = new Vector3(0, 0, 0);
 			road3B = (GameObject)Instantiate(road3A, new Vector3(1000, 0, 0), Quaternion.identity);
