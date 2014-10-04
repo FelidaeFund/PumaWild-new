@@ -165,6 +165,7 @@ public class LevelManager : MonoBehaviour
 	private ScoringSystem scoringSystem;
 	private InputControls inputControls;
 	private CameraController cameraController;
+	private TrafficManager trafficManager;
 
 	//===================================
 	//===================================
@@ -183,6 +184,7 @@ public class LevelManager : MonoBehaviour
 		scoringSystem = GetComponent<ScoringSystem>();
 		inputControls = GetComponent<InputControls>();
 		cameraController = GetComponent<CameraController>();
+		trafficManager = GetComponent<TrafficManager>();
 
 		// puma
 		pumaObj = GameObject.Find("Puma");	
@@ -210,7 +212,7 @@ public class LevelManager : MonoBehaviour
 		doe.gameObj = GameObject.Find("Doe");
 		fawn.gameObj = GameObject.Find("Fawn");
 		
-		InitLevel(1);
+		InitLevel(0);
 	}
 	
 	public void InitLevel(int level)
@@ -364,6 +366,12 @@ public class LevelManager : MonoBehaviour
 			road3C = (GameObject)Instantiate(road3A, new Vector3(0, 0, -1000), Quaternion.identity);
 			road3D = (GameObject)Instantiate(road3A, new Vector3(1000, 0, -1000), Quaternion.identity);
 		}
+
+		//================================
+		// Set Up Car Objects
+		//================================
+	
+		trafficManager.InitLevel(currentLevel);
 	}
 	
 	public void SwapLevel(int level)
@@ -498,21 +506,36 @@ public class LevelManager : MonoBehaviour
 		}
 
 		if (road1A != null) {
-			road1A.transform.position = new Vector3(0, 0, 0);
-			road1B = (GameObject)Instantiate(road1A, new Vector3(1000, 0, 0), Quaternion.identity);
-			road1C = (GameObject)Instantiate(road1A, new Vector3(0, 0, -1000), Quaternion.identity);
-			road1D = (GameObject)Instantiate(road1A, new Vector3(1000, 0, -1000), Quaternion.identity);
+			road1A.transform.position = new Vector3(terrainAx + 1000f, 0, terrainAz);
+			road1B = (GameObject)Instantiate(road1A, new Vector3(terrainBx + 1000f, 0, terrainBz), Quaternion.identity);
+			road1B.transform.parent = terrainB.transform;
+			road1C = (GameObject)Instantiate(road1A, new Vector3(terrainCx + 1000f, 0, terrainCz), Quaternion.identity);
+			road1C.transform.parent = terrainC.transform;
+			road1D = (GameObject)Instantiate(road1A, new Vector3(terrainDx + 1000f, 0, terrainDz), Quaternion.identity);
+			road1D.transform.parent = terrainD.transform;
 			
-			road2A.transform.position = new Vector3(0, 0, 0);
-			road2B = (GameObject)Instantiate(road2A, new Vector3(1000, 0, 0), Quaternion.identity);
-			road2C = (GameObject)Instantiate(road2A, new Vector3(0, 0, -1000), Quaternion.identity);
-			road2D = (GameObject)Instantiate(road2A, new Vector3(0, 0, -1000), Quaternion.identity);
+			road2A.transform.position = new Vector3(terrainAx + 1000f, 0, terrainAz);
+			road2B = (GameObject)Instantiate(road2A, new Vector3(terrainBx + 1000f, 0, terrainBz), Quaternion.identity);
+			road2B.transform.parent = terrainB.transform;
+			road2C = (GameObject)Instantiate(road2A, new Vector3(terrainCx + 1000f, 0, terrainCz), Quaternion.identity);
+			road2C.transform.parent = terrainC.transform;
+			road2D = (GameObject)Instantiate(road2A, new Vector3(terrainDx + 1000f, 0, terrainDz), Quaternion.identity);
+			road2D.transform.parent = terrainD.transform;
 			
-			road3A.transform.position = new Vector3(0, 0, 0);
-			road3B = (GameObject)Instantiate(road3A, new Vector3(1000, 0, 0), Quaternion.identity);
-			road3C = (GameObject)Instantiate(road3A, new Vector3(0, 0, -1000), Quaternion.identity);
-			road3D = (GameObject)Instantiate(road3A, new Vector3(1000, 0, -1000), Quaternion.identity);
+			road3A.transform.position = new Vector3(terrainAx + 1000f, 0, terrainAz);
+			road3B = (GameObject)Instantiate(road3A, new Vector3(terrainBx + 1000f, 0, terrainBz), Quaternion.identity);
+			road3B.transform.parent = terrainB.transform;
+			road3C = (GameObject)Instantiate(road3A, new Vector3(terrainCx + 1000f, 0, terrainCz), Quaternion.identity);
+			road3C.transform.parent = terrainC.transform;
+			road3D = (GameObject)Instantiate(road3A, new Vector3(terrainDx + 1000f, 0, terrainDz), Quaternion.identity);
+			road3D.transform.parent = terrainD.transform;
 		}
+
+		//================================
+		// Set Up Car Objects
+		//================================
+	
+		trafficManager.InitLevel(currentLevel);
 	}
 
 	public int GetCurrentLevel()
