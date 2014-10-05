@@ -17,10 +17,10 @@ public class TrafficManager : MonoBehaviour {
 	//	Level4 - 6-lane; 2-lane; 4-lane
 	//	Level5 - 6-lane; 2-lane; 4-lane
 	//
-	//	dirt   - width: 6.5, surrounding: 2
-	//	2-Lane - width: 11, surrounding: 3
-	//	4-Lane - width: 19, surrounding: 4
-	//	6-Lane - width: 26, surrounding: 5
+	//	dirt   - width:6.5, surrounding:2, IOS
+	//	2-Lane - width:11, surrounding:3, IOS
+	//	4-Lane - width:19, surrounding:4, IOS
+	//	6-Lane - width:26, surrounding:5, IOS
 	//
 	//	Road1 - 23 markers
 	//	Road2 - 26 markers
@@ -32,8 +32,7 @@ public class TrafficManager : MonoBehaviour {
 	//	Special case for Road 1 Level 2 (road 1 is flat not bridged)
 	//		- set all middle markers y to terrain height (press ctrl)
 	//		- set markers 11 and 12 y to 2.0
-	//
-	//	Set new roads for IOS
+	//		- set markers 17 and 18 y to 1.9
 	//
 	//	Tie new roads into LevelManager
 	
@@ -528,25 +527,25 @@ public class TrafficManager : MonoBehaviour {
 
 		case 1:  // level 2
 			roadArray[0].lanesPerSide = 1;
-			roadArray[0].laneSpeed1 = 40;
-			roadArray[0].laneSpeed2 = 43;
-			roadArray[0].laneSpeed3 = 46;
+			roadArray[0].laneSpeed1 = 30;
+			roadArray[0].laneSpeed2 = 33;
+			roadArray[0].laneSpeed3 = 36;
 			roadArray[0].followDistance1 = 200;
 			roadArray[0].followDistance2 = 35;
 			roadArray[0].followDistance3 = 40;
 			////////////
 			roadArray[1].lanesPerSide = 1;
-			roadArray[1].laneSpeed1 = 40;
-			roadArray[1].laneSpeed2 = 43;
-			roadArray[1].laneSpeed3 = 46;
+			roadArray[1].laneSpeed1 = 30;
+			roadArray[1].laneSpeed2 = 33;
+			roadArray[1].laneSpeed3 = 36;
 			roadArray[1].followDistance1 = 150;
 			roadArray[1].followDistance2 = 35;
 			roadArray[1].followDistance3 = 40;
 			////////////
 			roadArray[2].lanesPerSide = 1;
-			roadArray[2].laneSpeed1 = 40;
-			roadArray[2].laneSpeed2 = 43;
-			roadArray[2].laneSpeed3 = 46;
+			roadArray[2].laneSpeed1 = 30;
+			roadArray[2].laneSpeed2 = 33;
+			roadArray[2].laneSpeed3 = 36;
 			roadArray[2].followDistance1 = 175;
 			roadArray[2].followDistance2 = 35;
 			roadArray[2].followDistance3 = 40;
@@ -554,25 +553,25 @@ public class TrafficManager : MonoBehaviour {
 		
 		case 2:  // level 3
 			roadArray[0].lanesPerSide = 2;
-			roadArray[0].laneSpeed1 = 40;
-			roadArray[0].laneSpeed2 = 43;
-			roadArray[0].laneSpeed3 = 46;
+			roadArray[0].laneSpeed1 = 35;
+			roadArray[0].laneSpeed2 = 38;
+			roadArray[0].laneSpeed3 = 41;
 			roadArray[0].followDistance1 = 100;
 			roadArray[0].followDistance2 = 120;
 			roadArray[0].followDistance3 = 40;
 			////////////
 			roadArray[1].lanesPerSide = 1;
-			roadArray[1].laneSpeed1 = 40;
-			roadArray[1].laneSpeed2 = 43;
-			roadArray[1].laneSpeed3 = 46;
+			roadArray[1].laneSpeed1 = 35;
+			roadArray[1].laneSpeed2 = 38;
+			roadArray[1].laneSpeed3 = 41;
 			roadArray[1].followDistance1 = 75;
 			roadArray[1].followDistance2 = 35;
 			roadArray[1].followDistance3 = 40;
 			////////////
 			roadArray[2].lanesPerSide = 1;
-			roadArray[2].laneSpeed1 = 40;
-			roadArray[2].laneSpeed2 = 43;
-			roadArray[2].laneSpeed3 = 46;
+			roadArray[2].laneSpeed1 = 35;
+			roadArray[2].laneSpeed2 = 38;
+			roadArray[2].laneSpeed3 = 41;
 			roadArray[2].followDistance1 = 90;
 			roadArray[2].followDistance2 = 35;
 			roadArray[2].followDistance3 = 40;
