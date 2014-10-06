@@ -52,23 +52,33 @@ public class PumaController : MonoBehaviour
 		
 	void OnCollisionEnter(Collision collisionInfo)
 	{
-		Debug.Log("Detected collision between " + gameObject.name + " and " + collisionInfo.collider.name);
-		Debug.Log("There are " + collisionInfo.contacts.Length + " point(s) of contacts");
-		Debug.Log("Their relative velocity is " + collisionInfo.relativeVelocity);
+
+
+		//if (collisionInfo.gameObject.tag == "BridgeCollider") {
+
+			//Debug.Log("Detected collision between " + gameObject.name + " and " + collisionInfo.collider.name);
+			//Debug.Log("There are " + collisionInfo.contacts.Length + " point(s) of contacts");
+			//Debug.Log("Their relative velocity is " + collisionInfo.relativeVelocity);
+
+		//}
+
+
 	}
 
 
 	void OnCollisionStay(Collision collisionInfo)
 
 	{
-		Debug.Log(gameObject.name + " and " + collisionInfo.collider.name + " are still colliding");
+		//Debug.Log(gameObject.name + " and " + collisionInfo.collider.name + " are still colliding");
 	}
 
 
 	void OnCollisionExit(Collision collisionInfo)
 
 	{
-		Debug.Log(gameObject.name + " and " + collisionInfo.collider.name + " are no longer colliding");
+		//if (collisionInfo.gameObject.tag == "BridgeCollider") {
+			//Debug.Log(gameObject.name + " and " + collisionInfo.collider.name + " are no longer colliding");
+		//}
 	}
 	
 	

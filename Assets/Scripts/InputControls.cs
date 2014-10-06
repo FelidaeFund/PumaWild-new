@@ -168,15 +168,15 @@ public class InputControls : MonoBehaviour
 			keyStateTurnLeft = true;
 		if (Input.GetKey(KeyCode.L) || Input.GetKey(KeyCode.RightArrow))
 			keyStateTurnRight = true;
-		if (Input.GetKey(KeyCode.Q))
+		if (Input.GetKey(KeyCode.A))
 			levelManager.SwapLevel(0);
-		if (Input.GetKey(KeyCode.W))
+		if (Input.GetKey(KeyCode.S))
 			levelManager.SwapLevel(1);
-		if (Input.GetKey(KeyCode.E))
+		if (Input.GetKey(KeyCode.D))
 			levelManager.SwapLevel(2);
-		if (Input.GetKey(KeyCode.R))
+		if (Input.GetKey(KeyCode.F))
 			levelManager.SwapLevel(3);
-		if (Input.GetKey(KeyCode.T))
+		if (Input.GetKey(KeyCode.G))
 			levelManager.SwapLevel(4);
 			
 		// set the heading to either straight ahead or diagonal

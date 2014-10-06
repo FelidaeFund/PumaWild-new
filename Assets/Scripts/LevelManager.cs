@@ -87,6 +87,29 @@ public class LevelManager : MonoBehaviour
 	private GameObject road2D;
 	private GameObject road3D;
 	
+	// BRIDGES
+	
+	public GameObject L3Bridge1;
+	public GameObject L3Bridge2;
+
+	public GameObject L4Bridge1;
+	public GameObject L4Bridge2;
+
+	public GameObject L5Bridge1;
+	public GameObject L5Bridge2;
+
+	private GameObject bridge1A;
+	private GameObject bridge2A;
+	
+	private GameObject bridge1B;
+	private GameObject bridge2B;
+	
+	private GameObject bridge1C;
+	private GameObject bridge2C;
+	
+	private GameObject bridge1D;
+	private GameObject bridge2D;
+	
 	// PUMA
 
 	public GameObject pumaObj;
@@ -224,7 +247,7 @@ public class LevelManager : MonoBehaviour
 		currentLevel = level;
 		gameState = "gameStateGui";
 		stateStartTime = Time.time;
-		mainHeading = Random.Range(0f, 360f);
+		mainHeading = 30f; //Random.Range(0f, 360f);
 
 		pumaX = -700f; //0f;
 		pumaY = 0f;
@@ -353,18 +376,96 @@ public class LevelManager : MonoBehaviour
 		if (road1A != null) {
 			road1A.transform.position = new Vector3(0, 0, 0);
 			road1B = (GameObject)Instantiate(road1A, new Vector3(1000, 0, 0), Quaternion.identity);
+			road1B.transform.parent = terrainB.transform;
 			road1C = (GameObject)Instantiate(road1A, new Vector3(0, 0, -1000), Quaternion.identity);
+			road1C.transform.parent = terrainC.transform;
 			road1D = (GameObject)Instantiate(road1A, new Vector3(1000, 0, -1000), Quaternion.identity);
+			road1D.transform.parent = terrainD.transform;
 			
 			road2A.transform.position = new Vector3(0, 0, 0);
 			road2B = (GameObject)Instantiate(road2A, new Vector3(1000, 0, 0), Quaternion.identity);
+			road2B.transform.parent = terrainB.transform;
 			road2C = (GameObject)Instantiate(road2A, new Vector3(0, 0, -1000), Quaternion.identity);
+			road2C.transform.parent = terrainC.transform;
 			road2D = (GameObject)Instantiate(road2A, new Vector3(1000, 0, -1000), Quaternion.identity);
+			road2D.transform.parent = terrainD.transform;
 			
 			road3A.transform.position = new Vector3(0, 0, 0);
 			road3B = (GameObject)Instantiate(road3A, new Vector3(1000, 0, 0), Quaternion.identity);
+			road3B.transform.parent = terrainB.transform;
 			road3C = (GameObject)Instantiate(road3A, new Vector3(0, 0, -1000), Quaternion.identity);
+			road3C.transform.parent = terrainC.transform;
 			road3D = (GameObject)Instantiate(road3A, new Vector3(1000, 0, -1000), Quaternion.identity);
+			road3D.transform.parent = terrainD.transform;
+		}
+
+		//================================
+		// Set Up Bridge Objects
+		//================================
+	
+		if (bridge1A != null) {
+			bridge1A = null;
+			bridge2A = null;
+			Destroy(bridge1B);
+			bridge1B = null;
+			Destroy(bridge2B);
+			bridge2B = null;
+			Destroy(bridge1C);
+			bridge1C = null;
+			Destroy(bridge2C);
+			bridge2C = null;
+			Destroy(bridge1D);
+			bridge1D = null;
+			Destroy(bridge2D);
+			bridge2D = null;
+		}
+
+		switch (currentLevel) {
+		case 0:
+		case 1:
+			bridge1A = null;
+			bridge2A = null;
+			bridge1B = null;
+			bridge2B = null;
+			bridge1C = null;
+			bridge2C = null;
+			bridge1D = null;
+			bridge2D = null;
+			break;
+		case 2:
+			bridge1A = L3Bridge1;
+			bridge2A = L3Bridge2;
+			break;
+		case 3:
+			bridge1A = L4Bridge1;
+			bridge2A = L4Bridge2;
+			break;
+		case 4:
+			bridge1A = L5Bridge1;
+			bridge2A = L5Bridge2;
+			break;		
+		}
+
+		if (bridge1A != null) {
+			float bridge1x = bridge1A.transform.position.x;
+			float bridge1y = bridge1A.transform.position.y;
+			float bridge1z = bridge1A.transform.position.z;		
+			bridge1B = (GameObject)Instantiate(bridge1A, new Vector3(bridge1x + 1000, bridge1y, bridge1z), bridge1A.transform.rotation);
+			bridge1B.transform.parent = terrainB.transform;
+			bridge1C = (GameObject)Instantiate(bridge1A, new Vector3(bridge1x, bridge1y, bridge1z - 1000), bridge1A.transform.rotation);
+			bridge1C.transform.parent = terrainC.transform;
+			bridge1D = (GameObject)Instantiate(bridge1A, new Vector3(bridge1x + 1000, bridge1y, bridge1z - 1000), bridge1A.transform.rotation);
+			bridge1D.transform.parent = terrainD.transform;
+			
+			float bridge2x = bridge2A.transform.position.x;
+			float bridge2y = bridge2A.transform.position.y;
+			float bridge2z = bridge2A.transform.position.z;
+			bridge2B = (GameObject)Instantiate(bridge2A, new Vector3(bridge2x + 1000, bridge2y, bridge2z), bridge2A.transform.rotation);
+			bridge2B.transform.parent = terrainB.transform;
+			bridge2C = (GameObject)Instantiate(bridge2A, new Vector3(bridge2x, bridge2y, bridge2z - 1000), bridge2A.transform.rotation);
+			bridge2C.transform.parent = terrainC.transform;
+			bridge2D = (GameObject)Instantiate(bridge2A, new Vector3(bridge2x + 1000, bridge2y, bridge2z - 1000), bridge2A.transform.rotation);
+			bridge2D.transform.parent = terrainD.transform;
 		}
 
 		//================================
@@ -529,6 +630,71 @@ public class LevelManager : MonoBehaviour
 			road3C.transform.parent = terrainC.transform;
 			road3D = (GameObject)Instantiate(road3A, new Vector3(terrainDx + 1000f, 0, terrainDz), Quaternion.identity);
 			road3D.transform.parent = terrainD.transform;
+		}
+
+		//================================
+		// Set Up Bridge Objects
+		//================================
+	
+		if (bridge1A != null) {
+			bridge1A = null;
+			bridge2A = null;
+			Destroy(bridge1B);
+			bridge1B = null;
+			Destroy(bridge2B);
+			bridge2B = null;
+			Destroy(bridge1C);
+			bridge1C = null;
+			Destroy(bridge2C);
+			bridge2C = null;
+			Destroy(bridge1D);
+			bridge1D = null;
+			Destroy(bridge2D);
+			bridge2D = null;
+		}
+
+		switch (currentLevel) {
+		case 0:
+		case 1:
+			bridge1A = null;
+			bridge2A = null;
+			bridge1B = null;
+			bridge2B = null;
+			bridge1C = null;
+			bridge2C = null;
+			bridge1D = null;
+			bridge2D = null;
+			break;
+		case 2:
+			bridge1A = L3Bridge1;
+			bridge2A = L3Bridge2;
+			break;
+		case 3:
+			bridge1A = L4Bridge1;
+			bridge2A = L4Bridge2;
+			break;
+		case 4:
+			bridge1A = L5Bridge1;
+			bridge2A = L5Bridge2;
+			break;		
+		}
+
+		if (bridge1A != null) {
+			Vector3 bridge1Position = bridge1A.transform.position - terrainA.transform.position;
+			bridge1B = (GameObject)Instantiate(bridge1A, terrainB.transform.position + bridge1Position, bridge1A.transform.rotation);
+			bridge1B.transform.parent = terrainB.transform;
+			bridge1C = (GameObject)Instantiate(bridge1A, terrainC.transform.position + bridge1Position, bridge1A.transform.rotation);
+			bridge1C.transform.parent = terrainC.transform;
+			bridge1D = (GameObject)Instantiate(bridge1A, terrainD.transform.position + bridge1Position, bridge1A.transform.rotation);
+			bridge1D.transform.parent = terrainD.transform;
+			
+			Vector3 bridge2Position = bridge2A.transform.position - terrainA.transform.position;
+			bridge2B = (GameObject)Instantiate(bridge2A, terrainB.transform.position + bridge2Position, bridge2A.transform.rotation);
+			bridge2B.transform.parent = terrainB.transform;
+			bridge2C = (GameObject)Instantiate(bridge2A, terrainC.transform.position + bridge2Position, bridge2A.transform.rotation);
+			bridge2C.transform.parent = terrainC.transform;
+			bridge2D = (GameObject)Instantiate(bridge2A, terrainD.transform.position + bridge2Position, bridge2A.transform.rotation);
+			bridge2D.transform.parent = terrainD.transform;
 		}
 
 		//================================
