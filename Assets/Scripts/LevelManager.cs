@@ -226,9 +226,9 @@ public class LevelManager : MonoBehaviour
 		stateStartTime = Time.time;
 		mainHeading = Random.Range(0f, 360f);
 
-		pumaX = 0f;
+		pumaX = -700f; //0f;
 		pumaY = 0f;
-		pumaZ = 0f;			
+		pumaZ = 700f; //0f;			
 		pumaObj.transform.position = new Vector3(pumaX, pumaY, pumaZ);		
 
 		//================================

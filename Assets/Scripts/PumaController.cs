@@ -12,14 +12,14 @@ public class PumaController : MonoBehaviour
 	//===================================
 	//===================================
 
-	public GameObject pumaObj;
+	private GameObject pumaObj;
 	private int selectedPuma = -1;
 	public float mainHeading;
 	private float pumaX;
 	private float pumaY;
 	private float pumaZ;
 	private float pumaHeading = 0f;
-	public float pumaHeadingOffset = 0f;   			// NOTE: is currently changed from InputControls....probably shouldn't be
+	private float pumaHeadingOffset = 0f;   			// NOTE: is currently changed from InputControls....probably shouldn't be
 	private float pumaStalkingSpeed = 22f * 0.66f;
 	private float pumaChasingSpeed = 32f * 0.66f;
 	private float defaultPumaChasingSpeed = 32f * 0.66f;
@@ -45,6 +45,38 @@ public class PumaController : MonoBehaviour
     {
 
 	}
+	
+	
+	
+		
+		
+	void OnCollisionEnter(Collision collisionInfo)
+	{
+		Debug.Log("Detected collision between " + gameObject.name + " and " + collisionInfo.collider.name);
+		Debug.Log("There are " + collisionInfo.contacts.Length + " point(s) of contacts");
+		Debug.Log("Their relative velocity is " + collisionInfo.relativeVelocity);
+	}
+
+
+	void OnCollisionStay(Collision collisionInfo)
+
+	{
+		Debug.Log(gameObject.name + " and " + collisionInfo.collider.name + " are still colliding");
+	}
+
+
+	void OnCollisionExit(Collision collisionInfo)
+
+	{
+		Debug.Log(gameObject.name + " and " + collisionInfo.collider.name + " are no longer colliding");
+	}
+	
+	
+	
+	
+	
+	
+	
 
 	//===========================================
 	//===========================================
