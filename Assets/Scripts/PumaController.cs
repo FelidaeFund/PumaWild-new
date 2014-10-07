@@ -35,6 +35,22 @@ public class PumaController : MonoBehaviour
 	private float[] enduranceArray = new float[] {0.6f, 0.4f, 0.9f, 0.8f, 0.6f, 0.4f};
 	private float[] stealthinessArray = new float[] {0.10f, 0.20f, 0.45f, 0.55f, 0.80f, 0.90f};
 	
+	
+	
+	
+	
+	
+	
+	
+	public GameObject surface;
+	public GameObject sphere;
+	
+	
+	
+	
+	// EXTERNAL MODULES
+	private LevelManager levelManager;	
+	
 	//===================================
 	//===================================
 	//		INITIALIZATION
@@ -43,24 +59,35 @@ public class PumaController : MonoBehaviour
 
     void Start()
     {
+		// connect to external modules
+		levelManager = GameObject.Find("Scripts").GetComponent<LevelManager>();
 
 	}
 	
-	
-	
-		
-		
+	//===================================
+	//===================================
+	//		COLLISION LOGIC
+	//===================================
+	//===================================
+
 	void OnCollisionEnter(Collision collisionInfo)
 	{
 
 
-		//if (collisionInfo.gameObject.tag == "BridgeCollider") {
+		if (collisionInfo.gameObject.tag == "Bridge") {
 
-			//Debug.Log("Detected collision between " + gameObject.name + " and " + collisionInfo.collider.name);
+			Debug.Log("=====================================");
+			Debug.Log("Detected collision between " + gameObject.name + " and " + collisionInfo.collider.name);
 			//Debug.Log("There are " + collisionInfo.contacts.Length + " point(s) of contacts");
-			//Debug.Log("Their relative velocity is " + collisionInfo.relativeVelocity);
+			Debug.Log("The collision's contact normal is " + collisionInfo.contacts[0].normal);
+			Debug.Log("Their relative velocity is " + collisionInfo.relativeVelocity);
+			
+			
+			sphere.transform.position = collisionInfo.contacts[0].point;
+			
+			levelManager.BackupPuma(2f);
 
-		//}
+		}
 
 
 	}
@@ -76,9 +103,16 @@ public class PumaController : MonoBehaviour
 	void OnCollisionExit(Collision collisionInfo)
 
 	{
-		//if (collisionInfo.gameObject.tag == "BridgeCollider") {
-			//Debug.Log(gameObject.name + " and " + collisionInfo.collider.name + " are no longer colliding");
-		//}
+		if (collisionInfo.gameObject.tag == "Bridge") {
+			Debug.Log("=====================================");
+			Debug.Log(gameObject.name + " and " + collisionInfo.collider.name + " are no longer colliding");
+
+
+
+			sphere.transform.position = new Vector3(-650f, 4f, 775f);
+
+
+		}
 	}
 	
 	

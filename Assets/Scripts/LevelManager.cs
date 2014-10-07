@@ -1255,6 +1255,35 @@ public class LevelManager : MonoBehaviour
 			SetTerrainNeighbors();
 	}
 
+
+	//===================================
+	//===================================
+	//		PUMA HANDLING
+	//===================================
+	//===================================
+	
+	public void BackupPuma(float distance)
+	{
+
+		pumaX -= (Mathf.Sin(pumaHeading*Mathf.PI/180) * distance);
+		pumaZ -= (Mathf.Cos(pumaHeading*Mathf.PI/180) * distance);
+
+		// calculate puma rotX based on terrain in front and behind
+		float pumaRotX;
+		float offsetDistance = 1f;
+		float pumaAheadX = pumaX + (Mathf.Sin(pumaHeading*Mathf.PI/180) * offsetDistance * 1f);
+		float pumaAheadZ = pumaZ + (Mathf.Cos(pumaHeading*Mathf.PI/180) * offsetDistance * 1f);
+		float pumaBehindX = pumaX + (Mathf.Sin(pumaHeading*Mathf.PI/180) * offsetDistance * -1f);
+		float pumaBehindZ = pumaZ + (Mathf.Cos(pumaHeading*Mathf.PI/180) * offsetDistance * -1f);
+		pumaRotX = GetAngleFromOffset(0, GetTerrainHeight(pumaAheadX, pumaAheadZ), offsetDistance * 2f, GetTerrainHeight(pumaBehindX, pumaBehindZ)) - 90f;
+			
+		// update puma obj
+		pumaY = GetTerrainHeight(pumaX, pumaZ);
+		pumaObj.transform.position = new Vector3(pumaX, pumaY, pumaZ);			
+		pumaObj.transform.rotation = Quaternion.Euler(pumaRotX, (pumaHeading - 180f), 0);
+	}
+
+
 	//===================================
 	//===================================
 	//		DEER HANDLING
