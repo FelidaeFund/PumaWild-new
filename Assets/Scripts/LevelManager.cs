@@ -130,12 +130,9 @@ public class LevelManager : MonoBehaviour
 	private float deerCaughtFinalOffsetFactor90 = 1f;
 	private bool pumaCollisionFlag = false;
 	private float pumaCollisionBarrierHeading;
-	private float  pumaCollisionHeadingOffset;
-	
-	
-	private float lastPumaCollisionUpdateTime;
-	
-	
+	private float pumaCollisionHeadingOffset;	
+	private float nextFlybyHeadingUpdateTime;
+	private float flybyHeadingRotationSpeed = 0f;
 	
 	// PUMA CHARACTERISTICS
 
@@ -255,11 +252,11 @@ public class LevelManager : MonoBehaviour
 		currentLevel = level;
 		gameState = "gameStateGui";
 		stateStartTime = Time.time;
-		mainHeading = 30f; //Random.Range(0f, 360f);
+		mainHeading = Random.Range(0f, 360f);  //30f; //Random.Range(0f, 360f);
 
-		pumaX = -700f; //0f;
+		pumaX = 0f; //-700f; //0f;
 		pumaY = 0f;
-		pumaZ = 700f; //0f;			
+		pumaZ = 0f; //700f; //0f;			
 		pumaObj.transform.position = new Vector3(pumaX, pumaY, pumaZ);		
 
 		//================================
@@ -1151,7 +1148,8 @@ public class LevelManager : MonoBehaviour
 			// process automatic puma walking during GUI state
 			if ((gameState != "gameStateLeavingGui") || (Time.time - stateStartTime < 1.8f))
 				pumaAnimator.SetBool("GuiMode", true);
-			distance = guiFlybySpeed * Time.deltaTime  * 7f * guiFlybyOverdrive;
+			UpdateGuiStatePumaHeading();
+			distance = guiFlybySpeed * Time.deltaTime  * 7f * guiFlybyOverdrive;			
 			pumaX += (Mathf.Sin(mainHeading*Mathf.PI/180) * distance);
 			pumaZ += (Mathf.Cos(mainHeading*Mathf.PI/180) * distance);
 		}	
@@ -1338,15 +1336,49 @@ public class LevelManager : MonoBehaviour
 		pumaCollisionHeadingOffset = headingOffset;
 		pumaCollisionBarrierHeading = barrierHeading;
 		pumaCollisionFlag = true;
-		
-		
-		
-		lastPumaCollisionUpdateTime = Time.time;
 	}
 	
 	public void PumaEndCollision()
 	{
 		pumaCollisionFlag = false;
+	}
+	
+	private void UpdateGuiStatePumaHeading()
+	{
+		// random component of heading change
+		if (Time.time > nextFlybyHeadingUpdateTime) {
+			flybyHeadingRotationSpeed += Random.Range(-1f, 1f);
+			if (flybyHeadingRotationSpeed > 5f)
+				flybyHeadingRotationSpeed = 5f;
+			if (flybyHeadingRotationSpeed < -5f)
+				flybyHeadingRotationSpeed = -5f;
+			nextFlybyHeadingUpdateTime = Time.time + 1f;
+		}
+		float randomHeadingOffset = Time.deltaTime * flybyHeadingRotationSpeed;		
+		
+		// determine if we need to worry about avoiding roads
+		float avoidanceMax = 40f;
+		float avoidanceMin = 20f;
+		Vector3 nearestRoadPos = trafficManager.FindClosestNode(new Vector3(pumaX, 0, pumaZ));
+		float nearestRoadDistance = Vector3.Distance(nearestRoadPos, new Vector3(pumaX, 0, pumaZ));
+		if (currentLevel == 0 || nearestRoadDistance > avoidanceMax) {
+			mainHeading += randomHeadingOffset;
+			return;
+		}
+				
+		// yes, determine road avoidance component of heading change	
+		float avoidanceRotation;
+		float avoidanceAngle = GetAngleFromOffset(nearestRoadPos.x, nearestRoadPos.z, pumaX, pumaZ);	
+		float avoidanceStrength = (nearestRoadDistance < avoidanceMin) ? 1f : (avoidanceMax-nearestRoadDistance) / avoidanceMin;
+		avoidanceStrength = 1f - ((1f - avoidanceStrength) * (1f - avoidanceStrength));
+		if (avoidanceAngle > mainHeading)
+			avoidanceRotation = (avoidanceAngle - mainHeading < 180f) ? (avoidanceAngle - mainHeading) : (((mainHeading + 360f) - avoidanceAngle) * -1f);
+		else
+			avoidanceRotation = (mainHeading - avoidanceAngle < 180f) ? ((mainHeading - avoidanceAngle) * -1f) : ((avoidanceAngle + 360f) - mainHeading);
+		
+		// apply heading change
+		mainHeading += Time.deltaTime * avoidanceRotation * avoidanceStrength * 0.3f;			
+		mainHeading += randomHeadingOffset * (1f - avoidanceStrength);		
 	}
 
 	//===================================
@@ -1584,6 +1616,27 @@ public class LevelManager : MonoBehaviour
 			return terrainPosInitNEG;
 		}	
 		return 0f;
+	}
+
+	public Vector3 GetTerrainPosition(Vector3 referencePosition)
+	{
+		float refX = referencePosition.x;
+		float refZ = referencePosition.z;
+
+		if (refX >= terrainA.transform.position.x && refX < terrainA.transform.position.x + 1000f && refZ >= terrainA.transform.position.z && refZ < terrainA.transform.position.z + 1000f) {
+			return terrainA.transform.position;
+		}
+		else if (refX >= terrainB.transform.position.x && refX < terrainB.transform.position.x + 1000f && refZ >= terrainB.transform.position.z && refZ < terrainB.transform.position.z + 1000f) {
+			return terrainB.transform.position;
+		}
+		else if (refX >= terrainC.transform.position.x && refX < terrainC.transform.position.x + 1000f && refZ >= terrainC.transform.position.z && refZ < terrainC.transform.position.z + 1000f) {
+			return terrainC.transform.position;
+		}
+		else if (refX >= terrainD.transform.position.x && refX < terrainD.transform.position.x + 1000f && refZ >= terrainD.transform.position.z && refZ < terrainD.transform.position.z + 1000f) {
+			return terrainD.transform.position;
+		}
+		Debug.Log("ERROR: levelManager.GetTerrainPosition got point not in terrain");
+		return new Vector3(0f, 0f, 0f);
 	}
 	
 	public float GetTerrainMinX()
