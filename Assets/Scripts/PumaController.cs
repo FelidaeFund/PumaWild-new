@@ -35,18 +35,10 @@ public class PumaController : MonoBehaviour
 	private float[] enduranceArray = new float[] {0.6f, 0.4f, 0.9f, 0.8f, 0.6f, 0.4f};
 	private float[] stealthinessArray = new float[] {0.10f, 0.20f, 0.45f, 0.55f, 0.80f, 0.90f};
 	
-	
-	
-	
-	
-	
-	
-	
-	public GameObject surface;
-	public GameObject sphere;
-	
-	
-	
+	// COLLISION DETECTION
+		
+	private bool collisionBridgeSideLeftInProgress = false;
+	private bool collisionBridgeSideRightInProgress = false;
 	
 	// EXTERNAL MODULES
 	private LevelManager levelManager;	
@@ -72,56 +64,107 @@ public class PumaController : MonoBehaviour
 
 	void OnCollisionEnter(Collision collisionInfo)
 	{
-
+		if (collisionInfo.gameObject.tag == "BridgeSideLeft") {
+			collisionBridgeSideLeftInProgress = true;
+			return;
+		}
+		if (collisionInfo.gameObject.tag == "BridgeSideRight") {
+			collisionBridgeSideRightInProgress = true;
+			return;
+		}
 
 		if (collisionInfo.gameObject.tag == "Bridge") {
 
-			Debug.Log("=====================================");
-			Debug.Log("Detected collision between " + gameObject.name + " and " + collisionInfo.collider.name);
-			//Debug.Log("There are " + collisionInfo.contacts.Length + " point(s) of contacts");
-			Debug.Log("The collision's contact normal is " + collisionInfo.contacts[0].normal);
-			Debug.Log("Their relative velocity is " + collisionInfo.relativeVelocity);
+			//Debug.Log("=====================================");
+			//Debug.Log("Detected collision between " + gameObject.name + " and " + collisionInfo.collider.name);
 			
+			float headingOffset;
+			float barrierHeading;
+			float normalHeading = levelManager.GetAngleFromOffset(0f, 0f, collisionInfo.contacts[0].normal.x, collisionInfo.contacts[0].normal.z);		
+			float leftDirection = normalHeading + 90f;
+			float rightDirection = normalHeading - 90f;			
 			
-			sphere.transform.position = collisionInfo.contacts[0].point;
+			if (collisionBridgeSideLeftInProgress) {
+				headingOffset = -1f;
+				barrierHeading = leftDirection;
+			}
+			else if (collisionBridgeSideRightInProgress) {
+				headingOffset = 1f;
+				barrierHeading = rightDirection;
+			}
+			else {
+				float mainHeading = levelManager.mainHeading;
+				float deltaToLeftDirection;
+				float deltaToRightDirection;
+				
+				if (leftDirection > mainHeading) {
+					mainHeading += 360f;
+				}
+				deltaToLeftDirection = mainHeading - leftDirection;
+				if (deltaToLeftDirection > 180f) {
+					leftDirection += 360f;
+					deltaToLeftDirection = leftDirection - mainHeading;
+				}
+							
+				if (rightDirection > mainHeading) {
+					mainHeading += 360f;
+				}
+				deltaToRightDirection = mainHeading - rightDirection;
+				if (deltaToRightDirection > 180f) {
+					rightDirection += 360f;
+					deltaToRightDirection = rightDirection - mainHeading;
+				}
+							
+				if (deltaToLeftDirection > deltaToRightDirection) {
+					// turn right
+					headingOffset = 1f;
+					barrierHeading = rightDirection;
+				}
+				else {
+					// turn left
+					headingOffset = -1f;
+					barrierHeading = leftDirection;
+				}
+			}
 			
-			levelManager.BackupPuma(2f);
+			while (barrierHeading >= 360f)
+				barrierHeading -= 360f;			
+			while (barrierHeading < 0f)
+				barrierHeading += 360f;
+			
+			levelManager.PumaBeginCollision(headingOffset, barrierHeading);
 
 		}
-
-
 	}
 
 
 	void OnCollisionStay(Collision collisionInfo)
 
 	{
-		//Debug.Log(gameObject.name + " and " + collisionInfo.collider.name + " are still colliding");
+
 	}
 
 
 	void OnCollisionExit(Collision collisionInfo)
 
 	{
+		if (collisionInfo.gameObject.tag == "BridgeSideLeft") {
+			collisionBridgeSideLeftInProgress = false;
+			return;
+		}
+		if (collisionInfo.gameObject.tag == "BridgeSideRight") {
+			collisionBridgeSideRightInProgress = false;
+			return;
+		}
+
 		if (collisionInfo.gameObject.tag == "Bridge") {
-			Debug.Log("=====================================");
-			Debug.Log(gameObject.name + " and " + collisionInfo.collider.name + " are no longer colliding");
-
-
-
-			sphere.transform.position = new Vector3(-650f, 4f, 775f);
-
-
+			//Debug.Log("=====================================");
+			//Debug.Log(gameObject.name + " and " + collisionInfo.collider.name + " are no longer colliding");
+			levelManager.PumaEndCollision();
 		}
 	}
 	
 	
-	
-	
-	
-	
-	
-
 	//===========================================
 	//===========================================
 	//	PUBLIC FUNCTIONS

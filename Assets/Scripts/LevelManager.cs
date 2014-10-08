@@ -128,7 +128,15 @@ public class LevelManager : MonoBehaviour
 	private float caughtTriggerDistance = 1f;
 	private float deerCaughtFinalOffsetFactor0 = 1f;
 	private float deerCaughtFinalOffsetFactor90 = 1f;
-
+	private bool pumaCollisionFlag = false;
+	private float pumaCollisionBarrierHeading;
+	private float  pumaCollisionHeadingOffset;
+	
+	
+	private float lastPumaCollisionUpdateTime;
+	
+	
+	
 	// PUMA CHARACTERISTICS
 
 	private float[] powerArray = new float[] {0.6f, 0.4f, 0.9f, 0.7f, 0.7f, 0.5f};
@@ -1150,11 +1158,38 @@ public class LevelManager : MonoBehaviour
 		else if (gameState == "gameStateStalking") {	
 			// main stalking state
 			float rotationSpeed = 100f;
-			distance = inputControls.GetInputVert() * Time.deltaTime  * pumaStalkingSpeed * speedOverdrive;
-			mainHeading += inputControls.GetInputHorz() * Time.deltaTime * rotationSpeed;
-			pumaHeading = mainHeading + pumaHeadingOffset;
+			if (pumaCollisionFlag == true) {
+				distance = inputControls.GetInputVert() * Time.deltaTime  * pumaStalkingSpeed * speedOverdrive;
+				mainHeading += inputControls.GetInputHorz() * Time.deltaTime * rotationSpeed;
+				if (pumaCollisionHeadingOffset > 0f) {
+					// turning right
+					if (mainHeading < pumaCollisionBarrierHeading)
+						mainHeading += Time.deltaTime * pumaCollisionHeadingOffset * rotationSpeed;
+					pumaHeading = ((mainHeading < pumaCollisionBarrierHeading) ? pumaCollisionBarrierHeading : mainHeading) + pumaHeadingOffset;
+					if (mainHeading < pumaCollisionBarrierHeading) {				
+						float angleDelta = pumaCollisionBarrierHeading - mainHeading;
+						distance = (Mathf.Cos(angleDelta*Mathf.PI/180) * distance);				
+					}
+				}
+				else {
+					// turning left
+					if (mainHeading > pumaCollisionBarrierHeading)
+						mainHeading += Time.deltaTime * pumaCollisionHeadingOffset * rotationSpeed;
+					pumaHeading = ((mainHeading > pumaCollisionBarrierHeading) ? pumaCollisionBarrierHeading : mainHeading) + pumaHeadingOffset;
+					if (mainHeading > pumaCollisionBarrierHeading) {				
+						float angleDelta = mainHeading - pumaCollisionBarrierHeading;
+						distance = (Mathf.Cos(angleDelta*Mathf.PI/180) * distance);				
+					}
+				}
+			}
+			else {
+				distance = inputControls.GetInputVert() * Time.deltaTime  * pumaStalkingSpeed * speedOverdrive;
+				mainHeading += inputControls.GetInputHorz() * Time.deltaTime * rotationSpeed;
+				pumaHeading = mainHeading + pumaHeadingOffset;
+			}
 			pumaX += (Mathf.Sin(pumaHeading*Mathf.PI/180) * distance);
 			pumaZ += (Mathf.Cos(pumaHeading*Mathf.PI/180) * distance);
+			pumaHeading = mainHeading + pumaHeadingOffset; // restore normal setting in case of collision mode
 			scoringSystem.PumaHasWalked(selectedPuma, distance);
 			if (scoringSystem.GetPumaHealth(selectedPuma) == 0f)
 				SetGameState("gameStateDied1");			
@@ -1162,16 +1197,48 @@ public class LevelManager : MonoBehaviour
 		else if (gameState == "gameStateChasing") {
 			// main chasing state
 			float rotationSpeed = 150f;
-			distance = inputControls.GetInputVert() * Time.deltaTime  * pumaChasingSpeed * speedOverdrive;
+			if (pumaCollisionFlag == true) {
+				distance = inputControls.GetInputVert() * Time.deltaTime  * pumaStalkingSpeed * speedOverdrive;
+				mainHeading += inputControls.GetInputHorz() * Time.deltaTime * rotationSpeed;
+				if (pumaCollisionHeadingOffset > 0f) {
+					// turning right
+					if (mainHeading < pumaCollisionBarrierHeading)
+						mainHeading += Time.deltaTime * pumaCollisionHeadingOffset * rotationSpeed;
+					pumaHeading = ((mainHeading < pumaCollisionBarrierHeading) ? pumaCollisionBarrierHeading : mainHeading) + pumaHeadingOffset;
+					if (mainHeading < pumaCollisionBarrierHeading) {				
+						float angleDelta = pumaCollisionBarrierHeading - mainHeading;
+						distance = (Mathf.Cos(angleDelta*Mathf.PI/180) * distance);				
+					}
+				}
+				else {
+					// turning left
+					if (mainHeading > pumaCollisionBarrierHeading)
+						mainHeading += Time.deltaTime * pumaCollisionHeadingOffset * rotationSpeed;
+					pumaHeading = ((mainHeading > pumaCollisionBarrierHeading) ? pumaCollisionBarrierHeading : mainHeading) + pumaHeadingOffset;
+					if (mainHeading > pumaCollisionBarrierHeading) {				
+						float angleDelta = mainHeading - pumaCollisionBarrierHeading;
+						distance = (Mathf.Cos(angleDelta*Mathf.PI/180) * distance);				
+					}
+				}
+			}
+			else {
+				distance = inputControls.GetInputVert() * Time.deltaTime  * pumaStalkingSpeed * speedOverdrive;
+				mainHeading += inputControls.GetInputHorz() * Time.deltaTime * rotationSpeed;
+				pumaHeading = mainHeading + pumaHeadingOffset;
+			}
 			float travelledDistance = (scoringSystem.GetPumaHealth(selectedPuma) > 0.05f) ? distance : distance * (scoringSystem.GetPumaHealth(selectedPuma) / 0.05f);
-			mainHeading += inputControls.GetInputHorz() * Time.deltaTime * rotationSpeed;
-			pumaHeading = mainHeading + pumaHeadingOffset;
 			pumaX += (Mathf.Sin(pumaHeading*Mathf.PI/180) * travelledDistance);
 			pumaZ += (Mathf.Cos(pumaHeading*Mathf.PI/180) * travelledDistance);
+			pumaHeading = mainHeading + pumaHeadingOffset; // restore normal setting in case of collision mode
 			scoringSystem.PumaHasRun(selectedPuma, distance);
 			if (scoringSystem.GetPumaHealth(selectedPuma) == 0f)
 				SetGameState("gameStateDied1");			
 		}
+		
+		while (mainHeading >= 360f)
+			mainHeading -= 360f;
+		while (mainHeading < 0f)
+			mainHeading += 360f;	
 		
 		pumaAnimator.SetBool("GuiMode", false);
 		pumaAnimator.SetFloat("Distance", distance);
@@ -1262,27 +1329,25 @@ public class LevelManager : MonoBehaviour
 	//===================================
 	//===================================
 	
-	public void BackupPuma(float distance)
+	public void PumaBeginCollision(float headingOffset, float barrierHeading)
 	{
-
-		pumaX -= (Mathf.Sin(pumaHeading*Mathf.PI/180) * distance);
-		pumaZ -= (Mathf.Cos(pumaHeading*Mathf.PI/180) * distance);
-
-		// calculate puma rotX based on terrain in front and behind
-		float pumaRotX;
-		float offsetDistance = 1f;
-		float pumaAheadX = pumaX + (Mathf.Sin(pumaHeading*Mathf.PI/180) * offsetDistance * 1f);
-		float pumaAheadZ = pumaZ + (Mathf.Cos(pumaHeading*Mathf.PI/180) * offsetDistance * 1f);
-		float pumaBehindX = pumaX + (Mathf.Sin(pumaHeading*Mathf.PI/180) * offsetDistance * -1f);
-		float pumaBehindZ = pumaZ + (Mathf.Cos(pumaHeading*Mathf.PI/180) * offsetDistance * -1f);
-		pumaRotX = GetAngleFromOffset(0, GetTerrainHeight(pumaAheadX, pumaAheadZ), offsetDistance * 2f, GetTerrainHeight(pumaBehindX, pumaBehindZ)) - 90f;
-			
-		// update puma obj
-		pumaY = GetTerrainHeight(pumaX, pumaZ);
-		pumaObj.transform.position = new Vector3(pumaX, pumaY, pumaZ);			
-		pumaObj.transform.rotation = Quaternion.Euler(pumaRotX, (pumaHeading - 180f), 0);
+		if (headingOffset < 0f && barrierHeading > mainHeading)
+			barrierHeading -= 360f;
+		if (headingOffset > 0f && barrierHeading < mainHeading)
+			barrierHeading += 360f;
+		pumaCollisionHeadingOffset = headingOffset;
+		pumaCollisionBarrierHeading = barrierHeading;
+		pumaCollisionFlag = true;
+		
+		
+		
+		lastPumaCollisionUpdateTime = Time.time;
 	}
-
+	
+	public void PumaEndCollision()
+	{
+		pumaCollisionFlag = false;
+	}
 
 	//===================================
 	//===================================
