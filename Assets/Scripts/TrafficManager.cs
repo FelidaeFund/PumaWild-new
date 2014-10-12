@@ -85,8 +85,8 @@ public class TrafficManager : MonoBehaviour {
 	private class VirtualNodeInfo {
 		public Vector3 position;
 		public float segmentLength;
-		public float segmentPitch;
 		public float segmentHeading;
+		public float segmentPitch;
 		public float previousSegmentHeading;
 		public float nextSegmentHeading;
 	}
@@ -509,6 +509,12 @@ public class TrafficManager : MonoBehaviour {
 					heading = InterpolateAngles(vehicleInfo.segmentHeading, vehicleInfo.nextSegmentHeading, 1f - (0.5f*scaleFactor));
 				}
 				vehicleInfo.vehicle.transform.rotation = Quaternion.Euler(vehicleInfo.segmentPitch - 90f, heading, 0);
+
+				VehicleController vCtrl = vehicleInfo.vehicle.GetComponent<VehicleController>();
+				if (vCtrl != null) {
+					vCtrl.heading = heading;
+					vCtrl.pitch = vehicleInfo.segmentPitch;
+				}
 			}
 		}
 	}
@@ -578,29 +584,31 @@ public class TrafficManager : MonoBehaviour {
 			break;
 		
 		case 3:  // level 4
+			bool followClose = false;
+		
 			roadArray[0].lanesPerSide = 3;
 			roadArray[0].laneSpeed1 = 40;
 			roadArray[0].laneSpeed2 = 43;
 			roadArray[0].laneSpeed3 = 46;
-			roadArray[0].followDistance1 = 30;
-			roadArray[0].followDistance2 = 35;
-			roadArray[0].followDistance3 = 40;
+			roadArray[0].followDistance1 = (followClose == true) ? 4 : 30;
+			roadArray[0].followDistance2 = (followClose == true) ? 4 : 35;
+			roadArray[0].followDistance3 = (followClose == true) ? 4 : 40;
 			////////////
 			roadArray[1].lanesPerSide = 1;
 			roadArray[1].laneSpeed1 = 40;
 			roadArray[1].laneSpeed2 = 43;
 			roadArray[1].laneSpeed3 = 46;
-			roadArray[1].followDistance1 = 30;
-			roadArray[1].followDistance2 = 35;
-			roadArray[1].followDistance3 = 40;
+			roadArray[1].followDistance1 = (followClose == true) ? 4 : 30;
+			roadArray[1].followDistance2 = (followClose == true) ? 4 : 35;
+			roadArray[1].followDistance3 = (followClose == true) ? 4 : 40;
 			////////////
 			roadArray[2].lanesPerSide = 2;
 			roadArray[2].laneSpeed1 = 40;
 			roadArray[2].laneSpeed2 = 43;
 			roadArray[2].laneSpeed3 = 46;
-			roadArray[2].followDistance1 = 30;
-			roadArray[2].followDistance2 = 35;
-			roadArray[2].followDistance3 = 40;
+			roadArray[2].followDistance1 = (followClose == true) ? 4 : 30;
+			roadArray[2].followDistance2 = (followClose == true) ? 4 : 35;
+			roadArray[2].followDistance3 = (followClose == true) ? 4 : 40;
 			break;
 		
 		case 4:  // level 5

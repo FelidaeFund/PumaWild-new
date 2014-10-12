@@ -39,6 +39,10 @@ public class PumaController : MonoBehaviour
 		
 	private bool collisionBridgeSideLeftInProgress = false;
 	private bool collisionBridgeSideRightInProgress = false;
+	private float collisionCarForceTimeRemaining = 0;
+	private float collisionCarForceOffsetX;
+	private float collisionCarForceOffsetZ;
+	public float forceFactor = 100f;
 	
 	// EXTERNAL MODULES
 	private LevelManager levelManager;	
@@ -53,9 +57,31 @@ public class PumaController : MonoBehaviour
     {
 		// connect to external modules
 		levelManager = GameObject.Find("Scripts").GetComponent<LevelManager>();
-
 	}
 	
+ 	//===================================
+	//===================================
+	//		UPDATES
+	//===================================
+	//===================================
+
+    void Update()
+    {
+    }
+
+ 	void FixedUpdate()
+    {
+		if (collisionCarForceTimeRemaining > 0f) {
+			Vector3 forceVector = new Vector3(collisionCarForceOffsetX * Time.deltaTime, 0f, collisionCarForceOffsetZ * Time.deltaTime);
+			//Debug.Log("=======    ===========   =======");
+			//Debug.Log("Time.time: " + Time.time +  "   forceVector: " + forceVector);
+			//Debug.Log("=======    ===========   =======");
+			
+			rigidbody.AddForce(forceVector);
+			collisionCarForceTimeRemaining -= Time.deltaTime;
+		}		
+    }
+    
 	//===================================
 	//===================================
 	//		COLLISION LOGIC
@@ -64,16 +90,80 @@ public class PumaController : MonoBehaviour
 
 	void OnCollisionEnter(Collision collisionInfo)
 	{
-		if (collisionInfo.gameObject.tag == "BridgeSideLeft") {
+		// VEHICLE
+
+		if (collisionInfo.gameObject.tag == "Vehicle") {
+		
+		
+		
+			Debug.Log("=====================================");
+			Debug.Log("Detected collision between " + gameObject.name + " and " + collisionInfo.collider.name);
+			Debug.Log("Collision normal is " + collisionInfo.contacts[0].normal);
+			Debug.Log("Collision relative velocity is " + collisionInfo.relativeVelocity);
+			Debug.Log("Time.time: " + Time.time);
+			
+			
+			
+			GetComponent<Rigidbody>().isKinematic = false;
+			levelManager.carCollisionFlag = true;
+			levelManager.carCollisionTime = Time.time;
+			
+			
+			float collisionScale = 75000f;
+			float heading = collisionInfo.gameObject.GetComponent<VehicleController>().heading;
+			heading += Random.Range(-20f, 20f);
+			collisionCarForceOffsetX = Mathf.Sin(heading*Mathf.PI/180) * collisionScale;
+			collisionCarForceOffsetZ = Mathf.Cos(heading*Mathf.PI/180) * collisionScale;
+			collisionCarForceTimeRemaining = 0.30f;
+			
+			
+			// disable bridge colliders --- TEMP -- CURRENTLY INEFFICIENT	
+			BoxCollider[] boxColliders;
+
+			if (GameObject.Find("L3Bridge1") != null) {
+				boxColliders = GameObject.Find("L3Bridge1").GetComponents<BoxCollider>();
+				boxColliders[0].enabled = false;
+				boxColliders[1].enabled = false;
+				boxColliders = GameObject.Find("L3Bridge2").GetComponents<BoxCollider>();
+				boxColliders[0].enabled = false;
+				boxColliders[1].enabled = false;
+			}
+
+			if (GameObject.Find("L4Bridge1") != null) {
+				boxColliders = GameObject.Find("L4Bridge1").GetComponents<BoxCollider>();
+				boxColliders[0].enabled = false;
+				boxColliders[1].enabled = false;
+				boxColliders = GameObject.Find("L4Bridge2").GetComponents<BoxCollider>();
+				boxColliders[0].enabled = false;
+				boxColliders[1].enabled = false;
+			}
+
+			if (GameObject.Find("L5Bridge1") != null) {
+				boxColliders = GameObject.Find("L5Bridge1").GetComponents<BoxCollider>();
+				boxColliders[0].enabled = false;
+				boxColliders[1].enabled = false;
+				boxColliders = GameObject.Find("L5Bridge2").GetComponents<BoxCollider>();
+				boxColliders[0].enabled = false;
+				boxColliders[1].enabled = false;
+			}
+
+			// NEED TO TURN OFF BOX COLLIDERS IN INSTANTIATED TERRAINS TOO  !!!!!
+			
+		}
+		
+		// BRIDGE
+
+		else if (collisionInfo.gameObject.tag == "BridgeSideLeft") {
 			collisionBridgeSideLeftInProgress = true;
 			return;
 		}
-		if (collisionInfo.gameObject.tag == "BridgeSideRight") {
+		
+		else if (collisionInfo.gameObject.tag == "BridgeSideRight") {
 			collisionBridgeSideRightInProgress = true;
 			return;
 		}
-
-		if (collisionInfo.gameObject.tag == "Bridge") {
+		
+		else if (collisionInfo.gameObject.tag == "Bridge") {
 
 			//Debug.Log("=====================================");
 			//Debug.Log("Detected collision between " + gameObject.name + " and " + collisionInfo.collider.name);
@@ -85,14 +175,17 @@ public class PumaController : MonoBehaviour
 			float rightDirection = normalHeading - 90f;			
 			
 			if (collisionBridgeSideLeftInProgress) {
+				// move left along barrier
 				headingOffset = -1f;
 				barrierHeading = leftDirection;
 			}
 			else if (collisionBridgeSideRightInProgress) {
+				// move right along barrier
 				headingOffset = 1f;
 				barrierHeading = rightDirection;
 			}
 			else {
+				// determine which direction to move along barrier
 				float mainHeading = levelManager.mainHeading;
 				float deltaToLeftDirection;
 				float deltaToRightDirection;
@@ -126,7 +219,7 @@ public class PumaController : MonoBehaviour
 					barrierHeading = leftDirection;
 				}
 			}
-			
+
 			while (barrierHeading >= 360f)
 				barrierHeading -= 360f;			
 			while (barrierHeading < 0f)

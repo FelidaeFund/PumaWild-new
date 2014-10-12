@@ -239,6 +239,14 @@ public class LevelManager : MonoBehaviour
 		buck.gameObj = GameObject.Find("Buck");
 		doe.gameObj = GameObject.Find("Doe");
 		fawn.gameObj = GameObject.Find("Fawn");
+
+
+		
+		Physics.gravity = new Vector3(0f, -20f, 0f);
+
+
+
+
 		
 		InitLevel(3);
 	}
@@ -252,13 +260,13 @@ public class LevelManager : MonoBehaviour
 		currentLevel = level;
 		gameState = "gameStateGui";
 		stateStartTime = Time.time;
-		mainHeading = Random.Range(0f, 360f);  //30f; //Random.Range(0f, 360f);
+		mainHeading = 30f; //Random.Range(0f, 360f);
 
-		pumaX = 0f; //-700f; //0f;
-		pumaY = 0f;
-		pumaZ = 0f; //700f; //0f;			
+		pumaX = -700f; //0f;
+		pumaY = 36f;
+		pumaZ = 700f; //0f;			
 		pumaObj.transform.position = new Vector3(pumaX, pumaY, pumaZ);		
-
+		
 		//================================
 		// Set Up Terrain Objects
 		//================================
@@ -749,6 +757,26 @@ public class LevelManager : MonoBehaviour
 		}
 	}
 
+	
+	
+	
+	
+	
+	
+		private Vector3 moveDirection = Vector3.zero;
+		private float vSpeed = 0f; // keep vertical speed in a separate variable
+		private CharacterController controller; // controller reference
+		public bool carCollisionFlag = false;
+		public float carCollisionTime;
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	//===================================
 	//===================================
 	//		PERIODIC UPDATE
@@ -847,7 +875,8 @@ public class LevelManager : MonoBehaviour
 				SetGameState("gameStateStalking");
 			}
 			break;	
-	
+
+
 		case "gameStateStalking":
 			float lookingDistance = chaseTriggerDistance * 2f;
 			float chasingDistance = chaseTriggerDistance;
@@ -1117,7 +1146,7 @@ public class LevelManager : MonoBehaviour
 		case "gameStateDied4":
 			// camera spins slowly around puma
 			if (Time.time >= stateStartTime + 0.1f) {
-				float spinningRotOffsetY = cameraController.GetCurrentRotOffsetY() - (Time.deltaTime + 0.03f);
+				float spinningRotOffsetY = cameraController.GetCurrentRotOffsetY() - (Time.deltaTime + 0.05f);
 				if (spinningRotOffsetY < -180f)
 					spinningRotOffsetY += 360f;
 				cameraController.SelectTargetPosition("cameraPosEating", spinningRotOffsetY, 0f, "mainCurveNull", "curveRotXNull"); 
@@ -1252,9 +1281,252 @@ public class LevelManager : MonoBehaviour
 			
 		// update puma obj
 		pumaY = GetTerrainHeight(pumaX, pumaZ);
+		
+
+
+	if (carCollisionFlag == false) {
+
+
 		pumaObj.transform.position = new Vector3(pumaX, pumaY, pumaZ);			
 		pumaObj.transform.rotation = Quaternion.Euler(pumaRotX, (pumaHeading - 180f), 0);
+
 	
+		//GameObject pumaRagdoll = GameObject.Find("Puma-ragdoll");	
+		//Vector3 ragdollPos = new Vector3(pumaObj.transform.position.x, pumaObj.transform.position.y + 3f, pumaObj.transform.position.z);
+		//pumaRagdoll.transform.position = ragdollPos;
+	
+
+	}
+	else {
+	
+		pumaX = pumaObj.transform.position.x;
+		pumaY = pumaObj.transform.position.y;
+		pumaZ = pumaObj.transform.position.z;
+	
+	
+		if (gameState == "gameStateStalking" || gameState == "gameStateChasing") {
+			SetGameState("gameStateDied1");
+			pumaAnimator.SetBool("CarCollision", true);
+		}
+		
+		float forceFactor = pumaObj.GetComponent<PumaController>().forceFactor;
+	
+		pumaObj.rigidbody.AddForce(0, 0, forceFactor * Input.GetAxis("Vertical"));
+		pumaObj.rigidbody.AddForce(forceFactor * Input.GetAxis("Horizontal"), 0, 0);
+	
+		
+		//Debug.Log("rotX = " + pumaObj.transform.rotation.x + "   rotY = " + pumaObj.transform.rotation.y + "   rotZ = " + pumaObj.transform.rotation.z);
+
+
+		bool flippedFlag = (Mathf.Abs(pumaObj.transform.rotation.x) + Mathf.Abs(pumaObj.transform.rotation.z) > 1f) ? true : false;
+		
+		float colliderX = pumaObj.GetComponent<BoxCollider>().center.x;
+		float colliderZ = pumaObj.GetComponent<BoxCollider>().center.z;
+
+		
+
+		pumaObj.GetComponent<BoxCollider>().center = new Vector3(colliderX, flippedFlag ? 0.14f : -0.04f, colliderZ);
+		// prevent falling through terrain due to adjustment for flipped
+		if (pumaObj.transform.position.y < GetTerrainHeight(pumaObj.transform.position.x, pumaObj.transform.position.z))
+			pumaObj.transform.position = new Vector3(pumaObj.transform.position.x, GetTerrainHeight(pumaObj.transform.position.x, pumaObj.transform.position.z), pumaObj.transform.position.z);
+
+	}
+
+
+
+
+	
+	
+	
+	
+	
+	
+	
+		//pumaObj.rigidbody.AddForce (0, 0, -10f);
+
+		
+//		float rotX = 0f; //pumaObj.transform.rotation.x;
+//		float rotY = pumaObj.transform.rotation.y;
+//		float rotZ = pumaObj.transform.rotation.z;
+//		float rotW = pumaObj.transform.rotation.z;
+		
+		//Debug.Log("Puma rotation is " + pumaObj.transform.rotation + "   puma rotX is " + rotX);
+		
+//		Quaternion newRotation = new Quaternion(rotX, rotY, rotZ, rotW);
+
+//		pumaObj.transform.rotation = newRotation;
+
+
+
+
+
+
+
+/*
+	if (carCollisionFlag == false) {
+
+
+		float speed = 60f;
+		float jumpSpeed = 8f;
+		float gravity = 20f;
+
+		if (controller == null)
+			controller = pumaObj.GetComponent<CharacterController>();
+
+		moveDirection = transform.forward * Input.GetAxis("Vertical") * speed;
+		
+		if (controller.isGrounded) {
+			vSpeed = 0; // a grounded character has zero vert speed unless...
+			if (Input.GetButton ("Jump")) { // unless Jump is pressed!
+				vSpeed = jumpSpeed; 
+			}
+		}
+		
+		// Apply gravity
+		vSpeed -= gravity * Time.deltaTime;
+		moveDirection.y = vSpeed; // include vertical speed
+		
+		// Move the controller
+		controller.Move(moveDirection * Time.deltaTime);
+
+
+}
+
+*/
+
+
+
+
+
+
+
+
+
+
+
+		
+		
+/*		
+		float gravity = 20.0F;
+		float jumpSpeed = 8.0F;
+		float speed = 6.0F;
+		Vector3 moveDirection = Vector3.zero;
+		CharacterController controller = pumaObj.GetComponent<CharacterController>();
+		
+		
+        if (controller.isGrounded) {
+            moveDirection = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
+            moveDirection = transform.TransformDirection(moveDirection);
+            moveDirection *= speed;
+            if (Input.GetButton("Jump"))
+                moveDirection.y = jumpSpeed;
+            
+        }
+        moveDirection.y -= gravity * Time.deltaTime;
+        controller.Move(moveDirection * Time.deltaTime);
+*/		
+		
+		
+		
+		
+
+/*
+
+		float speed = 30.0F;
+		float rotateSpeed = 3.0F;
+        CharacterController controller = pumaObj.GetComponent<CharacterController>();
+        pumaObj.transform.Rotate(0, Input.GetAxis("Horizontal") * rotateSpeed, 0);
+        Vector3 forward = transform.TransformDirection(Vector3.forward);
+        float curSpeed = speed * Input.GetAxis("Vertical");
+        controller.SimpleMove(forward * curSpeed);
+ */
+
+
+
+
+		
+		
+		
+		
+		
+
+/*
+using UnityEngine;
+using System.Collections;
+
+public class ExampleClass : MonoBehaviour {
+    public float speed = 6.0F;
+    public float jumpSpeed = 8.0F;
+    public float gravity = 20.0F;
+    private Vector3 moveDirection = Vector3.zero;
+    void Update() {
+        CharacterController controller = GetComponent<CharacterController>();
+        if (controller.isGrounded) {
+            moveDirection = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
+            moveDirection = transform.TransformDirection(moveDirection);
+            moveDirection *= speed;
+            if (Input.GetButton("Jump"))
+                moveDirection.y = jumpSpeed;
+            
+        }
+        moveDirection.y -= gravity * Time.deltaTime;
+        controller.Move(moveDirection * Time.deltaTime);
+    }
+}
+
+
+
+[RequireComponent(typeof(CharacterController))]
+public class ExampleClass : MonoBehaviour {
+    public float speed = 3.0F;
+    public float rotateSpeed = 3.0F;
+    void Update() {
+        CharacterController controller = GetComponent<CharacterController>();
+        transform.Rotate(0, Input.GetAxis("Horizontal") * rotateSpeed, 0);
+        Vector3 forward = transform.TransformDirection(Vector3.forward);
+        float curSpeed = speed * Input.GetAxis("Vertical");
+        controller.SimpleMove(forward * curSpeed);
+    }
+}
+*/
+
+
+
+/*
+		public float speed = 6.0F;
+		public float jumpSpeed = 8.0F;
+		public float gravity = 20.0F;
+		private Vector3 moveDirection = Vector3.zero;
+		void Update() {
+			CharacterController controller = GetComponent<CharacterController>();
+			if (controller.isGrounded) {
+				moveDirection = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
+				moveDirection = transform.TransformDirection(moveDirection);
+				moveDirection *= speed;
+				if (Input.GetButton("Jump"))
+					moveDirection.y = jumpSpeed;
+				
+			}
+			moveDirection.y -= gravity * Time.deltaTime;
+			controller.Move(moveDirection * Time.deltaTime);
+		}
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		
 		//================
 		// Update Camera
 		//================
@@ -1747,6 +2019,7 @@ public class LevelManager : MonoBehaviour
 	
 		pumaAnimator.SetBool("Chasing", false);
 		pumaAnimator.SetBool("DeerKill", false);
+		pumaAnimator.SetBool("CarCollision", false);
 	}			
 	
 
