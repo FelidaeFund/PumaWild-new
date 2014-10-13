@@ -127,7 +127,7 @@ public class GuiManager : MonoBehaviour
 	private OverlayPanel overlayPanel;	
 	private InfoPanel infoPanel;	
 	private FeedingDisplay feedingDisplay;
-	private MortalityDisplay mortalityDisplay;
+	private PumaDoneDisplay pumaDoneDisplay;
 	private GameplayDisplay gameplayDisplay;	
 
 	//===================================
@@ -146,7 +146,7 @@ public class GuiManager : MonoBehaviour
 		overlayPanel = GetComponent<OverlayPanel>();
 		infoPanel = GetComponent<InfoPanel>();
 		feedingDisplay = GetComponent<FeedingDisplay>();
-		mortalityDisplay = GetComponent<MortalityDisplay>();
+		pumaDoneDisplay = GetComponent<PumaDoneDisplay>();
 		gameplayDisplay = GetComponent<GameplayDisplay>();
 		
 		// additional initialization
@@ -341,16 +341,19 @@ public class GuiManager : MonoBehaviour
 		case "guiStateFeeding2":
 			// pause during attack on deer
 			guiStateDuration = 2f;
-			if (Time.time - guiStateStartTime > guiStateDuration)
-				SetGuiState("guiStateFeeding3");
+			if (Time.time - guiStateStartTime > guiStateDuration) {
+				if (SelectedPumaIsFullHealth() == true)
+					SetGuiState("guiStatePumaDone3");
+				else
+					SetGuiState("guiStateFeeding3");
+			}
 			break;
 
 		case "guiStateFeeding3":
 			// fade-in of feeding display main panel
 			guiStateDuration = 1f;
 			FadeInOpacityLinear();
-			if (SelectedPumaIsFullHealth() == false)
-				CheckForKeyboardEscapeFromFeeding();
+			CheckForKeyboardEscapeFromFeeding();
 			if (Time.time > guiStateStartTime + guiStateDuration)
 				SetGuiState("guiStateFeeding4");
 			break;
@@ -358,14 +361,9 @@ public class GuiManager : MonoBehaviour
 		case "guiStateFeeding4":
 			// brief pause
 			guiStateDuration = 1f;
-			if (SelectedPumaIsFullHealth() == false)
-				CheckForKeyboardEscapeFromFeeding();
-			if (Time.time > guiStateStartTime + guiStateDuration) {
-				if (SelectedPumaIsFullHealth() == true)
-					SetGuiState("guiStatePumaWins1");
-				else
-					SetGuiState("guiStateFeeding5");
-			}
+			CheckForKeyboardEscapeFromFeeding();
+			if (Time.time > guiStateStartTime + guiStateDuration)
+				SetGuiState("guiStateFeeding5");
 			break;
 
 		case "guiStateFeeding5":
@@ -426,108 +424,60 @@ public class GuiManager : MonoBehaviour
 			break;
 			
 		//------------------------------
-		// Puma Wins
-		//
-		// if during feeding
-		// puma health reaches 100%
-		//------------------------------
-
-		case "guiStatePumaWins1":
-			// fade-in of puma wins display
-			guiStateDuration = 2f;
-			FadeInOpacityLinear();
-			if (Time.time > guiStateStartTime + guiStateDuration)
-				SetGuiState("guiStatePumaWins2");
-			break;
-
-		case "guiStatePumaWins2":
-			// brief pause
-			guiStateDuration = 1f;
-			CheckForKeyboardEscapeFromPumaWins();
-			if (Time.time > guiStateStartTime + guiStateDuration)
-				SetGuiState("guiStatePumaWins3");
-			break;
-
-		case "guiStatePumaWins3":
-			// fade-in of puma wins 'ok' button
-			guiStateDuration = 1f;
-			FadeInOpacityLinear();
-			CheckForKeyboardEscapeFromPumaWins();
-			if (Time.time > guiStateStartTime + guiStateDuration)
-				SetGuiState("guiStatePumaWins4");
-			break;
-
-		case "guiStatePumaWins4":
-			// ongoing view of puma wins display
-			CheckForKeyboardEscapeFromPumaWins();
-			break;
-
-		case "guiStateLeavingPumaWins":
-			// fade-out of puma wins display
-			guiStateDuration = 0.7f;
-			FadeOutOpacityLinear();
-			CheckForKeyboardSelectionOfPuma();
-			if (Time.time > guiStateStartTime + guiStateDuration) {
-				SetGuiState("guiStateEnteringOverlay");
-				selectedPuma = -1;
-				overlayPanel.SetCurrentScreen(0);
-			}
-			break;
-		
-		//------------------------------
-		// Puma Dies
+		// Puma Done
 		//
 		// due to starvation or
 		// collision with car
+		// or reaching full health
 		//------------------------------
 
-		case "guiStatePumaDied1":
+		case "guiStatePumaDone1":
 			// fade-out of game-play controls
 			guiStateDuration = 1f;
 			FadeOutOpacityLinear();
 			if (Time.time > guiStateStartTime + guiStateDuration)
-				SetGuiState("guiStatePumaDied2");
+				SetGuiState("guiStatePumaDone2");
 			break;
 
-		case "guiStatePumaDied2":
+		case "guiStatePumaDone2":
 			// pause for a bit of space
 			guiStateDuration = 2f;
 			if (Time.time - guiStateStartTime > guiStateDuration)
-				SetGuiState("guiStatePumaDied3");
+				SetGuiState("guiStatePumaDone3");
 			break;
 
-		case "guiStatePumaDied3":
+		case "guiStatePumaDone3":
 			// fade-in of mortality display main panel
 			guiStateDuration = 1f;
 			FadeInOpacityLinear();
-			CheckForKeyboardEscapeFromPumaDied();
+			CheckForKeyboardEscapeFromPumaDone();
 			if (Time.time > guiStateStartTime + guiStateDuration)
-				SetGuiState("guiStatePumaDied4");
+				SetGuiState("guiStatePumaDone4");
 			break;
 
-		case "guiStatePumaDied4":
+		case "guiStatePumaDone4":
 			// brief pause
-			guiStateDuration = 1f;
-			CheckForKeyboardEscapeFromPumaDied();
+			guiStateDuration = 0.2f;
+			CheckForKeyboardEscapeFromPumaDone();
 			if (Time.time > guiStateStartTime + guiStateDuration)
-				SetGuiState("guiStatePumaDied5");
+				SetGuiState("guiStatePumaDone5");
 			break;
 
-		case "guiStatePumaDied5":
+		case "guiStatePumaDone5":
 			// fade-in of mortality display 'ok' button
 			guiStateDuration = 1f;
 			FadeInOpacityLinear();
-			CheckForKeyboardEscapeFromPumaDied();
+			CheckForKeyboardEscapeFromPumaDone();
 			if (Time.time > guiStateStartTime + guiStateDuration)
-				SetGuiState("guiStatePumaDied6");
+				SetGuiState("guiStatePumaDone6");
 			break;
 
-		case "guiStatePumaDied6":
+		case "guiStatePumaDone6":
 			// ongoing view of mortality display
-			CheckForKeyboardEscapeFromPumaDied();
+			CheckForKeyboardEscapeFromPumaDone();
 			break;
 
-		case "guiStateLeavingPumaDied":
+		case "guiStateLeavingPumaDone":
 			// fade-out of mortality display
 			guiStateDuration = 0.7f;
 			FadeOutOpacityLinear();
@@ -584,23 +534,14 @@ public class GuiManager : MonoBehaviour
 		}
 	}
 
-	private void CheckForKeyboardEscapeFromPumaWins()
+	private void CheckForKeyboardEscapeFromPumaDone()
 	{
 		if (spacePressed || rightShiftPressed) {
 			// use keyboard to go to overlay
-			SetGuiState("guiStateLeavingPumaWins");
-			levelManager.SetGameState("gameStateLeavingGameplay");
-		}
-	}
-
-	private void CheckForKeyboardEscapeFromPumaDied()
-	{
-		if (spacePressed || rightShiftPressed) {
-			// use keyboard to go to overlay
-			SetGuiState("guiStateLeavingPumaDied");
+			SetGuiState("guiStateLeavingPumaDone");
 			if (levelManager.CheckCarCollision() == true)
 				levelManager.EndCarCollision();
-			else
+			else if (levelManager.CheckStarvation() == true)
 				levelManager.EndStarvation();		
 			levelManager.SetGameState("gameStateLeavingGameplay");
 		}
@@ -758,27 +699,27 @@ public class GuiManager : MonoBehaviour
 
 			case "guiStateFeeding3":
 				// fade-in of feeding display main panel
-				feedingDisplay.Draw(guiOpacity, guiOpacity, 0f, 0f);
+				feedingDisplay.Draw(guiOpacity, guiOpacity, 0f);
 				break;
 
 			case "guiStateFeeding4":
 				// brief pause
-				feedingDisplay.Draw(1f, 1f, 0f, 0f);
+				feedingDisplay.Draw(1f, 1f, 0f);
 				break;
 
 			case "guiStateFeeding5":
 				// fade-in of feeding display 'ok' button
-				feedingDisplay.Draw(1f, 1f, guiOpacity, 0f);
+				feedingDisplay.Draw(1f, 1f, guiOpacity);
 				break;
 
 			case "guiStateFeeding6":
 				// ongoing view of feeding display
-				feedingDisplay.Draw(1f, 1f, 1f, 0f);
+				feedingDisplay.Draw(1f, 1f, 1f);
 				break;
 
 			case "guiStateFeeding7":
 				// fade-out of feeding display
-				feedingDisplay.Draw(guiOpacity, guiOpacity, guiOpacity, 0f);
+				feedingDisplay.Draw(guiOpacity, guiOpacity, guiOpacity);
 				break;
 
 			case "guiStateFeeding8":
@@ -802,92 +743,70 @@ public class GuiManager : MonoBehaviour
 				break;
 				
 			//------------------------------
-			// Puma Wins
-			//
-			// if during feeding
-			// puma health reaches 100%
-			//------------------------------
-
-			case "guiStatePumaWins1":
-				// fade-out of feeding display main content
-				// fade-in of puma wins display
-				feedingDisplay.Draw(1f, 1f - guiOpacity, 0f, guiOpacity);
-				break;
-				
-			case "guiStatePumaWins2":
-				// brief pause
-				feedingDisplay.Draw(1f, 0f, 0f, 1f);
-				break;
-				
-			case "guiStatePumaWins3":
-				// fade-in of puma wins 'ok' button
-				feedingDisplay.Draw(1f, 0f, guiOpacity, 1f);
-				break;
-				
-			case "guiStatePumaWins4":
-				// ongoing view of puma wins display
-				feedingDisplay.Draw(1f, 0f, 1f, 1f);
-				break;
-				
-			case "guiStateLeavingPumaWins":
-				// fade-out of puma wins display
-				feedingDisplay.Draw(guiOpacity, 0f, guiOpacity, guiOpacity);
-				break;
-
-			//------------------------------
-			// Puma Died
+			// Puma Done
 			//
 			// due to starvation or
 			// collision with car
+			// or reaching full health
 			//------------------------------
 
-			case "guiStatePumaDied1":
+			case "guiStatePumaDone1":
 				// fade-out of game-play controls
 				gameplayDisplay.Draw(guiOpacity, guiOpacity, guiOpacity);
 				break;
 
-			case "guiStatePumaDied2":
+			case "guiStatePumaDone2":
 				// pause for a bit of space
 				break;
 
-			case "guiStatePumaDied3":
+			case "guiStatePumaDone3":
 				// fade-in of feeding display main panel
 				if (levelManager.CheckCarCollision() == true)
-					mortalityDisplay.Draw(guiOpacity, guiOpacity, 0f, 0f);
-				else
-					mortalityDisplay.Draw(guiOpacity, 0f, guiOpacity, 0f);				
+					pumaDoneDisplay.Draw(guiOpacity, guiOpacity, 0f, 0f, 0f);
+				else if (levelManager.CheckStarvation() == true)
+					pumaDoneDisplay.Draw(guiOpacity, 0f, guiOpacity, 0f, 0f);	
+				else if (scoringSystem.GetPumaHealth(selectedPuma) >= 1f)
+					pumaDoneDisplay.Draw(guiOpacity, 0f, 0f, guiOpacity, 0f);	
 				break;
 
-			case "guiStatePumaDied4":
+			case "guiStatePumaDone4":
 				// brief pause
 				if (levelManager.CheckCarCollision() == true)
-					mortalityDisplay.Draw(1f, 1f, 0f, 0f);
-				else
-					mortalityDisplay.Draw(1f, 0f, 1f, 0f);
+					pumaDoneDisplay.Draw(1f, 1f, 0f, 0f, 0f);
+				else if (levelManager.CheckStarvation() == true)
+					pumaDoneDisplay.Draw(1f, 0f, 1f, 0f, 0f);
+				else if (scoringSystem.GetPumaHealth(selectedPuma) >= 1f)
+					pumaDoneDisplay.Draw(1f, 0f, 0f, 1f, 0f);
 				break;
 
-			case "guiStatePumaDied5":
+			case "guiStatePumaDone5":
 				// fade-in of mortality display 'ok' button
 				if (levelManager.CheckCarCollision() == true)
-					mortalityDisplay.Draw(1f, 1f, 0f, guiOpacity);
-				else
-					mortalityDisplay.Draw(1f, 0f, 1f, guiOpacity);
+					pumaDoneDisplay.Draw(1f, 1f, 0f, 0f, guiOpacity);
+				else if (levelManager.CheckStarvation() == true)
+					pumaDoneDisplay.Draw(1f, 0f, 1f, 0f, guiOpacity);
+				else if (scoringSystem.GetPumaHealth(selectedPuma) >= 1f)
+					pumaDoneDisplay.Draw(1f, 0f, 0f, 1f, guiOpacity);
 				break;
 
-			case "guiStatePumaDied6":
+			case "guiStatePumaDone6":
 				// ongoing view of mortality display
 				if (levelManager.CheckCarCollision() == true)
-					mortalityDisplay.Draw(1f, 1f, 0f, 1f);
-				else
-					mortalityDisplay.Draw(1f, 0f, 1f, 1f);
+					pumaDoneDisplay.Draw(1f, 1f, 0f, 0f, 1f);
+				else if (levelManager.CheckStarvation() == true)
+					pumaDoneDisplay.Draw(1f, 0f, 1f, 0f, 1f);
+				else if (scoringSystem.GetPumaHealth(selectedPuma) >= 1f)
+					pumaDoneDisplay.Draw(1f, 0f, 0f, 1f, 1f);
 				break;
 				
-			case "guiStateLeavingPumaDied":
+			case "guiStateLeavingPumaDone":
 				// fade-out of mortality display
 				if (levelManager.CheckCarCollision() == true)
-					mortalityDisplay.Draw(guiOpacity, guiOpacity, 0f, guiOpacity);
-				else
-					mortalityDisplay.Draw(guiOpacity, 0f, guiOpacity, guiOpacity);
+					pumaDoneDisplay.Draw(guiOpacity, guiOpacity, 0f, 0f, guiOpacity);
+				else if (levelManager.CheckStarvation() == true)
+					pumaDoneDisplay.Draw(guiOpacity, 0f, guiOpacity, 0f, guiOpacity);
+				else if (scoringSystem.GetPumaHealth(selectedPuma) >= 1f)
+					pumaDoneDisplay.Draw(guiOpacity, 0f, 0f, guiOpacity, guiOpacity);
 				break;
 			}
 		}

@@ -144,7 +144,7 @@ public class CameraController : MonoBehaviour
 	// position in 3D world
 	// once per frame
 	//-----------------------
-
+	
 	public void UpdateCameraPosition(float pumaX, float pumaY, float pumaZ, float mainHeading)
 	{
 		float fadePercentComplete;

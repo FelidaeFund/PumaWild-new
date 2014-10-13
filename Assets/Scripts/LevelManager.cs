@@ -144,6 +144,10 @@ public class LevelManager : MonoBehaviour
 	private float pumaCollisionHeadingOffset;	
 	private float nextFlybyHeadingUpdateTime;
 	private float flybyHeadingRotationSpeed = 0f;
+	private float pumaPhysicsInProgressTime;
+	private float pumaPhysicsConcludedTime;
+	private float pumaPhysicsOffsetY;
+	private float pumaPhysicsPreviousY;
 	
 	// PUMA CHARACTERISTICS
 
@@ -759,21 +763,11 @@ public class LevelManager : MonoBehaviour
 		if (carCollisionState == "Concluded") {
 			carCollisionState = "None";
 			pumaAnimator.SetBool("CarCollision", false);
-			guiFlybyOverdriveRampFlag = true;
-			guiFlybyOverdriveRampStartVal = guiFlybyOverdrive;
-			guiFlybyOverdriveRampEndVal = 1f;
-			guiFlybyOverdriveRampStartTime = Time.time;
-			guiFlybyOverdriveRampEndTime = Time.time + 2f;
 		}
 		
 		if (starvationState == "Concluded") {
 			starvationState = "None";
 			pumaAnimator.SetBool("PumaStarved", false);
-			guiFlybyOverdriveRampFlag = true;
-			guiFlybyOverdriveRampStartVal = guiFlybyOverdrive;
-			guiFlybyOverdriveRampEndVal = 1f;
-			guiFlybyOverdriveRampStartTime = Time.time;
-			guiFlybyOverdriveRampEndTime = Time.time + 2f;
 		}
 	}
 
@@ -830,7 +824,17 @@ public class LevelManager : MonoBehaviour
 			float currentTime = Time.time;
 			if (currentTime > guiFlybyOverdriveRampEndTime) {
 				guiFlybyOverdrive = guiFlybyOverdriveRampEndVal;
-				guiFlybyOverdriveRampFlag = false;
+				if (guiFlybyOverdrive == 1f) {
+					// back to normal, we're done
+					guiFlybyOverdriveRampFlag = false;
+				}
+				else {
+					// we've reached the full level, now ramp it back down
+					guiFlybyOverdriveRampStartVal = guiFlybyOverdrive;
+					guiFlybyOverdriveRampEndVal = 1f;
+					guiFlybyOverdriveRampStartTime = Time.time;
+					guiFlybyOverdriveRampEndTime = Time.time + 4f;
+				}
 			}
 			else {
 				float totalRampTime = guiFlybyOverdriveRampEndTime - guiFlybyOverdriveRampStartTime;
@@ -1239,16 +1243,20 @@ public class LevelManager : MonoBehaviour
 				mainHeading += inputControls.GetInputHorz() * Time.deltaTime * rotationSpeed;
 				pumaHeading = mainHeading + pumaHeadingOffset;
 			}
-			float travelledDistance = (scoringSystem.GetPumaHealth(selectedPuma) > 0.05f) ? distance : distance * (scoringSystem.GetPumaHealth(selectedPuma) / 0.05f);
+			float travelledDistance = (scoringSystem.GetPumaHealth(selectedPuma) > 0.025f) ? distance : distance * (scoringSystem.GetPumaHealth(selectedPuma) / 0.025f);
 			pumaX += (Mathf.Sin(pumaHeading*Mathf.PI/180) * travelledDistance);
 			pumaZ += (Mathf.Cos(pumaHeading*Mathf.PI/180) * travelledDistance);
 			pumaHeading = mainHeading + pumaHeadingOffset; // restore normal setting in case of collision mode
-			scoringSystem.PumaHasWalked(selectedPuma, distance * ((distance != travelledDistance) ? 1f : travelledDistanceOverdrive));
+			scoringSystem.PumaHasWalked(selectedPuma, distance * travelledDistanceOverdrive);
+			//scoringSystem.PumaHasWalked(selectedPuma, distance * ((distance != travelledDistance) ? 1f : travelledDistanceOverdrive));
 			if (scoringSystem.GetPumaHealth(selectedPuma) == 0f) {
 				// STARVATION !!
 				SetGameState("gameStateDied1");	
-				guiManager.SetGuiState("guiStatePumaDied1");
+				guiManager.SetGuiState("guiStatePumaDone1");
 				pumaAnimator.SetBool("PumaStarved", true);
+				starvationState = "InProgress";
+				pumaPhysicsInProgressTime = Time.time;
+				pumaPhysicsPreviousY = pumaY;
 			}
 		}
 		else if (gameState == "gameStateChasing") {
@@ -1287,12 +1295,16 @@ public class LevelManager : MonoBehaviour
 			pumaX += (Mathf.Sin(pumaHeading*Mathf.PI/180) * travelledDistance);
 			pumaZ += (Mathf.Cos(pumaHeading*Mathf.PI/180) * travelledDistance);
 			pumaHeading = mainHeading + pumaHeadingOffset; // restore normal setting in case of collision mode
-			scoringSystem.PumaHasRun(selectedPuma, distance * ((distance != travelledDistance) ? 1f : travelledDistanceOverdrive));
+			scoringSystem.PumaHasRun(selectedPuma, distance * travelledDistanceOverdrive);
+			// scoringSystem.PumaHasRun(selectedPuma, distance * ((distance != travelledDistance) ? 1f : travelledDistanceOverdrive));
 			if (scoringSystem.GetPumaHealth(selectedPuma) == 0f) {
 				// STARVATION !!
 				SetGameState("gameStateDied1");	
-				guiManager.SetGuiState("guiStatePumaDied1");
+				guiManager.SetGuiState("guiStatePumaDone1");
 				pumaAnimator.SetBool("PumaStarved", true);
+				starvationState = "InProgress";
+				pumaPhysicsInProgressTime = Time.time;
+				pumaPhysicsPreviousY = pumaY;
 			}
 		}
 		
@@ -1347,7 +1359,7 @@ public class LevelManager : MonoBehaviour
 			pumaX = pumaObj.transform.position.x;
 			pumaY = pumaObj.transform.position.y;
 			pumaZ = pumaObj.transform.position.z;
-			
+
 			// adjust position of puma within box collider based on which side is down
 			bool flippedFlag = (Mathf.Abs(pumaObj.transform.rotation.x) + Mathf.Abs(pumaObj.transform.rotation.z) > 1f) ? true : false;	
 			pumaObjCollider.center = new Vector3(pumaObjCollider.center.x, flippedFlag ? 0.14f : -0.04f, pumaObjCollider.center.z);
@@ -1362,8 +1374,30 @@ public class LevelManager : MonoBehaviour
 				//pumaObj.rigidbody.AddForce(forceFactor * Input.GetAxis("Horizontal"), 0, 0);
 			}
 		}
+		else if (starvationState == "InProgress") {
+			// physics takes over
+			pumaX = pumaObj.transform.position.x;
+			pumaY = pumaObj.transform.position.y;
+			pumaZ = pumaObj.transform.position.z;
+			pumaObjCollider.center = new Vector3(pumaObjCollider.center.x, -0.04f, pumaObjCollider.center.z);
+
+			// to smooth over transition from virtual puma to physics
+			// need to ramp down the difference in the Y position
+			float elapsedTime = Time.time - pumaPhysicsInProgressTime;
+			float transTime = 1.5f;
+			if (elapsedTime < transTime) {
+				pumaY = pumaPhysicsPreviousY + ((pumaY - pumaPhysicsPreviousY) * elapsedTime/transTime);
+			}
+		}
 		else if (carCollisionState == "Concluded" || starvationState == "Concluded") {
-			// do nothing - allows movement of virtual puma but leaves puma obj stationary
+			// zoom up of camera - allow movement of virtual puma but leaves puma obj stationary
+			// -- in order to smooth over transition from physics to virtual puma postion
+			//       need to ramp down the difference in the Y position
+			float elapsedTime = Time.time - pumaPhysicsConcludedTime;
+			float transTime = 1.5f;
+			if (elapsedTime < transTime) {
+				pumaY += pumaPhysicsOffsetY * (1f - elapsedTime/transTime);
+			}
 		}	
 		else {
 			Debug.Log("ERROR: levelManager - got bad collision or starvation state");
@@ -1437,7 +1471,7 @@ public class LevelManager : MonoBehaviour
 
 	//===================================
 	//===================================
-	//		CAR COLLISIONS
+	//		CAR COLLISION HANDLING
 	//===================================
 	//===================================
 	
@@ -1445,7 +1479,7 @@ public class LevelManager : MonoBehaviour
 	{
 		carCollisionState = "InProgress";
 		SetGameState("gameStateDied1");
-		guiManager.SetGuiState("guiStatePumaDied1");
+		guiManager.SetGuiState("guiStatePumaDone1");
 		pumaAnimator.SetBool("CarCollision", true);
 		scoringSystem.PumaHasDied(selectedPuma);
 	
@@ -1490,6 +1524,8 @@ public class LevelManager : MonoBehaviour
 	public void EndCarCollision()
 	{	
 		carCollisionState = "Concluded";
+		pumaPhysicsOffsetY = pumaY - GetTerrainHeight(pumaX, pumaZ);
+		pumaPhysicsConcludedTime = Time.time;
 
 		guiFlybyOverdriveRampFlag = true;
 		guiFlybyOverdriveRampStartVal = guiFlybyOverdrive;
@@ -1533,9 +1569,16 @@ public class LevelManager : MonoBehaviour
 	}
 
 
+	public bool CheckStarvation()
+	{	
+		return (starvationState != "None");
+	}
+
 	public void EndStarvation()
 	{	
 		starvationState = "Concluded";
+		pumaPhysicsOffsetY = pumaY - GetTerrainHeight(pumaX, pumaZ);
+		pumaPhysicsConcludedTime = Time.time;
 
 		guiFlybyOverdriveRampFlag = true;
 		guiFlybyOverdriveRampStartVal = guiFlybyOverdrive;
@@ -1595,7 +1638,7 @@ public class LevelManager : MonoBehaviour
 		// yes, determine road avoidance component of heading change	
 		float avoidanceRotation;
 		float avoidanceAngle = GetAngleFromOffset(nearestRoadPos.x, nearestRoadPos.z, pumaX, pumaZ);	
-		float avoidanceStrength = (nearestRoadDistance < avoidanceMin) ? 1f : (avoidanceMax-nearestRoadDistance) / avoidanceMin;
+		float avoidanceStrength = (nearestRoadDistance < avoidanceMin) ? 1f : (avoidanceMax-nearestRoadDistance) / (avoidanceMax-avoidanceMin);
 		avoidanceStrength = 1f - ((1f - avoidanceStrength) * (1f - avoidanceStrength));
 		if (avoidanceAngle > mainHeading)
 			avoidanceRotation = (avoidanceAngle - mainHeading < 180f) ? (avoidanceAngle - mainHeading) : (((mainHeading + 360f) - avoidanceAngle) * -1f);

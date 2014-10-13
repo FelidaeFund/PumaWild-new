@@ -61,7 +61,7 @@ public class FeedingDisplay : MonoBehaviour
 	//===================================
 	//===================================
 
-	public void Draw(float backgroundPanelOpacity, float mainContentOpacity, float okButtonOpacity, float pumaWinsOpacity) 
+	public void Draw(float backgroundPanelOpacity, float mainContentOpacity, float okButtonOpacity) 
 	{ 
 		float feedingDisplayX = (Screen.width / 2) - (Screen.height * 0.7f);
 		float feedingDisplayY = Screen.height * 0.025f;
@@ -440,101 +440,12 @@ public class FeedingDisplay : MonoBehaviour
 		guiManager.customGUISkin.button.fontSize = (int)(feedingDisplayHeight * 0.14);
 		guiManager.customGUISkin.button.fontStyle = FontStyle.Normal;
 		if (GUI.Button(new Rect(feedingDisplayX + feedingDisplayWidth * 0.81f,  feedingDisplayY + feedingDisplayHeight * 0.727f, feedingDisplayWidth * 0.14f, feedingDisplayHeight * 0.25f), "Go")) {
-			if (pumaWinsOpacity > 0f) {
-				guiManager.SetGuiState("guiStateLeavingPumaWins");
-				levelManager.SetGameState("gameStateLeavingGameplay");
-			}
-			else {
-				guiManager.SetGuiState("guiStateFeeding7");
-				levelManager.SetGameState("gameStateFeeding5");
-			}
+			guiManager.SetGuiState("guiStateFeeding7");
+			levelManager.SetGameState("gameStateFeeding5");
 		}	
 		
 		feedingDisplayX += feedingDisplayWidth * 0.02f;
 		feedingDisplayY -= feedingDisplayHeight * 1.3f;
-		
-
-		//********************
-		// PUMA WINS
-		//********************
-					
-		GUI.color = new Color(1f, 1f, 1f, 1f * pumaWinsOpacity);
-
-		
-		float sourcePercent = 0f;
-		float destPercent = 1f;
-
-		// header title
-		float titleX = feedingDisplayX + feedingDisplayWidth * 0.3f;
-		float titleY = feedingDisplayY + feedingDisplayHeight * 0.136f;
-		float titleW = feedingDisplayWidth * 0.4f;
-		float titleH = feedingDisplayHeight * 0.03f;
-		style.fontSize = (int)(fontRef * 0.22f);
-		style.normal.textColor =  new Color(0f, 0.66f, 0f, 1f);
-		style.fontStyle = FontStyle.Bold;
-		//GUI.Button(new Rect(feedingDisplayX + feedingDisplayWidth * 0.3f + title1Offset, feedingDisplayY + feedingDisplayHeight * 0.135f, feedingDisplayWidth * 0.4f, feedingDisplayHeight * 0.03f), topString, style);
-		style.fontSize = (int)(fontRef * 0.18f);
-		GUI.Button(new Rect(titleX, titleY, titleW, titleH), "Yay! - This puma is at FULL HEATLH !!", style);
-		
-		// background box
-		float boxX = feedingDisplayX + feedingDisplayWidth * (0.665f * sourcePercent + 0.3f * destPercent);
-		float boxY = feedingDisplayY + feedingDisplayHeight * (0.3f * sourcePercent + 0.3f * destPercent);
-		float boxW = feedingDisplayWidth * (0.3f * sourcePercent + 0.4f * destPercent);
-		float boxH = feedingDisplayHeight * (0.62f * sourcePercent + 0.8f * destPercent);
-		GUI.color = new Color(1f, 1f, 1f, 0.8f * pumaWinsOpacity);
-		GUI.Box(new Rect(boxX, boxY, boxW, boxH), "");
-		GUI.color = new Color(1f, 1f, 1f, 0.5f * pumaWinsOpacity);
-		GUI.Box(new Rect(boxX, boxY, boxW, boxH), "");
-		GUI.color = new Color(1f, 1f, 1f, 1f * pumaWinsOpacity);
-
-		// left label
-		float leftLabelX = feedingDisplayX + feedingDisplayWidth * 0.668f;
-		float leftLabelY1 = feedingDisplayY + feedingDisplayHeight * (0.596f + panelOffsetY);
-		float leftLabelY2 = feedingDisplayY + feedingDisplayHeight * (0.678f + panelOffsetY);
-		float leftLabelW = feedingDisplayWidth * 0.1f;
-		float leftLabelH = feedingDisplayHeight * 0.03f;
-		style.normal.textColor = new Color(0.90f, 0.65f, 0f, 0.9f);
-		style.fontSize = (int)(fontRef * 0.15f);
-		GUI.Button(new Rect(leftLabelX, leftLabelY1, leftLabelW, leftLabelH), "Energy", style);
-		style.fontSize = (int)(fontRef * 0.14f);
-		GUI.Button(new Rect(leftLabelX, leftLabelY2, leftLabelW, leftLabelH), "Spent", style);
-
-		// puma head
-		textureX = feedingDisplayX + feedingDisplayWidth * 0.76f;
-		textureY = feedingDisplayY + feedingDisplayHeight * (0.42f + panelOffsetY);
-		textureWidth = feedingDisplayHeight * 0.39f;
-		textureHeight = headshotTexture.height * (textureWidth / headshotTexture.width);
-		GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), headshotTexture);
-
-		// puma name
-		float nameX = feedingDisplayX + feedingDisplayWidth * 0.767f;
-		float nameY = feedingDisplayY + feedingDisplayHeight * (0.78f + panelOffsetY);
-		float nameW = feedingDisplayWidth * 0.1f;
-		float nameH = feedingDisplayHeight * 0.03f;
-		style.normal.textColor = new Color(0.99f * 0.9f, 0.63f * 0.8f, 0f, 1f);
-		style.fontSize = (int)(fontRef * 0.13f);
-		GUI.Button(new Rect(nameX, nameY, nameW, nameH), pumaName, style);
-
-		// right label
-		float rightLabelX = feedingDisplayX + feedingDisplayWidth * 0.86f;
-		float rightLabelY1 = feedingDisplayY + feedingDisplayHeight * (0.60f + panelOffsetY);
-		float rightLabelY2 = feedingDisplayY + feedingDisplayHeight * (0.68f + panelOffsetY);
-		float rightLabelW = feedingDisplayWidth * 0.1f;
-		float rightLabelH = feedingDisplayHeight * 0.03f;
-		style.normal.textColor = new Color(0.78f, 0f, 0f, 1f);
-		style.fontSize = (int)(fontRef * 0.18f);
-		GUI.Button(new Rect(rightLabelX, rightLabelY1, rightLabelW, rightLabelH), caloriesExpended.ToString("n0"), style);
-		style.fontSize = (int)(fontRef * 0.125f);
-		GUI.Button(new Rect(rightLabelX, rightLabelY2, rightLabelW, rightLabelH), "points -", style);
-		
-		
-		// health bar
-		float barX = feedingDisplayX + feedingDisplayWidth * 0.670f + feedingDisplayHeight * 0.03f;
-		float barY = feedingDisplayY + feedingDisplayHeight * 0.775f;
-		float barW = feedingDisplayWidth * 0.29f - feedingDisplayHeight * 0.06f;
-		float barH = feedingDisplayHeight * 0.11f;
-		guiComponents.DrawPumaHealthBar(guiManager.selectedPuma, pumaWinsOpacity, barX, barY, barW, barH);
-		
 	}
 	
 }

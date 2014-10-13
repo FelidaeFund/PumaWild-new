@@ -15,10 +15,12 @@ public class ScoringSystem : MonoBehaviour
 	// meat consumption
 	private float meatLimitForLevel;
 	private float meatTotalEaten;
+	public float meatEatenOverdrive = 1f;
 
 	// health points
 	private float maxHealth;
 	private float[] healthPoints;
+	private bool[] carKilledFlags;
 	
 	// energy usage
 	private float expensePerMeterChasing;
@@ -64,6 +66,8 @@ public class ScoringSystem : MonoBehaviour
 		maxHealth = 175000f;
 		healthPoints = new float[] { maxHealth * 0.5f, maxHealth * 0.5f, maxHealth * 0.5f,
 									 maxHealth * 0.5f, maxHealth * 0.5f, maxHealth * 0.5f};
+		carKilledFlags = new bool[] {false, false, false, false, false, false};
+
 		// energy usage
 		expensePerMeterChasing = 150f;
 		expensePerMeterStalking = expensePerMeterChasing * 0.25f;
@@ -197,6 +201,9 @@ public class ScoringSystem : MonoBehaviour
 			System.Console.WriteLine("ScoringSystem.DeerCaught got bad deerType: " + deerType);
 			return;
 		}
+		
+		meatEaten *= meatEatenOverdrive;
+		caloriesEaten *= meatEatenOverdrive;
 
 		lastKillMeatEaten = meatEaten;
 		lastKillCaloriesEaten = caloriesEaten;
@@ -222,6 +229,7 @@ public class ScoringSystem : MonoBehaviour
 		lastKillDeerType = "None";
 		lastKillExpenses[selectedPuma] = 0f;
 		healthPoints[selectedPuma] = 0f;
+		carKilledFlags[selectedPuma] = true; // we assume this function is only called by car collision code
 	}
 
 	//------------------------------------------
@@ -260,6 +268,11 @@ public class ScoringSystem : MonoBehaviour
 			return -1f;
 
 		return healthPoints[pumaNum] / maxHealth;
+	}
+
+	public bool WasKilledByCar(int pumaNum)
+	{
+		return carKilledFlags[pumaNum];
 	}
 
 	public float GetLastKillMeatEaten()

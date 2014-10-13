@@ -108,39 +108,6 @@ public class PumaController : MonoBehaviour
 			collisionCarForceOffsetX = Mathf.Sin(heading*Mathf.PI/180) * collisionScale;
 			collisionCarForceOffsetZ = Mathf.Cos(heading*Mathf.PI/180) * collisionScale;
 			collisionCarForceTimeRemaining = 0.30f;
-				
-			// disable bridge colliders --- TEMP -- CURRENTLY INEFFICIENT	
-			BoxCollider[] boxColliders;
-
-			if (GameObject.Find("L3Bridge1") != null) {
-				boxColliders = GameObject.Find("L3Bridge1").GetComponents<BoxCollider>();
-				boxColliders[0].enabled = false;
-				boxColliders[1].enabled = false;
-				boxColliders = GameObject.Find("L3Bridge2").GetComponents<BoxCollider>();
-				boxColliders[0].enabled = false;
-				boxColliders[1].enabled = false;
-			}
-
-			if (GameObject.Find("L4Bridge1") != null) {
-				boxColliders = GameObject.Find("L4Bridge1").GetComponents<BoxCollider>();
-				boxColliders[0].enabled = false;
-				boxColliders[1].enabled = false;
-				boxColliders = GameObject.Find("L4Bridge2").GetComponents<BoxCollider>();
-				boxColliders[0].enabled = false;
-				boxColliders[1].enabled = false;
-			}
-
-			if (GameObject.Find("L5Bridge1") != null) {
-				boxColliders = GameObject.Find("L5Bridge1").GetComponents<BoxCollider>();
-				boxColliders[0].enabled = false;
-				boxColliders[1].enabled = false;
-				boxColliders = GameObject.Find("L5Bridge2").GetComponents<BoxCollider>();
-				boxColliders[0].enabled = false;
-				boxColliders[1].enabled = false;
-			}
-
-			// NEED TO TURN OFF BOX COLLIDERS IN INSTANTIATED TERRAINS TOO  !!!!!
-			
 		}
 		
 		// BRIDGE

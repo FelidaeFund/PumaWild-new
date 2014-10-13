@@ -62,7 +62,9 @@ public class OverlayPanel : MonoBehaviour
 	private Texture2D closeup5Texture;
 	private Texture2D closeup6Texture;
 	private Texture2D closeupBackgroundTexture;
-
+	private Texture2D pumaCrossbonesDarkRedTexture;
+	private Texture2D greenHeartTexture;
+	
 	// external modules
 	private GuiManager guiManager;
 	private GuiComponents guiComponents;
@@ -118,6 +120,8 @@ public class OverlayPanel : MonoBehaviour
 		closeup5Texture = guiManager.closeup5Texture;
 		closeup6Texture = guiManager.closeup6Texture;
 		closeupBackgroundTexture = guiManager.closeupBackgroundTexture;
+		pumaCrossbonesDarkRedTexture = guiManager.pumaCrossbonesDarkRedTexture;		
+		greenHeartTexture = guiManager.greenHeartTexture;		
 		
 		// custom button styling
 		buttonStyle = new GUIStyle();
@@ -505,19 +509,19 @@ public class OverlayPanel : MonoBehaviour
 
 		//Color fullHealthPumaHeadshotColor = new Color(0.2f, 1f, 0.05f, 1f * selectScreenOpacity);
 		//Color fullHealthPumaIconColor = new Color(0.1f, 1f, 0f, 0.65f * selectScreenOpacity);
-		Color fullHealthPumaHeadshotColor = new Color(0.99f, 0.92f, 0f, 0.62f * selectScreenOpacity);
-		Color fullHealthPumaIconColor = new Color(0.99f, 0.92f, 0f, 0.27f * selectScreenOpacity);
+		Color fullHealthPumaHeadshotColor = new Color(0.88f, 0.88f, 0.88f, 0.98f * selectScreenOpacity);
+		Color fullHealthPumaIconColor = new Color(0.7f, 0.7f, 0.7f, 0.8f * selectScreenOpacity);
 		//Color fullHealthPumaTextColor = new Color(0.1f, 0.5f, 0f, 0.8f * selectScreenOpacity);
-		Color fullHealthPumaTextColor = new Color(0.32f, 0.32f, 0.22f, 0.8f * selectScreenOpacity);
-		Color fullHealthPumaAnnounceColor = new Color(0.01f, 0.85f, 0f, 0.8f * selectScreenOpacity);
+		Color fullHealthPumaTextColor = new Color(0.5f, 0.4f, 0.05f, 0.8f * selectScreenOpacity);
+		Color fullHealthPumaAnnounceColor = new Color(0f, 0.70f, 0f, 0.8f * selectScreenOpacity);
 
 		//Color deadPumaHeadshotColor = new Color(0.8f, 0.1f, 0f, 0.55f * selectScreenOpacity);
 		Color deadPumaHeadshotColor = new Color(0.12f, 0.12f, 0.12f, 0.7f * selectScreenOpacity);
 		//Color deadPumaIconColor = new Color(0.8f, 0f, 0f, 0.3f * selectScreenOpacity);
 		Color deadPumaIconColor = new Color(0.08f, 0.08f, 0.08f, 0.99f * selectScreenOpacity);
 		//Color deadPumaTextColor = new Color(0.05f, 0.05f, 0.02f, 1f * selectScreenOpacity);
-		Color deadPumaTextColor = new Color(0.32f, 0.32f, 0.22f, 0.8f * selectScreenOpacity);
-		Color deadPumaAnnounceColor = new Color(0.65f, 0.05f, 0f, 1f * selectScreenOpacity);
+		Color deadPumaTextColor = new Color(0.32f * 1.3f, 0.32f * 1.3f, 0.22f * 1.3f, 0.8f * selectScreenOpacity);
+		Color deadPumaAnnounceColor = new Color(0.625f, 0.05f, 0f, 1f * selectScreenOpacity);
 
 		float endingLabelDownshift = overlayRect.height * 0.036f;
 		
@@ -563,7 +567,7 @@ public class OverlayPanel : MonoBehaviour
 				GUI.color = new Color(1f, 1f, 1f, 1f * selectScreenOpacity);
 				style.normal.textColor = deadPumaAnnounceColor;
 				style.fontSize = (int)(overlayRect.width * 0.012f);
-				GUI.Button(new Rect(textureX, overlayRect.y + overlayRect.height * 0.26f + yOffsetForAddingPopulationBar + textUpShift + endingLabelDownshift, textureWidth, overlayRect.height * 0.08f), "STARVED", style);
+				GUI.Button(new Rect(textureX, overlayRect.y + overlayRect.height * 0.26f + yOffsetForAddingPopulationBar + textUpShift + endingLabelDownshift, textureWidth, overlayRect.height * 0.08f), scoringSystem.WasKilledByCar(0) ? "Killed by Car" : "Starved", style);
 			}
 			else if (scoringSystem.GetPumaHealth(0) >= 1f) {
 				// puma at full health
@@ -579,7 +583,7 @@ public class OverlayPanel : MonoBehaviour
 				float checkMarkX = textureX + textureWidth * 0.84f;
 				float checkMarkY = overlayRect.y + overlayRect.height * 0.282f + yOffsetForAddingPopulationBar + textUpShift;
 				GUI.color = new Color(1f, 1f, 1f, 0.8f * selectScreenOpacity);
-				GUI.DrawTexture(new Rect(checkMarkX, checkMarkY + endingLabelDownshift, checkMarkWidth, checkMarkHeight), greenCheckTexture);
+				//GUI.DrawTexture(new Rect(checkMarkX, checkMarkY + endingLabelDownshift, checkMarkWidth, checkMarkHeight), greenCheckTexture);
 				GUI.color = new Color(1f, 1f, 1f, 1f * selectScreenOpacity);
 			}
 		}
@@ -682,7 +686,7 @@ public class OverlayPanel : MonoBehaviour
 				GUI.color = new Color(1f, 1f, 1f, 1f * selectScreenOpacity);
 				style.normal.textColor = deadPumaAnnounceColor;
 				style.fontSize = (int)(overlayRect.width * 0.012f);
-				GUI.Button(new Rect(textureX, overlayRect.y + overlayRect.height * 0.26f + yOffsetForAddingPopulationBar + textUpShift + endingLabelDownshift, textureWidth, overlayRect.height * 0.08f), "STARVED", style);
+				GUI.Button(new Rect(textureX, overlayRect.y + overlayRect.height * 0.26f + yOffsetForAddingPopulationBar + textUpShift + endingLabelDownshift, textureWidth, overlayRect.height * 0.08f), scoringSystem.WasKilledByCar(1) ? "Killed by Car" : "Starved", style);
 			}
 			else if (scoringSystem.GetPumaHealth(1) >= 1f) {
 				// puma at full health
@@ -698,7 +702,7 @@ public class OverlayPanel : MonoBehaviour
 				float checkMarkX = textureX + textureWidth * 0.84f;
 				float checkMarkY = overlayRect.y + overlayRect.height * 0.282f + yOffsetForAddingPopulationBar + textUpShift;
 				GUI.color = new Color(1f, 1f, 1f, 0.8f * selectScreenOpacity);
-				GUI.DrawTexture(new Rect(checkMarkX, checkMarkY + endingLabelDownshift, checkMarkWidth, checkMarkHeight), greenCheckTexture);
+				//GUI.DrawTexture(new Rect(checkMarkX, checkMarkY + endingLabelDownshift, checkMarkWidth, checkMarkHeight), greenCheckTexture);
 				GUI.color = new Color(1f, 1f, 1f, 1f * selectScreenOpacity);
 			}
 		}
@@ -799,7 +803,7 @@ public class OverlayPanel : MonoBehaviour
 				GUI.color = new Color(1f, 1f, 1f, 1f * selectScreenOpacity);
 				style.normal.textColor = deadPumaAnnounceColor;
 				style.fontSize = (int)(overlayRect.width * 0.012f);
-				GUI.Button(new Rect(textureX, overlayRect.y + overlayRect.height * 0.26f + yOffsetForAddingPopulationBar + textUpShift + endingLabelDownshift, textureWidth, overlayRect.height * 0.08f), "STARVED !", style);
+				GUI.Button(new Rect(textureX, overlayRect.y + overlayRect.height * 0.26f + yOffsetForAddingPopulationBar + textUpShift + endingLabelDownshift, textureWidth, overlayRect.height * 0.08f), scoringSystem.WasKilledByCar(2) ? "Killed by Car" : "Starved", style);
 			}
 			else if (scoringSystem.GetPumaHealth(2) >= 1f) {
 				// puma at full health
@@ -815,7 +819,7 @@ public class OverlayPanel : MonoBehaviour
 				float checkMarkX = textureX + textureWidth * 0.84f;
 				float checkMarkY = overlayRect.y + overlayRect.height * 0.282f + yOffsetForAddingPopulationBar + textUpShift;
 				GUI.color = new Color(1f, 1f, 1f, 0.8f * selectScreenOpacity);
-				GUI.DrawTexture(new Rect(checkMarkX, checkMarkY + endingLabelDownshift, checkMarkWidth, checkMarkHeight), greenCheckTexture);
+				//GUI.DrawTexture(new Rect(checkMarkX, checkMarkY + endingLabelDownshift, checkMarkWidth, checkMarkHeight), greenCheckTexture);
 				GUI.color = new Color(1f, 1f, 1f, 1f * selectScreenOpacity);
 			}
 		}
@@ -916,7 +920,7 @@ public class OverlayPanel : MonoBehaviour
 				GUI.color = new Color(1f, 1f, 1f, 1f * selectScreenOpacity);
 				style.normal.textColor = deadPumaAnnounceColor;
 				style.fontSize = (int)(overlayRect.width * 0.012f);
-				GUI.Button(new Rect(textureX, overlayRect.y + overlayRect.height * 0.26f + yOffsetForAddingPopulationBar + textUpShift + endingLabelDownshift, textureWidth, overlayRect.height * 0.08f), "STARVED !", style);
+				GUI.Button(new Rect(textureX, overlayRect.y + overlayRect.height * 0.26f + yOffsetForAddingPopulationBar + textUpShift + endingLabelDownshift, textureWidth, overlayRect.height * 0.08f), scoringSystem.WasKilledByCar(3) ? "Killed by Car" : "Starved", style);
 			}
 			else if (scoringSystem.GetPumaHealth(3) >= 1f) {
 				// puma at full health
@@ -932,7 +936,7 @@ public class OverlayPanel : MonoBehaviour
 				float checkMarkX = textureX + textureWidth * 0.84f;
 				float checkMarkY = overlayRect.y + overlayRect.height * 0.282f + yOffsetForAddingPopulationBar + textUpShift;
 				GUI.color = new Color(1f, 1f, 1f, 0.8f * selectScreenOpacity);
-				GUI.DrawTexture(new Rect(checkMarkX, checkMarkY + endingLabelDownshift, checkMarkWidth, checkMarkHeight), greenCheckTexture);
+				//GUI.DrawTexture(new Rect(checkMarkX, checkMarkY + endingLabelDownshift, checkMarkWidth, checkMarkHeight), greenCheckTexture);
 				GUI.color = new Color(1f, 1f, 1f, 1f * selectScreenOpacity);
 			}
 		}
@@ -1033,7 +1037,7 @@ public class OverlayPanel : MonoBehaviour
 				GUI.color = new Color(1f, 1f, 1f, 1f * selectScreenOpacity);
 				style.normal.textColor = deadPumaAnnounceColor;
 				style.fontSize = (int)(overlayRect.width * 0.012f);
-				GUI.Button(new Rect(textureX, overlayRect.y + overlayRect.height * 0.26f + yOffsetForAddingPopulationBar + textUpShift + endingLabelDownshift, textureWidth, overlayRect.height * 0.08f), "STARVED !", style);
+				GUI.Button(new Rect(textureX, overlayRect.y + overlayRect.height * 0.26f + yOffsetForAddingPopulationBar + textUpShift + endingLabelDownshift, textureWidth, overlayRect.height * 0.08f), scoringSystem.WasKilledByCar(4) ? "Killed by Car" : "Starved", style);
 			}
 			else if (scoringSystem.GetPumaHealth(4) >= 1f) {
 				// puma at full health
@@ -1049,7 +1053,7 @@ public class OverlayPanel : MonoBehaviour
 				float checkMarkX = textureX + textureWidth * 0.84f;
 				float checkMarkY = overlayRect.y + overlayRect.height * 0.282f + yOffsetForAddingPopulationBar + textUpShift;
 				GUI.color = new Color(1f, 1f, 1f, 0.8f * selectScreenOpacity);
-				GUI.DrawTexture(new Rect(checkMarkX, checkMarkY + endingLabelDownshift, checkMarkWidth, checkMarkHeight), greenCheckTexture);
+				//GUI.DrawTexture(new Rect(checkMarkX, checkMarkY + endingLabelDownshift, checkMarkWidth, checkMarkHeight), greenCheckTexture);
 				GUI.color = new Color(1f, 1f, 1f, 1f * selectScreenOpacity);
 			}
 		}
@@ -1150,7 +1154,7 @@ public class OverlayPanel : MonoBehaviour
 				GUI.color = new Color(1f, 1f, 1f, 1f * selectScreenOpacity);
 				style.normal.textColor = deadPumaAnnounceColor;
 				style.fontSize = (int)(overlayRect.width * 0.012f);
-				GUI.Button(new Rect(textureX, overlayRect.y + overlayRect.height * 0.26f + yOffsetForAddingPopulationBar + textUpShift + endingLabelDownshift, textureWidth, overlayRect.height * 0.08f), "STARVED !", style);
+				GUI.Button(new Rect(textureX, overlayRect.y + overlayRect.height * 0.26f + yOffsetForAddingPopulationBar + textUpShift + endingLabelDownshift, textureWidth, overlayRect.height * 0.08f), scoringSystem.WasKilledByCar(5) ? "Killed by Car" : "Starved", style);
 			}
 			else if (scoringSystem.GetPumaHealth(5) >= 1f) {
 				// puma at full health
@@ -1166,7 +1170,7 @@ public class OverlayPanel : MonoBehaviour
 				float checkMarkX = textureX + textureWidth * 0.84f;
 				float checkMarkY = overlayRect.y + overlayRect.height * 0.282f + yOffsetForAddingPopulationBar + textUpShift;
 				GUI.color = new Color(1f, 1f, 1f, 0.8f * selectScreenOpacity);
-				GUI.DrawTexture(new Rect(checkMarkX, checkMarkY + endingLabelDownshift, checkMarkWidth, checkMarkHeight), greenCheckTexture);
+				//GUI.DrawTexture(new Rect(checkMarkX, checkMarkY + endingLabelDownshift, checkMarkWidth, checkMarkHeight), greenCheckTexture);
 				GUI.color = new Color(1f, 1f, 1f, 1f * selectScreenOpacity);
 			}
 		}
@@ -2577,9 +2581,6 @@ public class OverlayPanel : MonoBehaviour
 	
 	
 	
-	
-	
-	
 	void DrawDisplayBars(int pumaNum, float displayBarsOpacity, float refX, float refY, float refWidth, float refHeight, bool brightFlag = false) 
 	{ 
 		float yOffset = overlayRect.height * -0.085f;
@@ -2587,55 +2588,70 @@ public class OverlayPanel : MonoBehaviour
 		
 		refWidth = refHeight * 3f;
 	
-		// display bars for characteristics: backgrounds
-		GUI.color = new Color(0f, 0f, 0f, (brightFlag ? 0.9f : 0.75f) * displayBarsOpacity);
-		GUI.Box(new Rect(refX + refWidth * 0.52f + displayBarsRightShift,  yOffset + refY + refHeight + overlayRect.height * 0.012f - overlayRect.height * 0.00f, refWidth * 0.38f, overlayRect.height * 0.012f), "");
-		GUI.Box(new Rect(refX + refWidth * 0.52f + displayBarsRightShift,  yOffset + refY + refHeight + overlayRect.height * 0.034f - overlayRect.height * 0.00f, refWidth * 0.38f, overlayRect.height * 0.012f), "");
-		GUI.Box(new Rect(refX + refWidth * 0.52f + displayBarsRightShift,  yOffset + refY + refHeight + overlayRect.height * 0.056f - overlayRect.height * 0.00f, refWidth * 0.38f, overlayRect.height * 0.012f), "");
-		GUI.Box(new Rect(refX + refWidth * 0.52f + displayBarsRightShift,  yOffset + refY + refHeight + overlayRect.height * 0.078f - overlayRect.height * 0.00f, refWidth * 0.38f, overlayRect.height * 0.012f), "");
 
-		// display bars for characteristics: backgrounds again to darken them
-		//GUI.Box(new Rect(headshotX + headshotWidth * 0.52f,  yOffset + headshotY + headshotHeight + overlayRect.height * 0.012f - overlayRect.height * 0.002f, headshotWidth * 0.38f, overlayRect.height * 0.012f), "");
-		//GUI.Box(new Rect(headshotX + headshotWidth * 0.52f,  yOffset + headshotY + headshotHeight + overlayRect.height * 0.035f - overlayRect.height * 0.002f, headshotWidth * 0.38f, overlayRect.height * 0.012f), "");
-		//GUI.Box(new Rect(headshotX + headshotWidth * 0.52f,  yOffset + headshotY + headshotHeight + overlayRect.height * 0.058f - overlayRect.height * 0.002f, headshotWidth * 0.38f, overlayRect.height * 0.012f), "");
-		//GUI.Box(new Rect(headshotX + headshotWidth * 0.52f,  yOffset + headshotY + headshotHeight + overlayRect.height * 0.081f - overlayRect.height * 0.002f, headshotWidth * 0.38f, overlayRect.height * 0.012f), "");
+		if (scoringSystem.GetPumaHealth(pumaNum) >= 1f) {
+			// puma at full health, draw heart
+			GUI.color = new Color(0.7f, 0.7f, 0.7f, 0.46f * displayBarsOpacity);
+			float textureX = refX + refWidth * 0.09f;
+			float textureY = refY + refHeight * 0.21f;
+			float textureWidth = refWidth * 0.27f;
+			float textureHeight = greenHeartTexture.height * (textureWidth / greenHeartTexture.width);
+			GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), greenHeartTexture);
+			GUI.color = new Color(1f, 1f, 1f, 1f * displayBarsOpacity);
+		}
 
-		// display bars for characteristics: fillers
-		GUI.color = new Color(1f, 1f, 1f, (brightFlag ? 0.7f : 0.55f) * displayBarsOpacity);
+		else if (scoringSystem.GetPumaHealth(pumaNum) <= 0f) {
+			// puma has died, draw crossbones
+			GUI.color = new Color(0.7f, 0.7f, 0.7f, 0.6f * displayBarsOpacity);
+			float textureX = refX + refWidth * 0.09f;
+			float textureY = refY + refHeight * 0.21f;
+			float textureWidth = refWidth * 0.27f;
+			float textureHeight = pumaCrossbonesDarkRedTexture.height * (textureWidth / pumaCrossbonesDarkRedTexture.width);
+			GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), pumaCrossbonesDarkRedTexture);
+			GUI.color = new Color(1f, 1f, 1f, 1f * displayBarsOpacity);
+		}
 
+		else {
+			// normal case, draw bars
 
-		
-		if (true) {
+			// display bars for characteristics: backgrounds
+			GUI.color = new Color(0f, 0f, 0f, (brightFlag ? 0.9f : 0.75f) * displayBarsOpacity);
+			GUI.Box(new Rect(refX + refWidth * 0.52f + displayBarsRightShift,  yOffset + refY + refHeight + overlayRect.height * 0.012f - overlayRect.height * 0.00f, refWidth * 0.38f, overlayRect.height * 0.012f), "");
+			GUI.Box(new Rect(refX + refWidth * 0.52f + displayBarsRightShift,  yOffset + refY + refHeight + overlayRect.height * 0.034f - overlayRect.height * 0.00f, refWidth * 0.38f, overlayRect.height * 0.012f), "");
+			GUI.Box(new Rect(refX + refWidth * 0.52f + displayBarsRightShift,  yOffset + refY + refHeight + overlayRect.height * 0.056f - overlayRect.height * 0.00f, refWidth * 0.38f, overlayRect.height * 0.012f), "");
+			GUI.Box(new Rect(refX + refWidth * 0.52f + displayBarsRightShift,  yOffset + refY + refHeight + overlayRect.height * 0.078f - overlayRect.height * 0.00f, refWidth * 0.38f, overlayRect.height * 0.012f), "");
 
-			if (scoringSystem.GetPumaHealth(pumaNum) >= 1f)
-				GUI.color = new Color(0.1f, 1f, 0f, (brightFlag ? 0.7f : 0.55f) * displayBarsOpacity);
-			else if (scoringSystem.GetPumaHealth(pumaNum) <= 0f)
-				GUI.color = new Color(0.4f, 0.4f, 0.4f, (brightFlag ? 0.5f : 0.4f) * displayBarsOpacity);
+			// display bars for characteristics: backgrounds again to darken them
+			//GUI.Box(new Rect(headshotX + headshotWidth * 0.52f,  yOffset + headshotY + headshotHeight + overlayRect.height * 0.012f - overlayRect.height * 0.002f, headshotWidth * 0.38f, overlayRect.height * 0.012f), "");
+			//GUI.Box(new Rect(headshotX + headshotWidth * 0.52f,  yOffset + headshotY + headshotHeight + overlayRect.height * 0.035f - overlayRect.height * 0.002f, headshotWidth * 0.38f, overlayRect.height * 0.012f), "");
+			//GUI.Box(new Rect(headshotX + headshotWidth * 0.52f,  yOffset + headshotY + headshotHeight + overlayRect.height * 0.058f - overlayRect.height * 0.002f, headshotWidth * 0.38f, overlayRect.height * 0.012f), "");
+			//GUI.Box(new Rect(headshotX + headshotWidth * 0.52f,  yOffset + headshotY + headshotHeight + overlayRect.height * 0.081f - overlayRect.height * 0.002f, headshotWidth * 0.38f, overlayRect.height * 0.012f), "");
+
+			// display bars for characteristics: fillers
+			GUI.color = new Color(1f, 1f, 1f, (brightFlag ? 0.7f : 0.55f) * displayBarsOpacity);
 
 			guiUtils.DrawRect(new Rect(refX + refWidth * 0.54f + displayBarsRightShift,  yOffset + refY + refHeight + overlayRect.height * 0.018f - overlayRect.height * 0.002f, refWidth * 0.34f, overlayRect.height * 0.0048f), new Color(0.42f, 0.404f, 0.533f, 1f));	
 			guiUtils.DrawRect(new Rect(refX + refWidth * 0.54f + displayBarsRightShift,  yOffset + refY + refHeight + overlayRect.height * 0.040f - overlayRect.height * 0.002f, refWidth * 0.34f, overlayRect.height * 0.0048f), new Color(0.5f, 0.5f, 0.5f, 1f));	
 			guiUtils.DrawRect(new Rect(refX + refWidth * 0.54f + displayBarsRightShift,  yOffset + refY + refHeight + overlayRect.height * 0.062f - overlayRect.height * 0.002f, refWidth * 0.34f, overlayRect.height * 0.0048f), new Color(0.5f, 0.5f, 0.5f, 1f));	
 			guiUtils.DrawRect(new Rect(refX + refWidth * 0.54f + displayBarsRightShift,  yOffset + refY + refHeight + overlayRect.height * 0.084f - overlayRect.height * 0.002f, refWidth * 0.34f, overlayRect.height * 0.0048f), new Color(0.5f, 0.5f, 0.5f, 1f));	
 
-			if (scoringSystem.GetPumaHealth(pumaNum) > 0f && scoringSystem.GetPumaHealth(pumaNum) < 1f) {
-				float speed = guiManager.GetPumaSpeed(pumaNum);
-				Color speedColor = (speed > 0.66f) ? new Color(0f, 1f, 0f, 0.8f) : ((speed > 0.33f) ? new Color(1f, 1f, 0f, 0.85f) : new Color(1f, 0f, 0f, 1f));
-				guiUtils.DrawRect(new Rect(refX + refWidth * 0.54f + displayBarsRightShift,  yOffset + refY + refHeight + overlayRect.height * 0.018f - overlayRect.height * 0.002f, refWidth * 0.34f * speed, overlayRect.height * 0.0048f), speedColor);	
+			float speed = guiManager.GetPumaSpeed(pumaNum);
+			Color speedColor = (speed > 0.66f) ? new Color(0f, 1f, 0f, 0.8f) : ((speed > 0.33f) ? new Color(1f, 1f, 0f, 0.85f) : new Color(1f, 0f, 0f, 1f));
+			guiUtils.DrawRect(new Rect(refX + refWidth * 0.54f + displayBarsRightShift,  yOffset + refY + refHeight + overlayRect.height * 0.018f - overlayRect.height * 0.002f, refWidth * 0.34f * speed, overlayRect.height * 0.0048f), speedColor);	
 
-				float stealth = guiManager.GetPumaStealth(pumaNum);
-				Color stealthColor = (stealth > 0.66f) ? new Color(0f, 1f, 0f,  0.8f) : ((stealth > 0.33f) ? new Color(1f, 1f, 0f, 0.85f) : new Color(1f, 0f, 0f, 1f));
-				guiUtils.DrawRect(new Rect(refX + refWidth * 0.54f + displayBarsRightShift,  yOffset + refY + refHeight + overlayRect.height * 0.040f - overlayRect.height * 0.002f, refWidth * 0.34f * stealth, overlayRect.height * 0.0048f), stealthColor);	
+			float stealth = guiManager.GetPumaStealth(pumaNum);
+			Color stealthColor = (stealth > 0.66f) ? new Color(0f, 1f, 0f,  0.8f) : ((stealth > 0.33f) ? new Color(1f, 1f, 0f, 0.85f) : new Color(1f, 0f, 0f, 1f));
+			guiUtils.DrawRect(new Rect(refX + refWidth * 0.54f + displayBarsRightShift,  yOffset + refY + refHeight + overlayRect.height * 0.040f - overlayRect.height * 0.002f, refWidth * 0.34f * stealth, overlayRect.height * 0.0048f), stealthColor);	
 
-				float endurance = guiManager.GetPumaEndurance(pumaNum);
-				Color enduranceColor = (endurance > 0.66f) ? new Color(0f, 1f, 0f,  0.8f) : ((endurance > 0.33f) ? new Color(1f, 1f, 0f, 0.85f) : new Color(1f, 0f, 0f, 1f));
-				guiUtils.DrawRect(new Rect(refX + refWidth * 0.54f + displayBarsRightShift,  yOffset + refY + refHeight + overlayRect.height * 0.062f - overlayRect.height * 0.002f, refWidth * 0.34f * endurance, overlayRect.height * 0.0048f), enduranceColor);	
+			float endurance = guiManager.GetPumaEndurance(pumaNum);
+			Color enduranceColor = (endurance > 0.66f) ? new Color(0f, 1f, 0f,  0.8f) : ((endurance > 0.33f) ? new Color(1f, 1f, 0f, 0.85f) : new Color(1f, 0f, 0f, 1f));
+			guiUtils.DrawRect(new Rect(refX + refWidth * 0.54f + displayBarsRightShift,  yOffset + refY + refHeight + overlayRect.height * 0.062f - overlayRect.height * 0.002f, refWidth * 0.34f * endurance, overlayRect.height * 0.0048f), enduranceColor);	
 
-				float power = guiManager.GetPumaPower(pumaNum);
-				Color powerColor = (power > 0.66f) ? new Color(0f, 1f, 0f,  0.8f) : ((power > 0.33f) ? new Color(1f, 1f, 0f, 0.85f) : new Color(1f, 0f, 0f, 1f));
-				guiUtils.DrawRect(new Rect(refX + refWidth * 0.54f + displayBarsRightShift,  yOffset + refY + refHeight + overlayRect.height * 0.084f - overlayRect.height * 0.002f, refWidth * 0.34f * power, overlayRect.height * 0.0048f), powerColor);	
-			}
+			float power = guiManager.GetPumaPower(pumaNum);
+			Color powerColor = (power > 0.66f) ? new Color(0f, 1f, 0f,  0.8f) : ((power > 0.33f) ? new Color(1f, 1f, 0f, 0.85f) : new Color(1f, 0f, 0f, 1f));
+			guiUtils.DrawRect(new Rect(refX + refWidth * 0.54f + displayBarsRightShift,  yOffset + refY + refHeight + overlayRect.height * 0.084f - overlayRect.height * 0.002f, refWidth * 0.34f * power, overlayRect.height * 0.0048f), powerColor);	
 		}
-				
+		
 		GUI.color = new Color(1f, 1f, 1f, 1f * displayBarsOpacity);
 	}
 	
