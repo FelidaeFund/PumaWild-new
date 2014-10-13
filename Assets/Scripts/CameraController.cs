@@ -349,6 +349,17 @@ public class CameraController : MonoBehaviour
 	}
 
 	//-----------------------
+	// SetCurrentRotOffsetY
+	//
+	// sets current val
+	//-----------------------
+
+	public void SetCurrentRotOffsetY(float newVal)
+	{
+		currentCameraRotOffsetY = newVal;
+	}
+
+	//-----------------------
 	// ProcessKeyboardInput
 	//
 	// DEV ONLY

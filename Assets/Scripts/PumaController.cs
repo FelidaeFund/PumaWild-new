@@ -93,30 +93,22 @@ public class PumaController : MonoBehaviour
 		// VEHICLE
 
 		if (collisionInfo.gameObject.tag == "Vehicle") {
-		
-		
-		
 			Debug.Log("=====================================");
 			Debug.Log("Detected collision between " + gameObject.name + " and " + collisionInfo.collider.name);
 			Debug.Log("Collision normal is " + collisionInfo.contacts[0].normal);
 			Debug.Log("Collision relative velocity is " + collisionInfo.relativeVelocity);
 			Debug.Log("Time.time: " + Time.time);
+					
+			levelManager.BeginCarCollision();
 			
-			
-			
-			GetComponent<Rigidbody>().isKinematic = false;
-			levelManager.carCollisionFlag = true;
-			levelManager.carCollisionTime = Time.time;
-			
-			
+			// create force to push puma off road (to right)
 			float collisionScale = 75000f;
 			float heading = collisionInfo.gameObject.GetComponent<VehicleController>().heading;
-			heading += Random.Range(-20f, 20f);
+			heading += Random.Range(20f, 40f);
 			collisionCarForceOffsetX = Mathf.Sin(heading*Mathf.PI/180) * collisionScale;
 			collisionCarForceOffsetZ = Mathf.Cos(heading*Mathf.PI/180) * collisionScale;
 			collisionCarForceTimeRemaining = 0.30f;
-			
-			
+				
 			// disable bridge colliders --- TEMP -- CURRENTLY INEFFICIENT	
 			BoxCollider[] boxColliders;
 

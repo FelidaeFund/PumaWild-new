@@ -115,6 +115,7 @@ public class TrafficManager : MonoBehaviour {
 	
 	private class VehicleInfo {
 		public GameObject vehicle;
+		public VehicleController vehicleController;
 		public int lane;
 		public float speed;
 		public bool ascendingFlag;
@@ -486,6 +487,7 @@ public class TrafficManager : MonoBehaviour {
 				int min = 0;  int max = 10;
 				int vehicleSelect = Random.Range(min, max);
 				vehicleInfo.vehicle = Instantiate(vehicleModels[vehicleSelect], vehicleInfo.terrainPos, Quaternion.identity) as GameObject;
+				vehicleInfo.vehicleController = vehicleInfo.vehicle.GetComponent<VehicleController>();
 			}
 			else if (distanceToPuma >= maxVisibleDistance && vehicleInfo.vehicle != null) {
 				// far from puma; destroy object
@@ -511,10 +513,10 @@ public class TrafficManager : MonoBehaviour {
 				vehicleInfo.vehicle.transform.rotation = Quaternion.Euler(vehicleInfo.segmentPitch - 90f, heading, 0);
 
 				VehicleController vCtrl = vehicleInfo.vehicle.GetComponent<VehicleController>();
-				if (vCtrl != null) {
-					vCtrl.heading = heading;
-					vCtrl.pitch = vehicleInfo.segmentPitch;
-				}
+
+				// store off heading and pitch for use during collision
+				vehicleInfo.vehicleController.heading = heading;
+				vehicleInfo.vehicleController.pitch = vehicleInfo.segmentPitch;
 			}
 		}
 	}

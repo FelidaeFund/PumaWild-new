@@ -10,6 +10,14 @@ public class LevelManager : MonoBehaviour
 	private bool goStraightToFeeding = false;
 	public float speedOverdrive = 1f;
 	public float guiFlybyOverdrive = 1f;
+	public float travelledDistanceOverdrive = 1f;
+	
+	public bool guiFlybyOverdriveRampFlag = false;
+	public float guiFlybyOverdriveRampStartVal;
+	public float guiFlybyOverdriveRampEndVal;
+	public float guiFlybyOverdriveRampStartTime;
+	public float guiFlybyOverdriveRampEndTime;
+
 	public float displayVar1;
 	public float displayVar2;
 	public float displayVar3;
@@ -32,6 +40,8 @@ public class LevelManager : MonoBehaviour
 	private float stateStartTime;
 	private bool stateInitFlag;
 	private int currentLevel;
+	private string carCollisionState = "None";
+	private string starvationState = "None";
 
 	// TERRAIN
 
@@ -113,6 +123,7 @@ public class LevelManager : MonoBehaviour
 	// PUMA
 
 	public GameObject pumaObj;
+	private BoxCollider pumaObjCollider;
 	private int selectedPuma = -1;
 	public float mainHeading;
 	private float pumaX;
@@ -168,7 +179,7 @@ public class LevelManager : MonoBehaviour
 	private float fawnDefaultTurnRate = 15f;
 	private float nextDeerRunUpdateTime = 0f;
 
-	// THE CAUGHT DEER
+	// CAUGHT DEER
 	
 	private DeerClass caughtDeer;
 	private float deerCaughtHeading;
@@ -190,6 +201,7 @@ public class LevelManager : MonoBehaviour
 	public Animator fawnAnimator;
 	
 	// EXTERNAL MODULES
+	private GuiManager guiManager;
 	private ScoringSystem scoringSystem;
 	private InputControls inputControls;
 	private CameraController cameraController;
@@ -209,6 +221,7 @@ public class LevelManager : MonoBehaviour
 	void Start() 
 	{	
 		// connect to external modules
+		guiManager = GetComponent<GuiManager>();
 		scoringSystem = GetComponent<ScoringSystem>();
 		inputControls = GetComponent<InputControls>();
 		cameraController = GetComponent<CameraController>();
@@ -216,6 +229,7 @@ public class LevelManager : MonoBehaviour
 
 		// puma
 		pumaObj = GameObject.Find("Puma");	
+		pumaObjCollider = pumaObj.GetComponent<BoxCollider>();
 				
 		// deer
 		buck = new DeerClass();
@@ -240,13 +254,7 @@ public class LevelManager : MonoBehaviour
 		doe.gameObj = GameObject.Find("Doe");
 		fawn.gameObj = GameObject.Find("Fawn");
 
-
-		
 		Physics.gravity = new Vector3(0f, -20f, 0f);
-
-
-
-
 		
 		InitLevel(3);
 	}
@@ -747,6 +755,26 @@ public class LevelManager : MonoBehaviour
 		
 		pumaChasingSpeed = basePumaChasingSpeed + speedArray[selectedPuma];
 		chaseTriggerDistance = baseChaseTriggerDistance + stealthArray[selectedPuma];
+		
+		if (carCollisionState == "Concluded") {
+			carCollisionState = "None";
+			pumaAnimator.SetBool("CarCollision", false);
+			guiFlybyOverdriveRampFlag = true;
+			guiFlybyOverdriveRampStartVal = guiFlybyOverdrive;
+			guiFlybyOverdriveRampEndVal = 1f;
+			guiFlybyOverdriveRampStartTime = Time.time;
+			guiFlybyOverdriveRampEndTime = Time.time + 2f;
+		}
+		
+		if (starvationState == "Concluded") {
+			starvationState = "None";
+			pumaAnimator.SetBool("PumaStarved", false);
+			guiFlybyOverdriveRampFlag = true;
+			guiFlybyOverdriveRampStartVal = guiFlybyOverdrive;
+			guiFlybyOverdriveRampEndVal = 1f;
+			guiFlybyOverdriveRampStartTime = Time.time;
+			guiFlybyOverdriveRampEndTime = Time.time + 2f;
+		}
 	}
 
 	void SelectCameraPosition(string targetPositionLabel, float targetRotOffsetY, float fadeTime, string mainCurve, string rotXCurve)
@@ -757,26 +785,6 @@ public class LevelManager : MonoBehaviour
 		}
 	}
 
-	
-	
-	
-	
-	
-	
-		private Vector3 moveDirection = Vector3.zero;
-		private float vSpeed = 0f; // keep vertical speed in a separate variable
-		private CharacterController controller; // controller reference
-		public bool carCollisionFlag = false;
-		public float carCollisionTime;
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	//===================================
 	//===================================
 	//		PERIODIC UPDATE
@@ -814,7 +822,24 @@ public class LevelManager : MonoBehaviour
 			pumaDeerDistance1 = 0;
 		}
 			
-		
+		//========================================
+		// Check for Change to guiFlybyOverdrive
+		//========================================
+
+		if (guiFlybyOverdriveRampFlag == true) {
+			float currentTime = Time.time;
+			if (currentTime > guiFlybyOverdriveRampEndTime) {
+				guiFlybyOverdrive = guiFlybyOverdriveRampEndVal;
+				guiFlybyOverdriveRampFlag = false;
+			}
+			else {
+				float totalRampTime = guiFlybyOverdriveRampEndTime - guiFlybyOverdriveRampStartTime;
+				float totalRampAmount = guiFlybyOverdriveRampEndVal - guiFlybyOverdriveRampStartVal;
+				float elapsedTime = currentTime - guiFlybyOverdriveRampStartTime;
+				guiFlybyOverdrive = guiFlybyOverdriveRampStartVal + (totalRampAmount * (elapsedTime/totalRampTime));
+			}
+		}			
+
 		//===========================
 		// Update Game-State Logic
 		//===========================
@@ -1214,18 +1239,23 @@ public class LevelManager : MonoBehaviour
 				mainHeading += inputControls.GetInputHorz() * Time.deltaTime * rotationSpeed;
 				pumaHeading = mainHeading + pumaHeadingOffset;
 			}
-			pumaX += (Mathf.Sin(pumaHeading*Mathf.PI/180) * distance);
-			pumaZ += (Mathf.Cos(pumaHeading*Mathf.PI/180) * distance);
+			float travelledDistance = (scoringSystem.GetPumaHealth(selectedPuma) > 0.05f) ? distance : distance * (scoringSystem.GetPumaHealth(selectedPuma) / 0.05f);
+			pumaX += (Mathf.Sin(pumaHeading*Mathf.PI/180) * travelledDistance);
+			pumaZ += (Mathf.Cos(pumaHeading*Mathf.PI/180) * travelledDistance);
 			pumaHeading = mainHeading + pumaHeadingOffset; // restore normal setting in case of collision mode
-			scoringSystem.PumaHasWalked(selectedPuma, distance);
-			if (scoringSystem.GetPumaHealth(selectedPuma) == 0f)
-				SetGameState("gameStateDied1");			
+			scoringSystem.PumaHasWalked(selectedPuma, distance * ((distance != travelledDistance) ? 1f : travelledDistanceOverdrive));
+			if (scoringSystem.GetPumaHealth(selectedPuma) == 0f) {
+				// STARVATION !!
+				SetGameState("gameStateDied1");	
+				guiManager.SetGuiState("guiStatePumaDied1");
+				pumaAnimator.SetBool("PumaStarved", true);
+			}
 		}
 		else if (gameState == "gameStateChasing") {
 			// main chasing state
 			float rotationSpeed = 150f;
 			if (pumaCollisionFlag == true) {
-				distance = inputControls.GetInputVert() * Time.deltaTime  * pumaStalkingSpeed * speedOverdrive;
+				distance = inputControls.GetInputVert() * Time.deltaTime  * pumaChasingSpeed * speedOverdrive;
 				mainHeading += inputControls.GetInputHorz() * Time.deltaTime * rotationSpeed;
 				if (pumaCollisionHeadingOffset > 0f) {
 					// turning right
@@ -1249,7 +1279,7 @@ public class LevelManager : MonoBehaviour
 				}
 			}
 			else {
-				distance = inputControls.GetInputVert() * Time.deltaTime  * pumaStalkingSpeed * speedOverdrive;
+				distance = inputControls.GetInputVert() * Time.deltaTime  * pumaChasingSpeed * speedOverdrive;
 				mainHeading += inputControls.GetInputHorz() * Time.deltaTime * rotationSpeed;
 				pumaHeading = mainHeading + pumaHeadingOffset;
 			}
@@ -1257,9 +1287,13 @@ public class LevelManager : MonoBehaviour
 			pumaX += (Mathf.Sin(pumaHeading*Mathf.PI/180) * travelledDistance);
 			pumaZ += (Mathf.Cos(pumaHeading*Mathf.PI/180) * travelledDistance);
 			pumaHeading = mainHeading + pumaHeadingOffset; // restore normal setting in case of collision mode
-			scoringSystem.PumaHasRun(selectedPuma, distance);
-			if (scoringSystem.GetPumaHealth(selectedPuma) == 0f)
-				SetGameState("gameStateDied1");			
+			scoringSystem.PumaHasRun(selectedPuma, distance * ((distance != travelledDistance) ? 1f : travelledDistanceOverdrive));
+			if (scoringSystem.GetPumaHealth(selectedPuma) == 0f) {
+				// STARVATION !!
+				SetGameState("gameStateDied1");	
+				guiManager.SetGuiState("guiStatePumaDied1");
+				pumaAnimator.SetBool("PumaStarved", true);
+			}
 		}
 		
 		while (mainHeading >= 360f)
@@ -1279,254 +1313,62 @@ public class LevelManager : MonoBehaviour
 		float pumaBehindZ = pumaZ + (Mathf.Cos(pumaHeading*Mathf.PI/180) * offsetDistance * -1f);
 		pumaRotX = GetAngleFromOffset(0, GetTerrainHeight(pumaAheadX, pumaAheadZ), offsetDistance * 2f, GetTerrainHeight(pumaBehindX, pumaBehindZ)) - 90f;
 			
-		// update puma obj
+		// get the y pos of puma based on terrain
 		pumaY = GetTerrainHeight(pumaX, pumaZ);
+
+		// write out the position and rotation of puma obj
 		
-
-
-	if (carCollisionFlag == false) {
-
-
-		pumaObj.transform.position = new Vector3(pumaX, pumaY, pumaZ);			
-		pumaObj.transform.rotation = Quaternion.Euler(pumaRotX, (pumaHeading - 180f), 0);
-
+		if (carCollisionState == "None" && starvationState == "None") {
+			// normal case: update pumaObj every frame
+			pumaObj.transform.position = new Vector3(pumaX, pumaY, pumaZ);			
+			pumaObj.transform.rotation = Quaternion.Euler(pumaRotX, (pumaHeading - 180f), 0);
 	
-		//GameObject pumaRagdoll = GameObject.Find("Puma-ragdoll");	
-		//Vector3 ragdollPos = new Vector3(pumaObj.transform.position.x, pumaObj.transform.position.y + 3f, pumaObj.transform.position.z);
-		//pumaRagdoll.transform.position = ragdollPos;
-	
-
-	}
-	else {
-	
-		pumaX = pumaObj.transform.position.x;
-		pumaY = pumaObj.transform.position.y;
-		pumaZ = pumaObj.transform.position.z;
-	
-	
-		if (gameState == "gameStateStalking" || gameState == "gameStateChasing") {
-			SetGameState("gameStateDied1");
-			pumaAnimator.SetBool("CarCollision", true);
+			/*
+			private Vector3 moveDirection = Vector3.zero;
+			public float jumpSpeed = 8.0F;
+			public float gravity = 20.0F;
+			private Vector3 moveDirection = Vector3.zero;
+			void Update() {
+				CharacterController controller = GetComponent<CharacterController>();
+				if (controller.isGrounded) {
+					moveDirection = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
+					moveDirection = transform.TransformDirection(moveDirection);
+					moveDirection *= speed;
+					if (Input.GetButton("Jump"))
+						moveDirection.y = jumpSpeed;
+					
+				}
+				moveDirection.y -= gravity * Time.deltaTime;
+				controller.Move(moveDirection * Time.deltaTime);
+			} */		
 		}
-		
-		float forceFactor = pumaObj.GetComponent<PumaController>().forceFactor;
-	
-		pumaObj.rigidbody.AddForce(0, 0, forceFactor * Input.GetAxis("Vertical"));
-		pumaObj.rigidbody.AddForce(forceFactor * Input.GetAxis("Horizontal"), 0, 0);
-	
-		
-		//Debug.Log("rotX = " + pumaObj.transform.rotation.x + "   rotY = " + pumaObj.transform.rotation.y + "   rotZ = " + pumaObj.transform.rotation.z);
+		else if (carCollisionState == "InProgress") {
+			// physics takes over
+			pumaX = pumaObj.transform.position.x;
+			pumaY = pumaObj.transform.position.y;
+			pumaZ = pumaObj.transform.position.z;
+			
+			// adjust position of puma within box collider based on which side is down
+			bool flippedFlag = (Mathf.Abs(pumaObj.transform.rotation.x) + Mathf.Abs(pumaObj.transform.rotation.z) > 1f) ? true : false;	
+			pumaObjCollider.center = new Vector3(pumaObjCollider.center.x, flippedFlag ? 0.14f : -0.04f, pumaObjCollider.center.z);
+			if (pumaObj.transform.position.y < GetTerrainHeight(pumaObj.transform.position.x, pumaObj.transform.position.z)) {
+				// prevent falling through terrain due to box collider adjustment
+				pumaObj.transform.position = new Vector3(pumaObj.transform.position.x, GetTerrainHeight(pumaObj.transform.position.x, pumaObj.transform.position.z), pumaObj.transform.position.z);
+			}
 
-
-		bool flippedFlag = (Mathf.Abs(pumaObj.transform.rotation.x) + Mathf.Abs(pumaObj.transform.rotation.z) > 1f) ? true : false;
-		
-		float colliderX = pumaObj.GetComponent<BoxCollider>().center.x;
-		float colliderZ = pumaObj.GetComponent<BoxCollider>().center.z;
-
-		
-
-		pumaObj.GetComponent<BoxCollider>().center = new Vector3(colliderX, flippedFlag ? 0.14f : -0.04f, colliderZ);
-		// prevent falling through terrain due to adjustment for flipped
-		if (pumaObj.transform.position.y < GetTerrainHeight(pumaObj.transform.position.x, pumaObj.transform.position.z))
-			pumaObj.transform.position = new Vector3(pumaObj.transform.position.x, GetTerrainHeight(pumaObj.transform.position.x, pumaObj.transform.position.z), pumaObj.transform.position.z);
-
-	}
-
-
-
-
-	
-	
-	
-	
-	
-	
-	
-		//pumaObj.rigidbody.AddForce (0, 0, -10f);
-
-		
-//		float rotX = 0f; //pumaObj.transform.rotation.x;
-//		float rotY = pumaObj.transform.rotation.y;
-//		float rotZ = pumaObj.transform.rotation.z;
-//		float rotW = pumaObj.transform.rotation.z;
-		
-		//Debug.Log("Puma rotation is " + pumaObj.transform.rotation + "   puma rotX is " + rotX);
-		
-//		Quaternion newRotation = new Quaternion(rotX, rotY, rotZ, rotW);
-
-//		pumaObj.transform.rotation = newRotation;
-
-
-
-
-
-
-
-/*
-	if (carCollisionFlag == false) {
-
-
-		float speed = 60f;
-		float jumpSpeed = 8f;
-		float gravity = 20f;
-
-		if (controller == null)
-			controller = pumaObj.GetComponent<CharacterController>();
-
-		moveDirection = transform.forward * Input.GetAxis("Vertical") * speed;
-		
-		if (controller.isGrounded) {
-			vSpeed = 0; // a grounded character has zero vert speed unless...
-			if (Input.GetButton ("Jump")) { // unless Jump is pressed!
-				vSpeed = jumpSpeed; 
+			/* enable manual positioning post-collision */ {
+				//float forceFactor = pumaObj.GetComponent<PumaController>().forceFactor;
+				//pumaObj.rigidbody.AddForce(0, 0, forceFactor * Input.GetAxis("Vertical"));
+				//pumaObj.rigidbody.AddForce(forceFactor * Input.GetAxis("Horizontal"), 0, 0);
 			}
 		}
-		
-		// Apply gravity
-		vSpeed -= gravity * Time.deltaTime;
-		moveDirection.y = vSpeed; // include vertical speed
-		
-		// Move the controller
-		controller.Move(moveDirection * Time.deltaTime);
+		else if (carCollisionState == "Concluded" || starvationState == "Concluded") {
+			// do nothing - allows movement of virtual puma but leaves puma obj stationary
+		}	
+		else {
+			Debug.Log("ERROR: levelManager - got bad collision or starvation state");
+		}	
 
-
-}
-
-*/
-
-
-
-
-
-
-
-
-
-
-
-		
-		
-/*		
-		float gravity = 20.0F;
-		float jumpSpeed = 8.0F;
-		float speed = 6.0F;
-		Vector3 moveDirection = Vector3.zero;
-		CharacterController controller = pumaObj.GetComponent<CharacterController>();
-		
-		
-        if (controller.isGrounded) {
-            moveDirection = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
-            moveDirection = transform.TransformDirection(moveDirection);
-            moveDirection *= speed;
-            if (Input.GetButton("Jump"))
-                moveDirection.y = jumpSpeed;
-            
-        }
-        moveDirection.y -= gravity * Time.deltaTime;
-        controller.Move(moveDirection * Time.deltaTime);
-*/		
-		
-		
-		
-		
-
-/*
-
-		float speed = 30.0F;
-		float rotateSpeed = 3.0F;
-        CharacterController controller = pumaObj.GetComponent<CharacterController>();
-        pumaObj.transform.Rotate(0, Input.GetAxis("Horizontal") * rotateSpeed, 0);
-        Vector3 forward = transform.TransformDirection(Vector3.forward);
-        float curSpeed = speed * Input.GetAxis("Vertical");
-        controller.SimpleMove(forward * curSpeed);
- */
-
-
-
-
-		
-		
-		
-		
-		
-
-/*
-using UnityEngine;
-using System.Collections;
-
-public class ExampleClass : MonoBehaviour {
-    public float speed = 6.0F;
-    public float jumpSpeed = 8.0F;
-    public float gravity = 20.0F;
-    private Vector3 moveDirection = Vector3.zero;
-    void Update() {
-        CharacterController controller = GetComponent<CharacterController>();
-        if (controller.isGrounded) {
-            moveDirection = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
-            moveDirection = transform.TransformDirection(moveDirection);
-            moveDirection *= speed;
-            if (Input.GetButton("Jump"))
-                moveDirection.y = jumpSpeed;
-            
-        }
-        moveDirection.y -= gravity * Time.deltaTime;
-        controller.Move(moveDirection * Time.deltaTime);
-    }
-}
-
-
-
-[RequireComponent(typeof(CharacterController))]
-public class ExampleClass : MonoBehaviour {
-    public float speed = 3.0F;
-    public float rotateSpeed = 3.0F;
-    void Update() {
-        CharacterController controller = GetComponent<CharacterController>();
-        transform.Rotate(0, Input.GetAxis("Horizontal") * rotateSpeed, 0);
-        Vector3 forward = transform.TransformDirection(Vector3.forward);
-        float curSpeed = speed * Input.GetAxis("Vertical");
-        controller.SimpleMove(forward * curSpeed);
-    }
-}
-*/
-
-
-
-/*
-		public float speed = 6.0F;
-		public float jumpSpeed = 8.0F;
-		public float gravity = 20.0F;
-		private Vector3 moveDirection = Vector3.zero;
-		void Update() {
-			CharacterController controller = GetComponent<CharacterController>();
-			if (controller.isGrounded) {
-				moveDirection = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
-				moveDirection = transform.TransformDirection(moveDirection);
-				moveDirection *= speed;
-				if (Input.GetButton("Jump"))
-					moveDirection.y = jumpSpeed;
-				
-			}
-			moveDirection.y -= gravity * Time.deltaTime;
-			controller.Move(moveDirection * Time.deltaTime);
-		}
-*/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-		
 		//================
 		// Update Camera
 		//================
@@ -1595,6 +1437,118 @@ public class ExampleClass : MonoBehaviour {
 
 	//===================================
 	//===================================
+	//		CAR COLLISIONS
+	//===================================
+	//===================================
+	
+	public void BeginCarCollision()
+	{
+		carCollisionState = "InProgress";
+		SetGameState("gameStateDied1");
+		guiManager.SetGuiState("guiStatePumaDied1");
+		pumaAnimator.SetBool("CarCollision", true);
+		scoringSystem.PumaHasDied(selectedPuma);
+	
+		// disable bridge colliders --- TEMP -- CURRENTLY INEFFICIENT	
+		BoxCollider[] boxColliders;
+
+		if (GameObject.Find("L3Bridge1") != null) {
+			boxColliders = GameObject.Find("L3Bridge1").GetComponents<BoxCollider>();
+			boxColliders[0].enabled = false;
+			boxColliders[1].enabled = false;
+			boxColliders = GameObject.Find("L3Bridge2").GetComponents<BoxCollider>();
+			boxColliders[0].enabled = false;
+			boxColliders[1].enabled = false;
+		}
+
+		if (GameObject.Find("L4Bridge1") != null) {
+			boxColliders = GameObject.Find("L4Bridge1").GetComponents<BoxCollider>();
+			boxColliders[0].enabled = false;
+			boxColliders[1].enabled = false;
+			boxColliders = GameObject.Find("L4Bridge2").GetComponents<BoxCollider>();
+			boxColliders[0].enabled = false;
+			boxColliders[1].enabled = false;
+		}
+
+		if (GameObject.Find("L5Bridge1") != null) {
+			boxColliders = GameObject.Find("L5Bridge1").GetComponents<BoxCollider>();
+			boxColliders[0].enabled = false;
+			boxColliders[1].enabled = false;
+			boxColliders = GameObject.Find("L5Bridge2").GetComponents<BoxCollider>();
+			boxColliders[0].enabled = false;
+			boxColliders[1].enabled = false;
+		}
+
+		// NEED TO TURN OFF BOX COLLIDERS IN INSTANTIATED TERRAINS TOO  !!!!!
+	}
+
+	public bool CheckCarCollision()
+	{	
+		return (carCollisionState != "None");
+	}
+
+	public void EndCarCollision()
+	{	
+		carCollisionState = "Concluded";
+
+		guiFlybyOverdriveRampFlag = true;
+		guiFlybyOverdriveRampStartVal = guiFlybyOverdrive;
+		guiFlybyOverdriveRampEndVal = 2f;
+		guiFlybyOverdriveRampStartTime = Time.time;
+		guiFlybyOverdriveRampEndTime = Time.time + 2f;
+		
+		UpdateGuiStatePumaHeading(true); // point puma away from road
+
+		// re-enable bridge colliders --- TEMP -- CURRENTLY INEFFICIENT	
+		BoxCollider[] boxColliders;
+
+		if (GameObject.Find("L3Bridge1") != null) {
+			boxColliders = GameObject.Find("L3Bridge1").GetComponents<BoxCollider>();
+			boxColliders[0].enabled = true;
+			boxColliders[1].enabled = true;
+			boxColliders = GameObject.Find("L3Bridge2").GetComponents<BoxCollider>();
+			boxColliders[0].enabled = true;
+			boxColliders[1].enabled = true;
+		}
+
+		if (GameObject.Find("L4Bridge1") != null) {
+			boxColliders = GameObject.Find("L4Bridge1").GetComponents<BoxCollider>();
+			boxColliders[0].enabled = true;
+			boxColliders[1].enabled = true;
+			boxColliders = GameObject.Find("L4Bridge2").GetComponents<BoxCollider>();
+			boxColliders[0].enabled = true;
+			boxColliders[1].enabled = true;
+		}
+
+		if (GameObject.Find("L5Bridge1") != null) {
+			boxColliders = GameObject.Find("L5Bridge1").GetComponents<BoxCollider>();
+			boxColliders[0].enabled = true;
+			boxColliders[1].enabled = true;
+			boxColliders = GameObject.Find("L5Bridge2").GetComponents<BoxCollider>();
+			boxColliders[0].enabled = true;
+			boxColliders[1].enabled = true;
+		}
+
+		// NEED TO TURN ON BOX COLLIDERS IN INSTANTIATED TERRAINS TOO  !!!!!
+	}
+
+
+	public void EndStarvation()
+	{	
+		starvationState = "Concluded";
+
+		guiFlybyOverdriveRampFlag = true;
+		guiFlybyOverdriveRampStartVal = guiFlybyOverdrive;
+		guiFlybyOverdriveRampEndVal = 2f;
+		guiFlybyOverdriveRampStartTime = Time.time;
+		guiFlybyOverdriveRampEndTime = Time.time + 2f;
+		
+		// NEED TO TURN ON BOX COLLIDERS IN INSTANTIATED TERRAINS TOO  !!!!!
+	}
+
+
+	//===================================
+	//===================================
 	//		PUMA HANDLING
 	//===================================
 	//===================================
@@ -1614,8 +1568,8 @@ public class ExampleClass : MonoBehaviour {
 	{
 		pumaCollisionFlag = false;
 	}
-	
-	private void UpdateGuiStatePumaHeading()
+		
+	private void UpdateGuiStatePumaHeading(bool forceMaximumAvoidance = false)
 	{
 		// random component of heading change
 		if (Time.time > nextFlybyHeadingUpdateTime) {
@@ -1647,10 +1601,17 @@ public class ExampleClass : MonoBehaviour {
 			avoidanceRotation = (avoidanceAngle - mainHeading < 180f) ? (avoidanceAngle - mainHeading) : (((mainHeading + 360f) - avoidanceAngle) * -1f);
 		else
 			avoidanceRotation = (mainHeading - avoidanceAngle < 180f) ? ((mainHeading - avoidanceAngle) * -1f) : ((avoidanceAngle + 360f) - mainHeading);
-		
-		// apply heading change
-		mainHeading += Time.deltaTime * avoidanceRotation * avoidanceStrength * 0.3f;			
-		mainHeading += randomHeadingOffset * (1f - avoidanceStrength);		
+
+		if (forceMaximumAvoidance == true) {
+			// shortcut for case of starting up after road kill - point away from road
+			cameraController.SetCurrentRotOffsetY(cameraController.GetCurrentRotOffsetY() - avoidanceRotation); 
+			mainHeading = avoidanceAngle;
+		}
+		else {
+			// apply gradual heading change
+			mainHeading += Time.deltaTime * avoidanceRotation * avoidanceStrength * 0.3f;			
+			mainHeading += randomHeadingOffset * (1f - avoidanceStrength);	
+		}
 	}
 
 	//===================================
@@ -2020,6 +1981,7 @@ public class ExampleClass : MonoBehaviour {
 		pumaAnimator.SetBool("Chasing", false);
 		pumaAnimator.SetBool("DeerKill", false);
 		pumaAnimator.SetBool("CarCollision", false);
+		pumaAnimator.SetBool("PumaStarved", false);
 	}			
 	
 

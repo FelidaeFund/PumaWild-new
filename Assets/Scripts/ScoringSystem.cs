@@ -209,6 +209,22 @@ public class ScoringSystem : MonoBehaviour
 	}
 	
 	//------------------------------------------
+	// PumaHasDied()
+	// 
+	// Called when puma dies from
+	// collision with vehicle
+	//------------------------------------------
+
+	public void PumaHasDied(int selectedPuma)
+	{
+		lastKillMeatEaten = 0f;
+		lastKillCaloriesEaten = 0f;
+		lastKillDeerType = "None";
+		lastKillExpenses[selectedPuma] = 0f;
+		healthPoints[selectedPuma] = 0f;
+	}
+
+	//------------------------------------------
 	// ClearLastKillInfo()
 	// 
 	// Called when leaving the Feeding Display,
