@@ -101,24 +101,113 @@ public class LevelManager : MonoBehaviour
 	
 	public GameObject L3Bridge1;
 	public GameObject L3Bridge2;
-
 	public GameObject L4Bridge1;
 	public GameObject L4Bridge2;
-
 	public GameObject L5Bridge1;
 	public GameObject L5Bridge2;
 
 	private GameObject bridge1A;
 	private GameObject bridge2A;
-	
 	private GameObject bridge1B;
 	private GameObject bridge2B;
-	
 	private GameObject bridge1C;
 	private GameObject bridge2C;
-	
 	private GameObject bridge1D;
 	private GameObject bridge2D;
+	
+	// OVERPASSES
+	
+	public GameObject overpass1;
+	public GameObject overpass2;
+	public GameObject overpass3;
+	public GameObject overpass4;
+	public GameObject overpass5;
+	public GameObject overpass6;
+	public GameObject overpass7;
+	public GameObject overpass8;
+	public GameObject overpass9;
+	
+	private GameObject overpass1A;
+	private GameObject overpass2A;
+	private GameObject overpass3A;
+	private GameObject overpass4A;
+	private GameObject overpass5A;
+	private GameObject overpass6A;
+	private GameObject overpass7A;
+	private GameObject overpass8A;
+	private GameObject overpass9A;
+	
+	private GameObject overpass1B;
+	private GameObject overpass2B;
+	private GameObject overpass3B;
+	private GameObject overpass4B;
+	private GameObject overpass5B;
+	private GameObject overpass6B;
+	private GameObject overpass7B;
+	private GameObject overpass8B;
+	private GameObject overpass9B;
+	
+	private GameObject overpass1C;
+	private GameObject overpass2C;
+	private GameObject overpass3C;
+	private GameObject overpass4C;
+	private GameObject overpass5C;
+	private GameObject overpass6C;
+	private GameObject overpass7C;
+	private GameObject overpass8C;
+	private GameObject overpass9C;
+	
+	private GameObject overpass1D;
+	private GameObject overpass2D;
+	private GameObject overpass3D;
+	private GameObject overpass4D;
+	private GameObject overpass5D;
+	private GameObject overpass6D;
+	private GameObject overpass7D;
+	private GameObject overpass8D;
+	private GameObject overpass9D;
+	
+	// UNDERPASSES
+	
+	public GameObject underpass1;
+	public GameObject underpass2;
+	public GameObject underpass3;
+	public GameObject underpass4;
+	public GameObject underpass5;
+	public GameObject underpass6;
+	public GameObject underpass7;
+	
+	private GameObject underpass1A;
+	private GameObject underpass2A;
+	private GameObject underpass3A;
+	private GameObject underpass4A;
+	private GameObject underpass5A;
+	private GameObject underpass6A;
+	private GameObject underpass7A;
+	
+	private GameObject underpass1B;
+	private GameObject underpass2B;
+	private GameObject underpass3B;
+	private GameObject underpass4B;
+	private GameObject underpass5B;
+	private GameObject underpass6B;
+	private GameObject underpass7B;
+	
+	private GameObject underpass1C;
+	private GameObject underpass2C;
+	private GameObject underpass3C;
+	private GameObject underpass4C;
+	private GameObject underpass5C;
+	private GameObject underpass6C;
+	private GameObject underpass7C;
+	
+	private GameObject underpass1D;
+	private GameObject underpass2D;
+	private GameObject underpass3D;
+	private GameObject underpass4D;
+	private GameObject underpass5D;
+	private GameObject underpass6D;
+	private GameObject underpass7D;
 	
 	// PUMA
 
@@ -260,7 +349,7 @@ public class LevelManager : MonoBehaviour
 
 		Physics.gravity = new Vector3(0f, -20f, 0f);
 		
-		InitLevel(3);
+		InitLevel(4);
 	}
 	
 	public void InitLevel(int level)
@@ -494,6 +583,306 @@ public class LevelManager : MonoBehaviour
 		}
 
 		//================================
+		// Set Up Overpass Objects
+		//================================
+	
+		if (overpass1A != null) {
+
+			// delete objects and clear pointers
+
+			overpass1A = null;
+			overpass2A = null;
+			overpass3A = null;
+			overpass4A = null;
+			overpass5A = null;
+			overpass6A = null;
+			overpass7A = null;
+			overpass8A = null;
+			overpass9A = null;
+	
+			Destroy(overpass1B);
+			overpass1B = null;
+			Destroy(overpass2B);
+			overpass2B = null;
+			Destroy(overpass3B);
+			overpass3B = null;
+			Destroy(overpass4B);
+			overpass4B = null;
+			Destroy(overpass5B);
+			overpass5B = null;
+			Destroy(overpass6B);
+			overpass6B = null;
+			Destroy(overpass7B);
+			overpass7B = null;
+			Destroy(overpass8B);
+			overpass8B = null;
+			Destroy(overpass9B);
+			overpass9B = null;
+	
+			Destroy(overpass1C);
+			overpass1C = null;
+			Destroy(overpass2C);
+			overpass2C = null;
+			Destroy(overpass3C);
+			overpass3C = null;
+			Destroy(overpass4C);
+			overpass4C = null;
+			Destroy(overpass5C);
+			overpass5C = null;
+			Destroy(overpass6C);
+			overpass6C = null;
+			Destroy(overpass7C);
+			overpass7C = null;
+			Destroy(overpass8C);
+			overpass8C = null;
+			Destroy(overpass9C);
+			overpass9C = null;
+	
+			Destroy(overpass1D);
+			overpass1D = null;
+			Destroy(overpass2D);
+			overpass2D = null;
+			Destroy(overpass3D);
+			overpass3D = null;
+			Destroy(overpass4D);
+			overpass4D = null;
+			Destroy(overpass5D);
+			overpass5D = null;
+			Destroy(overpass6D);
+			overpass6D = null;
+			Destroy(overpass7D);
+			overpass7D = null;
+			Destroy(overpass8D);
+			overpass8D = null;
+			Destroy(overpass9D);
+			overpass9D = null;
+		}
+
+		switch (currentLevel) {
+		case 0:
+		case 1:
+		case 2:
+		case 3:
+			break;
+
+		case 4:
+			overpass1A = overpass1;
+			overpass2A = overpass2;
+			overpass3A = overpass3;
+			overpass4A = overpass4;
+			overpass5A = overpass5;
+			overpass6A = overpass6;
+			overpass7A = overpass7;
+			overpass8A = overpass8;
+			overpass9A = overpass9;
+			break;		
+		}
+
+		if (overpass1A != null) {
+			Vector3 terrainOffsetB = new Vector3(1000f, 0f, 0f);
+			Vector3 terrainOffsetC = new Vector3(0f, 0f, -1000f);
+			Vector3 terrainOffsetD = new Vector3(1000f, 0f, -1000f);
+
+			overpass1B = (GameObject)Instantiate(overpass1A, overpass1A.transform.position + terrainOffsetB, overpass1A.transform.rotation);
+			overpass1B.transform.parent = terrainB.transform;
+			overpass1C = (GameObject)Instantiate(overpass1A, overpass1A.transform.position + terrainOffsetC, overpass1A.transform.rotation);
+			overpass1C.transform.parent = terrainC.transform;
+			overpass1D = (GameObject)Instantiate(overpass1A, overpass1A.transform.position + terrainOffsetD, overpass1A.transform.rotation);
+			overpass1D.transform.parent = terrainD.transform;
+
+			overpass2B = (GameObject)Instantiate(overpass2A, overpass2A.transform.position + terrainOffsetB, overpass2A.transform.rotation);
+			overpass2B.transform.parent = terrainB.transform;
+			overpass2C = (GameObject)Instantiate(overpass2A, overpass2A.transform.position + terrainOffsetC, overpass2A.transform.rotation);
+			overpass2C.transform.parent = terrainC.transform;
+			overpass2D = (GameObject)Instantiate(overpass2A, overpass2A.transform.position + terrainOffsetD, overpass2A.transform.rotation);
+			overpass2D.transform.parent = terrainD.transform;
+
+			overpass3B = (GameObject)Instantiate(overpass3A, overpass3A.transform.position + terrainOffsetB, overpass3A.transform.rotation);
+			overpass3B.transform.parent = terrainB.transform;
+			overpass3C = (GameObject)Instantiate(overpass3A, overpass3A.transform.position + terrainOffsetC, overpass3A.transform.rotation);
+			overpass3C.transform.parent = terrainC.transform;
+			overpass3D = (GameObject)Instantiate(overpass3A, overpass3A.transform.position + terrainOffsetD, overpass3A.transform.rotation);
+			overpass3D.transform.parent = terrainD.transform;
+
+			overpass4B = (GameObject)Instantiate(overpass4A, overpass4A.transform.position + terrainOffsetB, overpass4A.transform.rotation);
+			overpass4B.transform.parent = terrainB.transform;
+			overpass4C = (GameObject)Instantiate(overpass4A, overpass4A.transform.position + terrainOffsetC, overpass4A.transform.rotation);
+			overpass4C.transform.parent = terrainC.transform;
+			overpass4D = (GameObject)Instantiate(overpass4A, overpass4A.transform.position + terrainOffsetD, overpass4A.transform.rotation);
+			overpass4D.transform.parent = terrainD.transform;
+
+			overpass5B = (GameObject)Instantiate(overpass5A, overpass5A.transform.position + terrainOffsetB, overpass5A.transform.rotation);
+			overpass5B.transform.parent = terrainB.transform;
+			overpass5C = (GameObject)Instantiate(overpass5A, overpass5A.transform.position + terrainOffsetC, overpass5A.transform.rotation);
+			overpass5C.transform.parent = terrainC.transform;
+			overpass5D = (GameObject)Instantiate(overpass5A, overpass5A.transform.position + terrainOffsetD, overpass5A.transform.rotation);
+			overpass5D.transform.parent = terrainD.transform;
+
+			overpass6B = (GameObject)Instantiate(overpass6A, overpass6A.transform.position + terrainOffsetB, overpass6A.transform.rotation);
+			overpass6B.transform.parent = terrainB.transform;
+			overpass6C = (GameObject)Instantiate(overpass6A, overpass6A.transform.position + terrainOffsetC, overpass6A.transform.rotation);
+			overpass6C.transform.parent = terrainC.transform;
+			overpass6D = (GameObject)Instantiate(overpass6A, overpass6A.transform.position + terrainOffsetD, overpass6A.transform.rotation);
+			overpass6D.transform.parent = terrainD.transform;
+
+			overpass7B = (GameObject)Instantiate(overpass7A, overpass7A.transform.position + terrainOffsetB, overpass7A.transform.rotation);
+			overpass7B.transform.parent = terrainB.transform;
+			overpass7C = (GameObject)Instantiate(overpass7A, overpass7A.transform.position + terrainOffsetC, overpass7A.transform.rotation);
+			overpass7C.transform.parent = terrainC.transform;
+			overpass7D = (GameObject)Instantiate(overpass7A, overpass7A.transform.position + terrainOffsetD, overpass7A.transform.rotation);
+			overpass7D.transform.parent = terrainD.transform;
+
+			overpass8B = (GameObject)Instantiate(overpass8A, overpass8A.transform.position + terrainOffsetB, overpass8A.transform.rotation);
+			overpass8B.transform.parent = terrainB.transform;
+			overpass8C = (GameObject)Instantiate(overpass8A, overpass8A.transform.position + terrainOffsetC, overpass8A.transform.rotation);
+			overpass8C.transform.parent = terrainC.transform;
+			overpass8D = (GameObject)Instantiate(overpass8A, overpass8A.transform.position + terrainOffsetD, overpass8A.transform.rotation);
+			overpass8D.transform.parent = terrainD.transform;
+
+			overpass9B = (GameObject)Instantiate(overpass9A, overpass9A.transform.position + terrainOffsetB, overpass9A.transform.rotation);
+			overpass9B.transform.parent = terrainB.transform;
+			overpass9C = (GameObject)Instantiate(overpass9A, overpass9A.transform.position + terrainOffsetC, overpass9A.transform.rotation);
+			overpass9C.transform.parent = terrainC.transform;
+			overpass9D = (GameObject)Instantiate(overpass9A, overpass9A.transform.position + terrainOffsetD, overpass9A.transform.rotation);
+			overpass9D.transform.parent = terrainD.transform;
+		}
+
+		//================================
+		// Set Up Underpass Objects
+		//================================
+	
+		if (underpass1A != null) {
+
+			// delete objects and clear pointers
+
+			underpass1A = null;
+			underpass2A = null;
+			underpass3A = null;
+			underpass4A = null;
+			underpass5A = null;
+			underpass6A = null;
+			underpass7A = null;
+	
+			Destroy(underpass1B);
+			underpass1B = null;
+			Destroy(underpass2B);
+			underpass2B = null;
+			Destroy(underpass3B);
+			underpass3B = null;
+			Destroy(underpass4B);
+			underpass4B = null;
+			Destroy(underpass5B);
+			underpass5B = null;
+			Destroy(underpass6B);
+			underpass6B = null;
+			Destroy(underpass7B);
+			underpass7B = null;
+	
+			Destroy(underpass1C);
+			underpass1C = null;
+			Destroy(underpass2C);
+			underpass2C = null;
+			Destroy(underpass3C);
+			underpass3C = null;
+			Destroy(underpass4C);
+			underpass4C = null;
+			Destroy(underpass5C);
+			underpass5C = null;
+			Destroy(underpass6C);
+			underpass6C = null;
+			Destroy(underpass7C);
+			underpass7C = null;
+	
+			Destroy(underpass1D);
+			underpass1D = null;
+			Destroy(underpass2D);
+			underpass2D = null;
+			Destroy(underpass3D);
+			underpass3D = null;
+			Destroy(underpass4D);
+			underpass4D = null;
+			Destroy(underpass5D);
+			underpass5D = null;
+			Destroy(underpass6D);
+			underpass6D = null;
+			Destroy(underpass7D);
+			underpass7D = null;
+		}
+
+		switch (currentLevel) {
+		case 0:
+		case 1:
+		case 2:
+		case 3:
+			break;
+
+		case 4:
+			underpass1A = underpass1;
+			underpass2A = underpass2;
+			underpass3A = underpass3;
+			underpass4A = underpass4;
+			underpass5A = underpass5;
+			underpass6A = underpass6;
+			underpass7A = underpass7;
+			break;		
+		}
+
+		if (underpass1A != null) {
+			Vector3 terrainOffsetB = new Vector3(1000f, 0f, 0f);
+			Vector3 terrainOffsetC = new Vector3(0f, 0f, -1000f);
+			Vector3 terrainOffsetD = new Vector3(1000f, 0f, -1000f);
+
+			underpass1B = (GameObject)Instantiate(underpass1A, underpass1A.transform.position + terrainOffsetB, underpass1A.transform.rotation);
+			underpass1B.transform.parent = terrainB.transform;
+			underpass1C = (GameObject)Instantiate(underpass1A, underpass1A.transform.position + terrainOffsetC, underpass1A.transform.rotation);
+			underpass1C.transform.parent = terrainC.transform;
+			underpass1D = (GameObject)Instantiate(underpass1A, underpass1A.transform.position + terrainOffsetD, underpass1A.transform.rotation);
+			underpass1D.transform.parent = terrainD.transform;
+
+			underpass2B = (GameObject)Instantiate(underpass2A, underpass2A.transform.position + terrainOffsetB, underpass2A.transform.rotation);
+			underpass2B.transform.parent = terrainB.transform;
+			underpass2C = (GameObject)Instantiate(underpass2A, underpass2A.transform.position + terrainOffsetC, underpass2A.transform.rotation);
+			underpass2C.transform.parent = terrainC.transform;
+			underpass2D = (GameObject)Instantiate(underpass2A, underpass2A.transform.position + terrainOffsetD, underpass2A.transform.rotation);
+			underpass2D.transform.parent = terrainD.transform;
+
+			underpass3B = (GameObject)Instantiate(underpass3A, underpass3A.transform.position + terrainOffsetB, underpass3A.transform.rotation);
+			underpass3B.transform.parent = terrainB.transform;
+			underpass3C = (GameObject)Instantiate(underpass3A, underpass3A.transform.position + terrainOffsetC, underpass3A.transform.rotation);
+			underpass3C.transform.parent = terrainC.transform;
+			underpass3D = (GameObject)Instantiate(underpass3A, underpass3A.transform.position + terrainOffsetD, underpass3A.transform.rotation);
+			underpass3D.transform.parent = terrainD.transform;
+
+			underpass4B = (GameObject)Instantiate(underpass4A, underpass4A.transform.position + terrainOffsetB, underpass4A.transform.rotation);
+			underpass4B.transform.parent = terrainB.transform;
+			underpass4C = (GameObject)Instantiate(underpass4A, underpass4A.transform.position + terrainOffsetC, underpass4A.transform.rotation);
+			underpass4C.transform.parent = terrainC.transform;
+			underpass4D = (GameObject)Instantiate(underpass4A, underpass4A.transform.position + terrainOffsetD, underpass4A.transform.rotation);
+			underpass4D.transform.parent = terrainD.transform;
+
+			underpass5B = (GameObject)Instantiate(underpass5A, underpass5A.transform.position + terrainOffsetB, underpass5A.transform.rotation);
+			underpass5B.transform.parent = terrainB.transform;
+			underpass5C = (GameObject)Instantiate(underpass5A, underpass5A.transform.position + terrainOffsetC, underpass5A.transform.rotation);
+			underpass5C.transform.parent = terrainC.transform;
+			underpass5D = (GameObject)Instantiate(underpass5A, underpass5A.transform.position + terrainOffsetD, underpass5A.transform.rotation);
+			underpass5D.transform.parent = terrainD.transform;
+
+			underpass6B = (GameObject)Instantiate(underpass6A, underpass6A.transform.position + terrainOffsetB, underpass6A.transform.rotation);
+			underpass6B.transform.parent = terrainB.transform;
+			underpass6C = (GameObject)Instantiate(underpass6A, underpass6A.transform.position + terrainOffsetC, underpass6A.transform.rotation);
+			underpass6C.transform.parent = terrainC.transform;
+			underpass6D = (GameObject)Instantiate(underpass6A, underpass6A.transform.position + terrainOffsetD, underpass6A.transform.rotation);
+			underpass6D.transform.parent = terrainD.transform;
+
+			underpass7B = (GameObject)Instantiate(underpass7A, underpass7A.transform.position + terrainOffsetB, underpass7A.transform.rotation);
+			underpass7B.transform.parent = terrainB.transform;
+			underpass7C = (GameObject)Instantiate(underpass7A, underpass7A.transform.position + terrainOffsetC, underpass7A.transform.rotation);
+			underpass7C.transform.parent = terrainC.transform;
+			underpass7D = (GameObject)Instantiate(underpass7A, underpass7A.transform.position + terrainOffsetD, underpass7A.transform.rotation);
+			underpass7D.transform.parent = terrainD.transform;
+		}
+
+		//================================
 		// Set Up Car Objects
 		//================================
 	
@@ -720,6 +1109,316 @@ public class LevelManager : MonoBehaviour
 			bridge2C.transform.parent = terrainC.transform;
 			bridge2D = (GameObject)Instantiate(bridge2A, terrainD.transform.position + bridge2Position, bridge2A.transform.rotation);
 			bridge2D.transform.parent = terrainD.transform;
+		}
+
+		//================================
+		// Set Up Overpass Objects
+		//================================
+	
+		if (overpass1A != null) {
+
+			// delete objects and clear pointers
+
+			overpass1A = null;
+			overpass2A = null;
+			overpass3A = null;
+			overpass4A = null;
+			overpass5A = null;
+			overpass6A = null;
+			overpass7A = null;
+			overpass8A = null;
+			overpass9A = null;
+	
+			Destroy(overpass1B);
+			overpass1B = null;
+			Destroy(overpass2B);
+			overpass2B = null;
+			Destroy(overpass3B);
+			overpass3B = null;
+			Destroy(overpass4B);
+			overpass4B = null;
+			Destroy(overpass5B);
+			overpass5B = null;
+			Destroy(overpass6B);
+			overpass6B = null;
+			Destroy(overpass7B);
+			overpass7B = null;
+			Destroy(overpass8B);
+			overpass8B = null;
+			Destroy(overpass9B);
+			overpass9B = null;
+	
+			Destroy(overpass1C);
+			overpass1C = null;
+			Destroy(overpass2C);
+			overpass2C = null;
+			Destroy(overpass3C);
+			overpass3C = null;
+			Destroy(overpass4C);
+			overpass4C = null;
+			Destroy(overpass5C);
+			overpass5C = null;
+			Destroy(overpass6C);
+			overpass6C = null;
+			Destroy(overpass7C);
+			overpass7C = null;
+			Destroy(overpass8C);
+			overpass8C = null;
+			Destroy(overpass9C);
+			overpass9C = null;
+	
+			Destroy(overpass1D);
+			overpass1D = null;
+			Destroy(overpass2D);
+			overpass2D = null;
+			Destroy(overpass3D);
+			overpass3D = null;
+			Destroy(overpass4D);
+			overpass4D = null;
+			Destroy(overpass5D);
+			overpass5D = null;
+			Destroy(overpass6D);
+			overpass6D = null;
+			Destroy(overpass7D);
+			overpass7D = null;
+			Destroy(overpass8D);
+			overpass8D = null;
+			Destroy(overpass9D);
+			overpass9D = null;
+		}
+
+		switch (currentLevel) {
+		case 0:
+		case 1:
+		case 2:
+		case 3:
+			break;
+
+		case 4:
+			overpass1A = overpass1;
+			overpass2A = overpass2;
+			overpass3A = overpass3;
+			overpass4A = overpass4;
+			overpass5A = overpass5;
+			overpass6A = overpass6;
+			overpass7A = overpass7;
+			overpass8A = overpass8;
+			overpass9A = overpass9;
+			break;		
+		}
+		if (overpass1A != null) {
+			Vector3 overpassPosition;
+
+			overpassPosition = overpass1A.transform.position - terrainA.transform.position;
+			overpass1B = (GameObject)Instantiate(overpass1A, terrainB.transform.position + overpassPosition, overpass1A.transform.rotation);
+			overpass1B.transform.parent = terrainB.transform;
+			overpass1C = (GameObject)Instantiate(overpass1A, terrainC.transform.position + overpassPosition, overpass1A.transform.rotation);
+			overpass1C.transform.parent = terrainC.transform;
+			overpass1D = (GameObject)Instantiate(overpass1A, terrainD.transform.position + overpassPosition, overpass1A.transform.rotation);
+			overpass1D.transform.parent = terrainD.transform;
+			
+			overpassPosition = overpass2A.transform.position - terrainA.transform.position;
+			overpass2B = (GameObject)Instantiate(overpass2A, terrainB.transform.position + overpassPosition, overpass2A.transform.rotation);
+			overpass2B.transform.parent = terrainB.transform;
+			overpass2C = (GameObject)Instantiate(overpass2A, terrainC.transform.position + overpassPosition, overpass2A.transform.rotation);
+			overpass2C.transform.parent = terrainC.transform;
+			overpass2D = (GameObject)Instantiate(overpass2A, terrainD.transform.position + overpassPosition, overpass2A.transform.rotation);
+			overpass2D.transform.parent = terrainD.transform;
+
+			overpassPosition = overpass3A.transform.position - terrainA.transform.position;
+			overpass3B = (GameObject)Instantiate(overpass3A, terrainB.transform.position + overpassPosition, overpass3A.transform.rotation);
+			overpass3B.transform.parent = terrainB.transform;
+			overpass3C = (GameObject)Instantiate(overpass3A, terrainC.transform.position + overpassPosition, overpass3A.transform.rotation);
+			overpass3C.transform.parent = terrainC.transform;
+			overpass3D = (GameObject)Instantiate(overpass3A, terrainD.transform.position + overpassPosition, overpass3A.transform.rotation);
+			overpass3D.transform.parent = terrainD.transform;
+
+			overpassPosition = overpass4A.transform.position - terrainA.transform.position;
+			overpass4B = (GameObject)Instantiate(overpass4A, terrainB.transform.position + overpassPosition, overpass4A.transform.rotation);
+			overpass4B.transform.parent = terrainB.transform;
+			overpass4C = (GameObject)Instantiate(overpass4A, terrainC.transform.position + overpassPosition, overpass4A.transform.rotation);
+			overpass4C.transform.parent = terrainC.transform;
+			overpass4D = (GameObject)Instantiate(overpass4A, terrainD.transform.position + overpassPosition, overpass4A.transform.rotation);
+			overpass4D.transform.parent = terrainD.transform;
+
+			overpassPosition = overpass5A.transform.position - terrainA.transform.position;
+			overpass5B = (GameObject)Instantiate(overpass5A, terrainB.transform.position + overpassPosition, overpass5A.transform.rotation);
+			overpass5B.transform.parent = terrainB.transform;
+			overpass5C = (GameObject)Instantiate(overpass5A, terrainC.transform.position + overpassPosition, overpass5A.transform.rotation);
+			overpass5C.transform.parent = terrainC.transform;
+			overpass5D = (GameObject)Instantiate(overpass5A, terrainD.transform.position + overpassPosition, overpass5A.transform.rotation);
+			overpass5D.transform.parent = terrainD.transform;
+
+			overpassPosition = overpass6A.transform.position - terrainA.transform.position;
+			overpass6B = (GameObject)Instantiate(overpass6A, terrainB.transform.position + overpassPosition, overpass6A.transform.rotation);
+			overpass6B.transform.parent = terrainB.transform;
+			overpass6C = (GameObject)Instantiate(overpass6A, terrainC.transform.position + overpassPosition, overpass6A.transform.rotation);
+			overpass6C.transform.parent = terrainC.transform;
+			overpass6D = (GameObject)Instantiate(overpass6A, terrainD.transform.position + overpassPosition, overpass6A.transform.rotation);
+			overpass6D.transform.parent = terrainD.transform;
+
+			overpassPosition = overpass7A.transform.position - terrainA.transform.position;
+			overpass7B = (GameObject)Instantiate(overpass7A, terrainB.transform.position + overpassPosition, overpass7A.transform.rotation);
+			overpass7B.transform.parent = terrainB.transform;
+			overpass7C = (GameObject)Instantiate(overpass7A, terrainC.transform.position + overpassPosition, overpass7A.transform.rotation);
+			overpass7C.transform.parent = terrainC.transform;
+			overpass7D = (GameObject)Instantiate(overpass7A, terrainD.transform.position + overpassPosition, overpass7A.transform.rotation);
+			overpass7D.transform.parent = terrainD.transform;
+
+			overpassPosition = overpass8A.transform.position - terrainA.transform.position;
+			overpass8B = (GameObject)Instantiate(overpass8A, terrainB.transform.position + overpassPosition, overpass8A.transform.rotation);
+			overpass8B.transform.parent = terrainB.transform;
+			overpass8C = (GameObject)Instantiate(overpass8A, terrainC.transform.position + overpassPosition, overpass8A.transform.rotation);
+			overpass8C.transform.parent = terrainC.transform;
+			overpass8D = (GameObject)Instantiate(overpass8A, terrainD.transform.position + overpassPosition, overpass8A.transform.rotation);
+			overpass8D.transform.parent = terrainD.transform;
+
+			overpassPosition = overpass9A.transform.position - terrainA.transform.position;
+			overpass9B = (GameObject)Instantiate(overpass9A, terrainB.transform.position + overpassPosition, overpass9A.transform.rotation);
+			overpass9B.transform.parent = terrainB.transform;
+			overpass9C = (GameObject)Instantiate(overpass9A, terrainC.transform.position + overpassPosition, overpass9A.transform.rotation);
+			overpass9C.transform.parent = terrainC.transform;
+			overpass9D = (GameObject)Instantiate(overpass9A, terrainD.transform.position + overpassPosition, overpass9A.transform.rotation);
+			overpass9D.transform.parent = terrainD.transform;
+		}
+
+		//================================
+		// Set Up Underpass Objects
+		//================================
+	
+		if (underpass1A != null) {
+
+			// delete objects and clear pointers
+
+			underpass1A = null;
+			underpass2A = null;
+			underpass3A = null;
+			underpass4A = null;
+			underpass5A = null;
+			underpass6A = null;
+			underpass7A = null;
+	
+			Destroy(underpass1B);
+			underpass1B = null;
+			Destroy(underpass2B);
+			underpass2B = null;
+			Destroy(underpass3B);
+			underpass3B = null;
+			Destroy(underpass4B);
+			underpass4B = null;
+			Destroy(underpass5B);
+			underpass5B = null;
+			Destroy(underpass6B);
+			underpass6B = null;
+			Destroy(underpass7B);
+			underpass7B = null;
+	
+			Destroy(underpass1C);
+			underpass1C = null;
+			Destroy(underpass2C);
+			underpass2C = null;
+			Destroy(underpass3C);
+			underpass3C = null;
+			Destroy(underpass4C);
+			underpass4C = null;
+			Destroy(underpass5C);
+			underpass5C = null;
+			Destroy(underpass6C);
+			underpass6C = null;
+			Destroy(underpass7C);
+			underpass7C = null;
+	
+			Destroy(underpass1D);
+			underpass1D = null;
+			Destroy(underpass2D);
+			underpass2D = null;
+			Destroy(underpass3D);
+			underpass3D = null;
+			Destroy(underpass4D);
+			underpass4D = null;
+			Destroy(underpass5D);
+			underpass5D = null;
+			Destroy(underpass6D);
+			underpass6D = null;
+			Destroy(underpass7D);
+			underpass7D = null;
+		}
+
+		switch (currentLevel) {
+		case 0:
+		case 1:
+		case 2:
+		case 3:
+			break;
+
+		case 4:
+			underpass1A = underpass1;
+			underpass2A = underpass2;
+			underpass3A = underpass3;
+			underpass4A = underpass4;
+			underpass5A = underpass5;
+			underpass6A = underpass6;
+			underpass7A = underpass7;
+			break;		
+		}
+		if (underpass1A != null) {
+			Vector3 underpassPosition;
+
+			underpassPosition = underpass1A.transform.position - terrainA.transform.position;
+			underpass1B = (GameObject)Instantiate(underpass1A, terrainB.transform.position + underpassPosition, underpass1A.transform.rotation);
+			underpass1B.transform.parent = terrainB.transform;
+			underpass1C = (GameObject)Instantiate(underpass1A, terrainC.transform.position + underpassPosition, underpass1A.transform.rotation);
+			underpass1C.transform.parent = terrainC.transform;
+			underpass1D = (GameObject)Instantiate(underpass1A, terrainD.transform.position + underpassPosition, underpass1A.transform.rotation);
+			underpass1D.transform.parent = terrainD.transform;
+			
+			underpassPosition = underpass2A.transform.position - terrainA.transform.position;
+			underpass2B = (GameObject)Instantiate(underpass2A, terrainB.transform.position + underpassPosition, underpass2A.transform.rotation);
+			underpass2B.transform.parent = terrainB.transform;
+			underpass2C = (GameObject)Instantiate(underpass2A, terrainC.transform.position + underpassPosition, underpass2A.transform.rotation);
+			underpass2C.transform.parent = terrainC.transform;
+			underpass2D = (GameObject)Instantiate(underpass2A, terrainD.transform.position + underpassPosition, underpass2A.transform.rotation);
+			underpass2D.transform.parent = terrainD.transform;
+
+			underpassPosition = underpass3A.transform.position - terrainA.transform.position;
+			underpass3B = (GameObject)Instantiate(underpass3A, terrainB.transform.position + underpassPosition, underpass3A.transform.rotation);
+			underpass3B.transform.parent = terrainB.transform;
+			underpass3C = (GameObject)Instantiate(underpass3A, terrainC.transform.position + underpassPosition, underpass3A.transform.rotation);
+			underpass3C.transform.parent = terrainC.transform;
+			underpass3D = (GameObject)Instantiate(underpass3A, terrainD.transform.position + underpassPosition, underpass3A.transform.rotation);
+			underpass3D.transform.parent = terrainD.transform;
+
+			underpassPosition = underpass4A.transform.position - terrainA.transform.position;
+			underpass4B = (GameObject)Instantiate(underpass4A, terrainB.transform.position + underpassPosition, underpass4A.transform.rotation);
+			underpass4B.transform.parent = terrainB.transform;
+			underpass4C = (GameObject)Instantiate(underpass4A, terrainC.transform.position + underpassPosition, underpass4A.transform.rotation);
+			underpass4C.transform.parent = terrainC.transform;
+			underpass4D = (GameObject)Instantiate(underpass4A, terrainD.transform.position + underpassPosition, underpass4A.transform.rotation);
+			underpass4D.transform.parent = terrainD.transform;
+
+			underpassPosition = underpass5A.transform.position - terrainA.transform.position;
+			underpass5B = (GameObject)Instantiate(underpass5A, terrainB.transform.position + underpassPosition, underpass5A.transform.rotation);
+			underpass5B.transform.parent = terrainB.transform;
+			underpass5C = (GameObject)Instantiate(underpass5A, terrainC.transform.position + underpassPosition, underpass5A.transform.rotation);
+			underpass5C.transform.parent = terrainC.transform;
+			underpass5D = (GameObject)Instantiate(underpass5A, terrainD.transform.position + underpassPosition, underpass5A.transform.rotation);
+			underpass5D.transform.parent = terrainD.transform;
+
+			underpassPosition = underpass6A.transform.position - terrainA.transform.position;
+			underpass6B = (GameObject)Instantiate(underpass6A, terrainB.transform.position + underpassPosition, underpass6A.transform.rotation);
+			underpass6B.transform.parent = terrainB.transform;
+			underpass6C = (GameObject)Instantiate(underpass6A, terrainC.transform.position + underpassPosition, underpass6A.transform.rotation);
+			underpass6C.transform.parent = terrainC.transform;
+			underpass6D = (GameObject)Instantiate(underpass6A, terrainD.transform.position + underpassPosition, underpass6A.transform.rotation);
+			underpass6D.transform.parent = terrainD.transform;
+
+			underpassPosition = underpass7A.transform.position - terrainA.transform.position;
+			underpass7B = (GameObject)Instantiate(underpass7A, terrainB.transform.position + underpassPosition, underpass7A.transform.rotation);
+			underpass7B.transform.parent = terrainB.transform;
+			underpass7C = (GameObject)Instantiate(underpass7A, terrainC.transform.position + underpassPosition, underpass7A.transform.rotation);
+			underpass7C.transform.parent = terrainC.transform;
+			underpass7D = (GameObject)Instantiate(underpass7A, terrainD.transform.position + underpassPosition, underpass7A.transform.rotation);
+			underpass7D.transform.parent = terrainD.transform;
 		}
 
 		//================================
