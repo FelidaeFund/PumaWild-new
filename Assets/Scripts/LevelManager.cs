@@ -368,7 +368,7 @@ public class LevelManager : MonoBehaviour
 		stateStartTime = Time.time;
 		mainHeading = 30f; //Random.Range(0f, 360f);
 
-		pumaX = -700f; //0f;
+		pumaX = 300f; //-700f; //0f;
 		pumaY = 36f;
 		pumaZ = 750f; //0f;			
 		pumaObj.transform.position = new Vector3(pumaX, pumaY, pumaZ);		
