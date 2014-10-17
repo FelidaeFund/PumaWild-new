@@ -42,6 +42,7 @@ public class TrafficManager : MonoBehaviour {
 	//===================================
 	//===================================
 
+	private bool disableCarsFlag = false;
 	private bool moduleInitialized = false;
 	private int preInitLevelSelection = 0;
 	
@@ -334,6 +335,9 @@ public class TrafficManager : MonoBehaviour {
 
 	public void InitLevel(int levelNum)
 	{
+		if (disableCarsFlag == true)
+			return;
+	
 		if (moduleInitialized == false) {
 			preInitLevelSelection = levelNum;
 			return;
@@ -425,6 +429,9 @@ public class TrafficManager : MonoBehaviour {
 
 	void Update ()
 	{
+		if (disableCarsFlag == true)
+			return;
+	
 		for(int i=0; i<vehicleList.Count; i++) {
 			VehicleInfo vehicleInfo = vehicleList[i];
 			
@@ -461,6 +468,24 @@ public class TrafficManager : MonoBehaviour {
 			// calculate new vehicle position
 			Vector3 vehiclePos = vehicleInfo.terrainPos + Vector3.Lerp(vehicleInfo.segmentStartPos, vehicleInfo.segmentEndPos, vehicleInfo.percentTravelled);
 
+
+
+
+			
+			/// TEMP
+			
+			if (levelManager.currentLevel == 4)
+				vehiclePos += new Vector3(0, 0, 0);
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
 			// if we're not over any terrain, adjust accordingly
 			if (vehiclePos.x < levelManager.GetTerrainMinX()) {
 				vehiclePos.x += 2000f;

@@ -37,8 +37,10 @@ public class PumaController : MonoBehaviour
 	
 	// COLLISION DETECTION
 		
+	private GameObject collisionObject;
 	private bool collisionBridgeSideLeftInProgress = false;
 	private bool collisionBridgeSideRightInProgress = false;
+	private bool collisionOverpassInProgress = false;
 	private float collisionCarForceTimeRemaining = 0;
 	private float collisionCarForceOffsetX;
 	private float collisionCarForceOffsetZ;
@@ -93,21 +95,27 @@ public class PumaController : MonoBehaviour
 		// VEHICLE
 
 		if (collisionInfo.gameObject.tag == "Vehicle") {
-			Debug.Log("=====================================");
-			Debug.Log("Detected collision between " + gameObject.name + " and " + collisionInfo.collider.name);
-			Debug.Log("Collision normal is " + collisionInfo.contacts[0].normal);
-			Debug.Log("Collision relative velocity is " + collisionInfo.relativeVelocity);
-			Debug.Log("Time.time: " + Time.time);
+
+			if (collisionOverpassInProgress == false) {
+
+				Debug.Log("=====================================");
+				Debug.Log("=====================================");
+				Debug.Log("             VEHICLE HIT:  " + gameObject.name + " - " + collisionInfo.collider.name);
+				Debug.Log("=====================================");
+				Debug.Log("=====================================");
+				//Debug.Log("Collision normal is " + collisionInfo.contacts[0].normal);
+				//Debug.Log("Collision relative velocity is " + collisionInfo.relativeVelocity);
+				//Debug.Log("Time.time: " + Time.time);
 					
-			levelManager.BeginCarCollision();
-			
-			// create force to push puma off road (to right)
-			float collisionScale = 75000f;
-			float heading = collisionInfo.gameObject.GetComponent<VehicleController>().heading;
-			heading += Random.Range(20f, 40f);
-			collisionCarForceOffsetX = Mathf.Sin(heading*Mathf.PI/180) * collisionScale;
-			collisionCarForceOffsetZ = Mathf.Cos(heading*Mathf.PI/180) * collisionScale;
-			collisionCarForceTimeRemaining = 0.30f;
+				levelManager.BeginCarCollision();
+				// create force to push puma off road (to right)
+				float collisionScale = 75000f;
+				float heading = collisionInfo.gameObject.GetComponent<VehicleController>().heading;
+				heading += Random.Range(20f, 40f);
+				collisionCarForceOffsetX = Mathf.Sin(heading*Mathf.PI/180) * collisionScale;
+				collisionCarForceOffsetZ = Mathf.Cos(heading*Mathf.PI/180) * collisionScale;
+				collisionCarForceTimeRemaining = 0.30f;
+			}
 		}
 		
 		// BRIDGE
@@ -185,7 +193,16 @@ public class PumaController : MonoBehaviour
 				barrierHeading += 360f;
 			
 			levelManager.PumaBeginCollision(headingOffset, barrierHeading);
+		}
+		
+		// OVERPASS
 
+		else if (collisionInfo.gameObject.tag == "Overpass") {
+			collisionOverpassInProgress = true;
+			collisionObject = collisionInfo.gameObject;
+			Debug.Log("=====================================");
+			Debug.Log("COLLISION:  " + gameObject.name + " - " + collisionInfo.collider.name);
+			return;
 		}
 	}
 
@@ -204,15 +221,23 @@ public class PumaController : MonoBehaviour
 			collisionBridgeSideLeftInProgress = false;
 			return;
 		}
-		if (collisionInfo.gameObject.tag == "BridgeSideRight") {
+		
+		else if (collisionInfo.gameObject.tag == "BridgeSideRight") {
 			collisionBridgeSideRightInProgress = false;
 			return;
 		}
 
-		if (collisionInfo.gameObject.tag == "Bridge") {
+		else if (collisionInfo.gameObject.tag == "Bridge") {
 			//Debug.Log("=====================================");
-			//Debug.Log(gameObject.name + " and " + collisionInfo.collider.name + " are no longer colliding");
+			Debug.Log("Collision End:  " + gameObject.name + " - " + collisionInfo.collider.name);
 			levelManager.PumaEndCollision();
+		}
+
+		else if (collisionInfo.gameObject.tag == "Overpass") {
+			collisionOverpassInProgress = false;
+			Debug.Log("=====================================");
+			Debug.Log("Collision End:  " + gameObject.name + " - " + collisionInfo.collider.name);
+			return;
 		}
 	}
 	
@@ -222,7 +247,20 @@ public class PumaController : MonoBehaviour
 	//	PUBLIC FUNCTIONS
 	//===========================================
 	//===========================================
-/*
+
+	public float GetCollisionOverpassSurfaceHeight()
+	{
+		return collisionObject.transform.position.y + 0.48f;
+	}
+	
+	public bool CheckCollisionOverpassInProgress()
+	{
+		return (collisionOverpassInProgress == true);
+	}
+	
+	
+	
+	/*
 	//=======================
 	// Update Puma Position
 	//=======================

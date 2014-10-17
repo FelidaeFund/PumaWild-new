@@ -39,6 +39,7 @@ public class CameraController : MonoBehaviour
 	// external module
 	private LevelManager levelManager;
 	private InputControls inputControls;
+	private CameraCollider cameraCollider;
 
 	//===================================
 	//===================================
@@ -51,6 +52,7 @@ public class CameraController : MonoBehaviour
 		// connect to external modules
 		levelManager = GetComponent<LevelManager>();
 		inputControls = GetComponent<InputControls>();
+		cameraCollider = GameObject.Find("Camera").GetComponent<CameraCollider>();
 
 		currentCameraY = 0f;
 		currentCameraRotX = 0f;
@@ -313,9 +315,11 @@ public class CameraController : MonoBehaviour
 		// that screws up the viewing angle, putting the puma too high or low in field of view
 		// lastly we calculate an angle offset for new position, and factor in some fudge to account for viewing angle problem
 
+		float terrainY = levelManager.GetTerrainHeight(cameraX, cameraZ, (cameraCollider.CheckCollisionOverpassInProgress() == true) ? cameraCollider.GetCollisionOverpassSurfaceHeight() : 0f);
+
 		float adjustedCameraX = cameraX;
-		float adjustedCameraY = cameraY + levelManager.GetTerrainHeight(cameraX, cameraZ);
-		float adjustedCameraZ = cameraZ;	
+		float adjustedCameraY = cameraY + terrainY;
+		float adjustedCameraZ = cameraZ;
 
 		float idealVisualDistance = Vector3.Distance(new Vector3(0, 0, 0), new Vector3(currentCameraDistance, cameraY, 0));
 		float currentVisualAngle = levelManager.GetAngleFromOffset(0, pumaY, currentCameraDistance, adjustedCameraY);
@@ -325,7 +329,7 @@ public class CameraController : MonoBehaviour
 		adjustedCameraX = pumaX - (Mathf.Sin(cameraRotY*Mathf.PI/180) * adjustedCameraDistance);
 		adjustedCameraZ = pumaZ - (Mathf.Cos(cameraRotY*Mathf.PI/180) * adjustedCameraDistance);	
 
-		float cameraRotXAdjustment = -1f * (levelManager.GetAngleFromOffset(0, pumaY, currentCameraDistance, levelManager.GetTerrainHeight(cameraX, cameraZ)) - 90f);
+		float cameraRotXAdjustment = -1f * (levelManager.GetAngleFromOffset(0, pumaY, currentCameraDistance, terrainY) - 90f);
 		cameraRotXAdjustment *= (cameraRotXAdjustment > 0) ? 0.65f : 0.8f;
 		float adjustedCameraRotX = cameraRotX + cameraRotXAdjustment;
 

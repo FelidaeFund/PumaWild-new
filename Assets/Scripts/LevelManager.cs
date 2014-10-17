@@ -12,6 +12,7 @@ public class LevelManager : MonoBehaviour
 	public float guiFlybyOverdrive = 1f;
 	public float travelledDistanceOverdrive = 1f;
 	
+	private float guiFlybySpeed = 0f;
 	public bool guiFlybyOverdriveRampFlag = false;
 	public float guiFlybyOverdriveRampStartVal;
 	public float guiFlybyOverdriveRampEndVal;
@@ -39,7 +40,7 @@ public class LevelManager : MonoBehaviour
 	private string gameSubState;
 	private float stateStartTime;
 	private bool stateInitFlag;
-	private int currentLevel;
+	public int currentLevel;
 	private string carCollisionState = "None";
 	private string starvationState = "None";
 
@@ -65,6 +66,8 @@ public class LevelManager : MonoBehaviour
 	
 	// ROADS
 	
+	private float roadBaseY = 10.01f;
+
 	public GameObject L2Road1;
 	public GameObject L2Road2;
 	public GameObject L2Road3;
@@ -299,6 +302,7 @@ public class LevelManager : MonoBehaviour
 	private InputControls inputControls;
 	private CameraController cameraController;
 	private TrafficManager trafficManager;
+	private PumaController pumaController;
 
 	//===================================
 	//===================================
@@ -323,6 +327,7 @@ public class LevelManager : MonoBehaviour
 		// puma
 		pumaObj = GameObject.Find("Puma");	
 		pumaObjCollider = pumaObj.GetComponent<BoxCollider>();
+		pumaController = pumaObj.GetComponent<PumaController>();
 				
 		// deer
 		buck = new DeerClass();
@@ -365,7 +370,7 @@ public class LevelManager : MonoBehaviour
 
 		pumaX = -700f; //0f;
 		pumaY = 36f;
-		pumaZ = 700f; //0f;			
+		pumaZ = 750f; //0f;			
 		pumaObj.transform.position = new Vector3(pumaX, pumaY, pumaZ);		
 		
 		//================================
@@ -488,28 +493,29 @@ public class LevelManager : MonoBehaviour
 		}
 
 		if (road1A != null) {
-			road1A.transform.position = new Vector3(0, 0, 0);
-			road1B = (GameObject)Instantiate(road1A, new Vector3(1000, 0, 0), Quaternion.identity);
+		
+			road1A.transform.position = new Vector3(0, roadBaseY, 0);
+			road1B = (GameObject)Instantiate(road1A, new Vector3(1000, roadBaseY, 0), Quaternion.identity);
 			road1B.transform.parent = terrainB.transform;
-			road1C = (GameObject)Instantiate(road1A, new Vector3(0, 0, -1000), Quaternion.identity);
+			road1C = (GameObject)Instantiate(road1A, new Vector3(0, roadBaseY, -1000), Quaternion.identity);
 			road1C.transform.parent = terrainC.transform;
-			road1D = (GameObject)Instantiate(road1A, new Vector3(1000, 0, -1000), Quaternion.identity);
+			road1D = (GameObject)Instantiate(road1A, new Vector3(1000, roadBaseY, -1000), Quaternion.identity);
 			road1D.transform.parent = terrainD.transform;
 			
-			road2A.transform.position = new Vector3(0, 0, 0);
-			road2B = (GameObject)Instantiate(road2A, new Vector3(1000, 0, 0), Quaternion.identity);
+			road2A.transform.position = new Vector3(0, roadBaseY, 0);
+			road2B = (GameObject)Instantiate(road2A, new Vector3(1000, roadBaseY, 0), Quaternion.identity);
 			road2B.transform.parent = terrainB.transform;
-			road2C = (GameObject)Instantiate(road2A, new Vector3(0, 0, -1000), Quaternion.identity);
+			road2C = (GameObject)Instantiate(road2A, new Vector3(0, roadBaseY, -1000), Quaternion.identity);
 			road2C.transform.parent = terrainC.transform;
-			road2D = (GameObject)Instantiate(road2A, new Vector3(1000, 0, -1000), Quaternion.identity);
+			road2D = (GameObject)Instantiate(road2A, new Vector3(1000, roadBaseY, -1000), Quaternion.identity);
 			road2D.transform.parent = terrainD.transform;
 			
-			road3A.transform.position = new Vector3(0, 0, 0);
-			road3B = (GameObject)Instantiate(road3A, new Vector3(1000, 0, 0), Quaternion.identity);
+			road3A.transform.position = new Vector3(0, roadBaseY, 0);
+			road3B = (GameObject)Instantiate(road3A, new Vector3(1000, roadBaseY, 0), Quaternion.identity);
 			road3B.transform.parent = terrainB.transform;
-			road3C = (GameObject)Instantiate(road3A, new Vector3(0, 0, -1000), Quaternion.identity);
+			road3C = (GameObject)Instantiate(road3A, new Vector3(0, roadBaseY, -1000), Quaternion.identity);
 			road3C.transform.parent = terrainC.transform;
-			road3D = (GameObject)Instantiate(road3A, new Vector3(1000, 0, -1000), Quaternion.identity);
+			road3D = (GameObject)Instantiate(road3A, new Vector3(1000, roadBaseY, -1000), Quaternion.identity);
 			road3D.transform.parent = terrainD.transform;
 		}
 
@@ -1021,28 +1027,29 @@ public class LevelManager : MonoBehaviour
 		}
 
 		if (road1A != null) {
-			road1A.transform.position = new Vector3(terrainAx + 1000f, 0, terrainAz);
-			road1B = (GameObject)Instantiate(road1A, new Vector3(terrainBx + 1000f, 0, terrainBz), Quaternion.identity);
+		
+			road1A.transform.position = new Vector3(terrainAx + 1000f, roadBaseY, terrainAz);
+			road1B = (GameObject)Instantiate(road1A, new Vector3(terrainBx + 1000f, roadBaseY, terrainBz), Quaternion.identity);
 			road1B.transform.parent = terrainB.transform;
-			road1C = (GameObject)Instantiate(road1A, new Vector3(terrainCx + 1000f, 0, terrainCz), Quaternion.identity);
+			road1C = (GameObject)Instantiate(road1A, new Vector3(terrainCx + 1000f, roadBaseY, terrainCz), Quaternion.identity);
 			road1C.transform.parent = terrainC.transform;
-			road1D = (GameObject)Instantiate(road1A, new Vector3(terrainDx + 1000f, 0, terrainDz), Quaternion.identity);
+			road1D = (GameObject)Instantiate(road1A, new Vector3(terrainDx + 1000f, roadBaseY, terrainDz), Quaternion.identity);
 			road1D.transform.parent = terrainD.transform;
 			
-			road2A.transform.position = new Vector3(terrainAx + 1000f, 0, terrainAz);
-			road2B = (GameObject)Instantiate(road2A, new Vector3(terrainBx + 1000f, 0, terrainBz), Quaternion.identity);
+			road2A.transform.position = new Vector3(terrainAx + 1000f, roadBaseY, terrainAz);
+			road2B = (GameObject)Instantiate(road2A, new Vector3(terrainBx + 1000f, roadBaseY, terrainBz), Quaternion.identity);
 			road2B.transform.parent = terrainB.transform;
-			road2C = (GameObject)Instantiate(road2A, new Vector3(terrainCx + 1000f, 0, terrainCz), Quaternion.identity);
+			road2C = (GameObject)Instantiate(road2A, new Vector3(terrainCx + 1000f, roadBaseY, terrainCz), Quaternion.identity);
 			road2C.transform.parent = terrainC.transform;
-			road2D = (GameObject)Instantiate(road2A, new Vector3(terrainDx + 1000f, 0, terrainDz), Quaternion.identity);
+			road2D = (GameObject)Instantiate(road2A, new Vector3(terrainDx + 1000f, roadBaseY, terrainDz), Quaternion.identity);
 			road2D.transform.parent = terrainD.transform;
 			
-			road3A.transform.position = new Vector3(terrainAx + 1000f, 0, terrainAz);
-			road3B = (GameObject)Instantiate(road3A, new Vector3(terrainBx + 1000f, 0, terrainBz), Quaternion.identity);
+			road3A.transform.position = new Vector3(terrainAx + 1000f, roadBaseY, terrainAz);
+			road3B = (GameObject)Instantiate(road3A, new Vector3(terrainBx + 1000f, roadBaseY, terrainBz), Quaternion.identity);
 			road3B.transform.parent = terrainB.transform;
-			road3C = (GameObject)Instantiate(road3A, new Vector3(terrainCx + 1000f, 0, terrainCz), Quaternion.identity);
+			road3C = (GameObject)Instantiate(road3A, new Vector3(terrainCx + 1000f, roadBaseY, terrainCz), Quaternion.identity);
 			road3C.transform.parent = terrainC.transform;
-			road3D = (GameObject)Instantiate(road3A, new Vector3(terrainDx + 1000f, 0, terrainDz), Quaternion.identity);
+			road3D = (GameObject)Instantiate(road3A, new Vector3(terrainDx + 1000f, roadBaseY, terrainDz), Quaternion.identity);
 			road3D.transform.parent = terrainD.transform;
 		}
 
@@ -1487,7 +1494,6 @@ public class LevelManager : MonoBehaviour
 	void Update() 
 	{	
 		float fadeTime;
-		float guiFlybySpeed = 0f;
 
 		//pumaAnimator.SetLayerWeight(1, 1f);
 	
@@ -1890,7 +1896,7 @@ public class LevelManager : MonoBehaviour
 			Debug.Log("ERROR - LevelManager.Update() got bad state: " + gameState);
 			break;
 		}		
-		
+
 		//===============
 		// Update Puma
 		//===============
@@ -2015,24 +2021,42 @@ public class LevelManager : MonoBehaviour
 		pumaAnimator.SetBool("GuiMode", false);
 		pumaAnimator.SetFloat("Distance", distance);
 
-		// calculate puma rotX based on terrain in front and behind
-		float pumaRotX;
-		float offsetDistance = 1f;
-		float pumaAheadX = pumaX + (Mathf.Sin(pumaHeading*Mathf.PI/180) * offsetDistance * 1f);
-		float pumaAheadZ = pumaZ + (Mathf.Cos(pumaHeading*Mathf.PI/180) * offsetDistance * 1f);
-		float pumaBehindX = pumaX + (Mathf.Sin(pumaHeading*Mathf.PI/180) * offsetDistance * -1f);
-		float pumaBehindZ = pumaZ + (Mathf.Cos(pumaHeading*Mathf.PI/180) * offsetDistance * -1f);
-		pumaRotX = GetAngleFromOffset(0, GetTerrainHeight(pumaAheadX, pumaAheadZ), offsetDistance * 2f, GetTerrainHeight(pumaBehindX, pumaBehindZ)) - 90f;
 			
-		// get the y pos of puma based on terrain
-		pumaY = GetTerrainHeight(pumaX, pumaZ);
+		// get the y pos of puma based on terrain and/or overpass height
+		float pumaRotX;
+
+		if (pumaController.CheckCollisionOverpassInProgress() == true) {
+			// overpass
+			pumaY = GetTerrainHeight(pumaX, pumaZ, pumaController.GetCollisionOverpassSurfaceHeight());
+			pumaRotX = 0f;
+		}
+		else {
+			// normal case
+			pumaY = GetTerrainHeight(pumaX, pumaZ);
+			// calculate puma rotX based on terrain in front and behind
+			float offsetDistance = 1f;
+			float pumaAheadX = pumaX + (Mathf.Sin(pumaHeading*Mathf.PI/180) * offsetDistance * 1f);
+			float pumaAheadZ = pumaZ + (Mathf.Cos(pumaHeading*Mathf.PI/180) * offsetDistance * 1f);
+			float pumaBehindX = pumaX + (Mathf.Sin(pumaHeading*Mathf.PI/180) * offsetDistance * -1f);
+			float pumaBehindZ = pumaZ + (Mathf.Cos(pumaHeading*Mathf.PI/180) * offsetDistance * -1f);
+			pumaRotX = GetAngleFromOffset(0, GetTerrainHeight(pumaAheadX, pumaAheadZ), offsetDistance * 2f, GetTerrainHeight(pumaBehindX, pumaBehindZ)) - 90f;
+		}
+
 
 		// write out the position and rotation of puma obj
 		
 		if (carCollisionState == "None" && starvationState == "None") {
 			// normal case: update pumaObj every frame
+						
+			//Debug.Log(" ");
+			//Debug.Log("====================PUMA was at   " + pumaObj.transform.position);
+			
 			pumaObj.transform.position = new Vector3(pumaX, pumaY, pumaZ);			
 			pumaObj.transform.rotation = Quaternion.Euler(pumaRotX, (pumaHeading - 180f), 0);
+						
+			//Debug.Log("====================PUMA set to   " + pumaObj.transform.position);
+			//Debug.Log(" ");
+		
 	
 			/*
 			private Vector3 moveDirection = Vector3.zero;
@@ -2167,6 +2191,17 @@ public class LevelManager : MonoBehaviour
 			SetTerrainNeighbors();
 	}
 
+	
+	void FixedUpdate()
+	{
+	
+		pumaObj.transform.position = new Vector3(pumaX, pumaY, pumaZ);			
+		
+	}
+	
+	
+	
+	
 
 	//===================================
 	//===================================
@@ -2546,7 +2581,7 @@ public class LevelManager : MonoBehaviour
 		}
 	}
 
-	public float GetTerrainHeight(float x, float z)
+	public float GetTerrainHeight(float x, float z, float minHeight = 0f)
 	{
 		float terrainX = terrainA.transform.position.x;
 		float terrainZ = terrainA.transform.position.z;
@@ -2560,7 +2595,22 @@ public class LevelManager : MonoBehaviour
 		while (z >= terrainZ + 1000)
 			z -= terrainSideLength;
 
-		return  terrainMaster.SampleHeight(new Vector3(x, 0, z));
+		float terrainHeight = terrainMaster.SampleHeight(new Vector3(x, 0, z));
+		
+		
+		
+		
+		//Debug.Log("GET TERRAIN HEIGHT    terrainHeight:  " + terrainHeight + "  minHeight: " +  minHeight);
+		
+		
+		
+		
+		
+		
+		if (minHeight > terrainHeight)
+			return minHeight;
+		else
+			return terrainHeight;
 	}
 	
 	public float GetStartingTerrainX(int terrainNum)
