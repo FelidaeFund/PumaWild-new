@@ -43,22 +43,30 @@ public class TrafficManager : MonoBehaviour {
 	//
 	//	Overpass 4: custom terrain leveling
 	//
-	//	GENERAL INSTRUCTION
+	//	OVERPASSES
 	//
+	//	- set road width to 10
 	//	- place road nodes at 6 points
 	//	- set marker 4 as bridge
 	//	- set end marker heights as +0.5 of overpass height
 	//	- interpolate markers
-	//	- adjust inner markers closer
-	//	- set road width to 10
 	//	- surround widths, from center: 40, 30, 20
 	//	- indents, from center: (road-10)/2, 15, default
 	//	
 	//
+	//	UNDERPASSES
 	//
-	//
-	//
-	//
+	//	- place underpass just under low point of road; add 10
+	//	- set road width to 10
+	//	- place road nodes at 6 points
+	//	- set end marker heights as +0.5 of overpass height
+	//	- interpolate markers
+	//	- drop markers by 17
+	//	- surround widths, from center: 15, 50, 70
+	//	- indents, from center: (road-40)/2, default, default
+	//	- outer nodes go to surface height
+	//	- middle nodes get adjusted to taste
+	//	
 	
 	//===================================
 	//===================================
