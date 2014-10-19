@@ -50,8 +50,8 @@ public class TrafficManager : MonoBehaviour {
 	//	- set marker 4 as bridge
 	//	- set end marker heights as +0.5 of overpass height
 	//	- interpolate markers
-	//	- surround widths, from center: 40, 30, 20
 	//	- indents, from center: (road-10)/2, 15, default
+	//	- surround widths, from center: 40, 30, 20
 	//	
 	//
 	//	UNDERPASSES
@@ -62,8 +62,8 @@ public class TrafficManager : MonoBehaviour {
 	//	- set end marker heights as +0.5 of overpass height
 	//	- interpolate markers
 	//	- drop markers by 17
-	//	- surround widths, from center: 15, 50, 70
 	//	- indents, from center: (road-40)/2, default, default
+	//	- surround widths, from center: 15, 50, 3
 	//	- outer nodes go to surface height
 	//	- middle nodes get adjusted to taste
 	//	
