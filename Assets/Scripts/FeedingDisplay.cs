@@ -573,7 +573,7 @@ public class FeedingDisplay : MonoBehaviour
 		if (GUI.Button(new Rect(feedingDisplayX + feedingDisplayWidth * 0.81f,  feedingDisplayY + feedingDisplayHeight * 0.727f, feedingDisplayWidth * 0.14f, feedingDisplayHeight * 0.25f), "Go")) {
 			if (scoringSystem.GetHuntSuccessCount() >= 3) {
 				// use keyboard to go to next level
-				guiManager.SetGuiState("guiStateLeavingFeeding");
+				guiManager.SetGuiState("guiStateNextLevel1");
 				levelManager.SetGameState("gameStateLeavingGameplay");
 			}
 			else {

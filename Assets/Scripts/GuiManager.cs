@@ -7,9 +7,9 @@ using System.Collections;
 public class GuiManager : MonoBehaviour 
 {
 	// DEBUGGING OPTIONS
-	private bool displayFrameRate = false;
-	private bool skipStraightToLevel = true;
+	private bool skipStraightToLevel = false;
 	private int  skipStraightToLevelFrameCount = 0;
+	private bool displayFrameRate = false;
 
 	//===================================
 	//===================================
@@ -122,6 +122,11 @@ public class GuiManager : MonoBehaviour
 	public Texture2D iconLinkedInTexture; 
 	public Texture2D logoFelidaeTexture; 
 	public Texture2D logoBappTexture; 
+	public Texture2D levelImage1Texture; 
+	public Texture2D levelImage2Texture; 
+	public Texture2D levelImage3Texture; 
+	public Texture2D levelImage4Texture; 
+	public Texture2D levelImage5Texture; 
 
 	// EXTERNAL MODULES
 	private GuiComponents guiComponents;		// TEMP: may not need this when this file has been fully pruned
@@ -444,21 +449,81 @@ public class GuiManager : MonoBehaviour
 				SetGuiState("guiStateGameplay");
 			break;
 
-		case "guiStateLeavingFeeding":
-			// fade-out of feeding display, go to new level display
+		//------------------------------
+		// Next Level
+		//
+		// progress to next level
+		//------------------------------
+
+		case "guiStateNextLevel1":
+			// fade-out of feeding display
 			guiStateDuration = 0.7f;
 			FadeOutOpacityLinear();
-			CheckForKeyboardSelectionOfPuma();
 			if (Time.time > guiStateStartTime + guiStateDuration) {
-				SetGuiState("guiStateEnteringOverlay");
+				SetGuiState("guiStateNextLevel2");
 				selectedPuma = -1;
 				overlayPanel.SetCurrentScreen(0);
-				infoPanel.SetNewLevelFlag(true);
-				infoPanel.SetNewLevelNumber(levelManager.GetCurrentLevel() + 1);
-				OpenInfoPanel(-1);
 				scoringSystem.SetHuntSuccessCount(0);
 			}
 			break;
+			
+		case "guiStateNextLevel2":
+			// brief pause
+			guiStateDuration = 0.3f;
+			if (Time.time > guiStateStartTime + guiStateDuration) {
+				infoPanel.SetNewLevelFlag(true);
+				infoPanel.SetNewLevelNumber(levelManager.GetCurrentLevel() + 1);
+				OpenInfoPanel(-1, true);
+				SetGuiState("guiStateNextLevel3");
+			}
+			break;			
+			
+		case "guiStateNextLevel3":
+			// fade in of info screen (set below to 1.4 sec)
+			guiStateDuration = 1.2f;
+			if (Time.time > guiStateStartTime + guiStateDuration)
+				SetGuiState("guiStateNextLevel4");
+			break;			
+
+		case "guiStateNextLevel4":
+			// brief pause
+			guiStateDuration = 0.02f;
+			if (Time.time > guiStateStartTime + guiStateDuration)
+				SetGuiState("guiStateNextLevel5");
+			break;			
+
+		case "guiStateNextLevel5":
+			// fade in of back rect and switch to next level
+			guiStateDuration = 1.4f;
+			FadeInOpacityLinear();
+			if (Time.time > guiStateStartTime + guiStateDuration) {
+				levelManager.InitLevel(levelManager.GetCurrentLevel() + 1);
+				SetGuiState("guiStateNextLevel6");
+			}	
+			break;			
+
+		case "guiStateNextLevel6":
+			// brief pause
+			guiStateDuration = 0.8f;
+			if (Time.time > guiStateStartTime + guiStateDuration)
+				SetGuiState("guiStateNextLevel7");
+			break;			
+
+		case "guiStateNextLevel7":
+			// fade out of back rect
+			guiStateDuration = 2.8f;
+			FadeOutOpacityLogarithmic();
+			if (Time.time > guiStateStartTime + guiStateDuration)
+				SetGuiState("guiStateNextLevel8");
+			break;			
+
+		case "guiStateNextLevel8":
+			// fade in of 'Go' button
+			guiStateDuration = 1f;
+			FadeInOpacityLinear();
+			if (Time.time > guiStateStartTime + guiStateDuration)
+				SetGuiState("guiStateOverlay");
+			break;			
 
 		//------------------------------
 		// Puma Done
@@ -567,7 +632,7 @@ public class GuiManager : MonoBehaviour
 		if (spacePressed || rightShiftPressed) {
 			if (scoringSystem.GetHuntSuccessCount() >= 3) {
 				// use keyboard to go to next level
-				SetGuiState("guiStateLeavingFeeding");
+				SetGuiState("guiStateNextLevel1");
 				levelManager.SetGameState("gameStateLeavingGameplay");
 			}
 			else {
@@ -809,8 +874,14 @@ public class GuiManager : MonoBehaviour
 				gameplayDisplay.Draw(1f, 1f, guiOpacity);
 				break;
 				
-			case "guiStateLeavingFeeding":
-				// fade-out of feeding display, go to overlay
+			//------------------------------
+			// Next Level
+			//
+			// progress to next level
+			//------------------------------
+
+			case "guiStateNextLevel1":
+				// fade-out of feeding display
 				feedingDisplay.Draw(guiOpacity, guiOpacity, guiOpacity, guiOpacity);
 				break;
 
@@ -889,20 +960,34 @@ public class GuiManager : MonoBehaviour
 				
 		float elapsedTime = Time.time - infoPanelTransStart;
 		float percentVisible = 0f;
+		float backRectOpacity = 0f;
+		float goButtonOpacity = 1f;
+
+		if (guiState == "guiStateNextLevel5")
+			backRectOpacity = guiOpacity;
+		else if (guiState == "guiStateNextLevel6")
+			backRectOpacity = 1f;
+		else if (guiState == "guiStateNextLevel7")
+			backRectOpacity = guiOpacity;
+		
+		if (guiState == "guiStateNextLevel3" || guiState == "guiStateNextLevel4" || guiState == "guiStateNextLevel5" || guiState == "guiStateNextLevel6" || guiState == "guiStateNextLevel7")
+			goButtonOpacity = 0f;
+		else if (guiState == "guiStateNextLevel8")
+			goButtonOpacity = guiOpacity;
 		
 		if (infoPanelVisible == true && elapsedTime < infoPanelTransTime) {
 			// fading in
 			percentVisible = elapsedTime / infoPanelTransTime;			
-			infoPanel.Draw(percentVisible);
+			infoPanel.Draw(percentVisible, backRectOpacity, goButtonOpacity);
 		}
 		else if (infoPanelVisible == true) {
 			// fully visible
-			infoPanel.Draw(1f);
+			infoPanel.Draw(1f, backRectOpacity, goButtonOpacity);
 		}
 		else if (elapsedTime < infoPanelTransTime) {
 			// fading out		
 			percentVisible = 1f - elapsedTime / infoPanelTransTime;
-			infoPanel.Draw(percentVisible);
+			infoPanel.Draw(percentVisible, backRectOpacity, goButtonOpacity);
 		}
 
 		//------------------------------
@@ -940,11 +1025,11 @@ public class GuiManager : MonoBehaviour
 		//Debug.Log("NEW GUI STATE: " + newState);
 	}
 
-	public void OpenInfoPanel(int newPageNum)
+	public void OpenInfoPanel(int newPageNum, bool slowFlag = false)
 	{
 		if (newPageNum >= 0)
 			infoPanel.SetCurrentPage(newPageNum);
-		infoPanelTransTime = 0.3f;
+		infoPanelTransTime = slowFlag ? 1.4f : 0.4f;
 		infoPanelTransStart = Time.time;
 		infoPanelVisible = true;
 	}

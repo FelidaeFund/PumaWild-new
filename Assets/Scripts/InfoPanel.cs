@@ -77,6 +77,11 @@ public class InfoPanel : MonoBehaviour
 	private Texture2D iconLinkedInTexture; 
 	private Texture2D logoFelidaeTexture; 
 	private Texture2D logoBappTexture; 
+	private Texture2D levelImage1Texture; 
+	private Texture2D levelImage2Texture; 
+	private Texture2D levelImage3Texture; 
+	private Texture2D levelImage4Texture; 
+	private Texture2D levelImage5Texture; 
 	
 	// external modules
 	private GuiManager guiManager;
@@ -144,6 +149,12 @@ public class InfoPanel : MonoBehaviour
 		iconLinkedInTexture = guiManager.iconLinkedInTexture;
 		logoFelidaeTexture = guiManager.logoFelidaeTexture;
 		logoBappTexture = guiManager.logoBappTexture;
+		
+		levelImage1Texture = guiManager.levelImage1Texture;
+		levelImage2Texture = guiManager.levelImage2Texture;
+		levelImage3Texture = guiManager.levelImage3Texture;
+		levelImage4Texture = guiManager.levelImage4Texture;
+		levelImage5Texture = guiManager.levelImage5Texture;
 		
 		// custom button styling
 		buttonStyle = new GUIStyle();
@@ -229,8 +240,18 @@ public class InfoPanel : MonoBehaviour
 	//===================================
 	//===================================
 	
-	public void Draw(float infoPanelOpacity) 
+	public void Draw(float infoPanelOpacity, float backRectOpacity, float goButtonOpacity) 
 	{ 
+		// back rect happens before everything else
+		
+		
+		GUI.color = new Color(1f, 1f, 1f, 1f * infoPanelOpacity * backRectOpacity);
+		guiUtils.DrawRect(new Rect(0f, 0f, Screen.width, Screen.height), new Color(0.1f, 0.1f, 0.1f, 1f));	
+		GUI.color = new Color(1f, 1f, 1f, 1f * infoPanelOpacity);
+	
+
+		// now do the rest
+
 		overlayRect = guiManager.GetOverlayRect();
 		
 		float originalOverlayX = overlayRect.x;
@@ -270,6 +291,18 @@ public class InfoPanel : MonoBehaviour
 			GUI.color = new Color(1f, 1f, 1f, 1f * infoPanelOpacity);			
 			GUI.DrawTexture(new Rect(logoX, logoY, logoWidth, logoHeight), logoTexture);
 			//GUI.color = new Color(1f, 1f, 1f, 1f * infoPanelOpacity);
+
+			
+			//////   TEMP !!!
+			GUI.color = new Color(1f, 1f, 1f, 0f);
+			if (GUI.Button(new Rect(logoX, logoY, logoWidth, logoHeight), "")) {
+				currentLevel++;
+				if (currentLevel >= 5)
+					currentLevel = 0;
+			}
+			GUI.color = new Color(1f, 1f, 1f, 1f * infoPanelOpacity);
+
+			
 		}
 		else {
 			// text-based logo -- for reference only		
@@ -386,13 +419,12 @@ public class InfoPanel : MonoBehaviour
 		else {
 			// transition screen for next level
 			
-
 			// background rectangle
-			GUI.color = new Color(0f, 0f, 0f, 1f * infoPanelOpacity);
-			GUI.Box(new Rect(overlayRect.x + overlayRect.width * 0.415f, overlayRect.y + overlayRect.height * 0.902f, overlayRect.width * 0.17f, overlayRect.height * 0.088f), "");
-			GUI.color = new Color(1f, 1f, 1f, 1f * infoPanelOpacity);
+			GUI.color = new Color(0f, 0f, 0f, 1f * infoPanelOpacity * goButtonOpacity);
+			GUI.Box(new Rect(overlayRect.x + overlayRect.width * 0.415f, overlayRect.y + overlayRect.height * 0.892f, overlayRect.width * 0.17f, overlayRect.height * 0.098f), "");
+			GUI.color = new Color(1f, 1f, 1f, 1f * infoPanelOpacity * goButtonOpacity);
 
-			GUI.color = new Color(1f, 1f, 1f, 1f * infoPanelOpacity);		
+			GUI.color = new Color(1f, 1f, 1f, 1f * infoPanelOpacity * goButtonOpacity);		
 			// 'play'
 			bigButtonStyle.fontSize = (int)(overlayRect.width * 0.032);;
 			bigButtonDisabledStyle.fontSize = (int)(overlayRect.width * 0.03);;
@@ -402,8 +434,8 @@ public class InfoPanel : MonoBehaviour
 			GUI.backgroundColor = new Color(1f, 1f, 1f, 1f);
 			float startButtonWidth = overlayRect.width * 0.12f;
 			float startButtonX = overlayRect.x + overlayRect.width/2 - startButtonWidth/2;
-			float startButtonY = overlayRect.y + overlayRect.height * 0.916f;
-			float startButtonHeight = overlayRect.height * 0.06f;
+			float startButtonY = overlayRect.y + overlayRect.height * 0.906f;
+			float startButtonHeight = overlayRect.height * 0.07f;
 			if (GUI.Button(new Rect(startButtonX, startButtonY, startButtonWidth, startButtonHeight), "")) {
 				guiManager.CloseInfoPanel(true);
 				guiManager.SetGuiState("guiStateStartApp2");
@@ -412,6 +444,7 @@ public class InfoPanel : MonoBehaviour
 				guiManager.CloseInfoPanel(true);
 				guiManager.SetGuiState("guiStateStartApp2");
 			}
+
 		}
 
 		GUI.color = new Color(1f, 1f, 1f, 1f * infoPanelOpacity);
@@ -457,7 +490,7 @@ public class InfoPanel : MonoBehaviour
 		float panelX = overlayRect.x + overlayRect.width * 0.06f;
 		float panelY = overlayRect.y + overlayRect.height * 0.205f;
 		float panelWidth = overlayRect.width * 0.88f;
-		float panelHeight = overlayRect.height * 0.64f;
+		float panelHeight = overlayRect.height * 0.63f;
 		float fontScale = 0.8f;
 
 		GUIStyle style = new GUIStyle();
@@ -465,12 +498,153 @@ public class InfoPanel : MonoBehaviour
 
 		// background rectangle
 		GUI.color = new Color(0f, 0f, 0f, 1f * panelOpacity);
-		GUI.Box(new Rect(panelX - overlayRect.width * 0.02f, panelY - overlayRect.height * 0.025f, panelWidth + overlayRect.width * 0.04f, panelHeight + overlayRect.height * 0.05f), "");
+		GUI.Box(new Rect(panelX - overlayRect.width * 0.02f, panelY - overlayRect.height * 0.025f, panelWidth + overlayRect.width * 0.04f, panelHeight + overlayRect.height * 0.05f + panelHeight * 0.005f), "");
 		GUI.color = new Color(0f, 0f, 0f, 0.5f * panelOpacity);
-		GUI.Box(new Rect(panelX, panelY, panelWidth, panelHeight), "");
+		GUI.Box(new Rect(panelX, panelY, panelWidth, panelHeight + panelHeight * 0.005f), "");
 		GUI.color = new Color(1f, 1f, 1f, 1f * panelOpacity);
 
 
+		// level image
+		Texture2D imageTexture = levelImage1Texture;
+		float imageOpacity = 1f;
+		
+		switch (currentLevel) {
+		case 0:
+			imageTexture = levelImage1Texture;
+			imageOpacity = 1f;
+			break;
+		case 1:
+			imageTexture = levelImage2Texture;
+			imageOpacity = 1f;
+			break;
+		case 2:
+			imageTexture = levelImage3Texture;
+			imageOpacity = 0.9f;
+			break;
+		case 3:
+			imageTexture = levelImage4Texture;
+			imageOpacity = 1f;
+			break;
+		case 4:
+			imageTexture = levelImage5Texture;
+			imageOpacity = 0.9f;
+			break;
+		}		
+		
+		float textureX = panelX + panelWidth * 0.03f;
+		float textureY = panelY + panelHeight * 0.1f;
+		float textureHeight = panelHeight * 0.8f;
+		float textureWidth = imageTexture.width * (textureHeight / imageTexture.height);
+		GUI.color = new Color(1f, 1f, 1f, imageOpacity * panelOpacity);
+		GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), imageTexture);
+		GUI.color = new Color(1f, 1f, 1f, 1f * panelOpacity);
+		
+		
+		// level text
+		
+		string titleText1 = "empty text";
+		string titleText2 = "empty text";
+		string landscapeText1 = "empty text";
+		string landscapeText2 = "empty text";
+		string survivalText1 = "empty text";
+		string survivalText2 = "empty text";
+		Color labelColor = new Color(0f, 0f, 0f);
+		
+		switch (currentLevel) {
+		case 0:
+			titleText1 = "Welcome to Level 1:";
+			titleText2 = "WILD NATURE";
+			labelColor = new Color(0.2f, 0.7f, 0.14f);
+			landscapeText1 = "Natural pristine wilderness";
+			landscapeText2 = "No human activity";
+			survivalText1 = "Hunt efficiently for good health";
+			survivalText2 = "Hunt poorly and you die";
+			break;
+		case 1:
+			titleText1 = "Welcome to Level 2:";
+			titleText2 = "HUMAN ARRIVAL";
+			labelColor = new Color(0.85f, 0.66f, 0.0f);
+			landscapeText1 = "First encroachment by humans";
+			landscapeText2 = "Roads with light traffic";
+			survivalText1 = "Cross roads carefully to chase prey";
+			survivalText2 = "If a vehicle hits you - instant death";
+			break;
+		case 2:
+			titleText1 = "Welcome to Level 3:";
+			titleText2 = "DEVELOPMENT";
+			labelColor = new Color(1f, 0.5f, 0.0f);
+			landscapeText1 = "Humans have altered the landscape";
+			landscapeText2 = "Bigger roads with faster traffic";
+			survivalText1 = "Find bridges and cross underneath";
+			survivalText2 = "Be extra careful crossing roads";
+			break;
+		case 3:
+			titleText1 = "Welcome to Level 4:";
+			titleText2 = "FRAGMENTATION";
+			labelColor = new Color(1f, 0.2f, 0.0f);
+			landscapeText1 = "Human activity and roads everywhere";
+			landscapeText2 = "Roads impassible with heavy traffic";
+			survivalText1 = "Cross under AND OVER bridges";
+			survivalText2 = "Stay off the roads - or instant death";
+			break;
+		case 4:
+			titleText1 = "Welcome to Level 5:";
+			titleText2 = "CONGRATULATIONS!";
+			labelColor = new Color(0.14f, 0.7f, 0.14f);
+			landscapeText1 = "Humans have become good neighbors";
+			landscapeText2 = "CONNECTIVITY is possible again";
+			survivalText1 = "Travel easily over and under roads";
+			survivalText2 = "You still need to stay clear of cars";
+			break;
+		}
+
+		style.alignment = TextAnchor.MiddleLeft;
+		float colorScale = 0.74f;
+		float xOffset = panelWidth * -0.017f;
+		float yOffset = panelHeight * 0.042f;
+		
+		//
+
+		style.fontSize = (int)(overlayRect.width * 0.020f);
+		style.fontStyle = FontStyle.Italic;
+		style.normal.textColor = new Color(0.99f * colorScale, 0.64f * colorScale, 0.13f * colorScale, 1f);
+		GUI.Button(new Rect(xOffset + panelX + panelWidth * 0.58f, yOffset + panelY + panelHeight * 0.065f, panelWidth * 0.4f, panelHeight * 0.1f), titleText1, style);
+		style.normal.textColor = labelColor;
+		style.fontStyle = FontStyle.Bold;
+		style.fontSize = (int)(overlayRect.width * 0.025f);
+		GUI.Button(new Rect(xOffset + panelX + panelWidth * 0.58f, yOffset + panelY + panelHeight * 0.145f, panelWidth * 0.4f, panelHeight * 0.1f), titleText2, style);
+
+		//
+
+		style.fontSize = (int)(overlayRect.width * 0.024f);
+		style.fontStyle = FontStyle.BoldAndItalic;
+		style.normal.textColor = new Color(0.846f, 0.537f, 0.12f, 1f);
+		GUI.Button(new Rect(xOffset + panelX + panelWidth * 0.58f, yOffset + panelY + panelHeight * 0.29f, panelWidth * 0.4f, panelHeight * 0.1f), "Landscape", style);
+		
+		style.fontSize = (int)(overlayRect.width * 0.020f);
+		style.fontStyle = FontStyle.Normal;
+		style.normal.textColor = new Color(0.99f * colorScale, 0.88f * colorScale, 0.66f * colorScale, 1f);
+		GUI.Button(new Rect(xOffset + panelX + panelWidth * 0.6f, yOffset + panelY + panelHeight * 0.37f, panelWidth * 0.4f, panelHeight * 0.1f), landscapeText1, style);
+		GUI.Button(new Rect(xOffset + panelX + panelWidth * 0.6f, yOffset + panelY + panelHeight * 0.45f, panelWidth * 0.4f, panelHeight * 0.1f), landscapeText2, style);
+
+		//
+
+		style.fontSize = (int)(overlayRect.width * 0.024f);
+		style.fontStyle = FontStyle.BoldAndItalic;
+		style.normal.textColor = new Color(0.846f, 0.537f, 0.12f, 1f);
+		GUI.Button(new Rect(xOffset + panelX + panelWidth * 0.58f, yOffset + panelY + panelHeight * 0.59f, panelWidth * 0.4f, panelHeight * 0.1f), "Survival", style);
+
+		style.fontSize = (int)(overlayRect.width * 0.020f);
+		style.fontStyle = FontStyle.Normal;
+		style.normal.textColor = new Color(0.99f * colorScale, 0.88f * colorScale, 0.66f * colorScale, 1f);
+		GUI.Button(new Rect(xOffset + panelX + panelWidth * 0.6f, yOffset + panelY + panelHeight * 0.67f, panelWidth * 0.4f, panelHeight * 0.1f), survivalText1, style);
+		GUI.Button(new Rect(xOffset + panelX + panelWidth * 0.6f, yOffset + panelY + panelHeight * 0.75f, panelWidth * 0.4f, panelHeight * 0.1f), survivalText2, style);
+
+		//
+
+		style.alignment = TextAnchor.MiddleCenter;
+
+		
 	}	
 
 
