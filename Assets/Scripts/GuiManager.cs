@@ -343,8 +343,10 @@ public class GuiManager : MonoBehaviour
 			// fade-out of game-play controls
 			guiStateDuration = 1f;
 			FadeOutOpacityLinear();
-			if (Time.time > guiStateStartTime + guiStateDuration)
+			if (Time.time > guiStateStartTime + guiStateDuration) {
+				levelManager.goStraightToFeeding = false;
 				SetGuiState("guiStateFeeding2");
+			}
 			break;
 
 		case "guiStateFeeding2":

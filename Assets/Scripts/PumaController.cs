@@ -38,8 +38,6 @@ public class PumaController : MonoBehaviour
 	// COLLISION DETECTION
 		
 	private GameObject collisionObject;
-	private bool collisionBridgeSideLeftInProgress = false;
-	private bool collisionBridgeSideRightInProgress = false;
 	private bool collisionOverpassInProgress = false;
 	private float collisionCarForceTimeRemaining = 0;
 	private float collisionCarForceOffsetX;
@@ -120,16 +118,6 @@ public class PumaController : MonoBehaviour
 		
 		// BRIDGE
 
-		else if (collisionInfo.gameObject.tag == "BridgeSideLeft") {
-			collisionBridgeSideLeftInProgress = true;
-			return;
-		}
-		
-		else if (collisionInfo.gameObject.tag == "BridgeSideRight") {
-			collisionBridgeSideRightInProgress = true;
-			return;
-		}
-		
 		else if (collisionInfo.gameObject.tag == "Bridge") {
 
 			//Debug.Log("=====================================");
@@ -141,17 +129,7 @@ public class PumaController : MonoBehaviour
 			float leftDirection = normalHeading + 90f;
 			float rightDirection = normalHeading - 90f;			
 			
-			if (collisionBridgeSideLeftInProgress) {
-				// move left along barrier
-				headingOffset = -1f;
-				barrierHeading = leftDirection;
-			}
-			else if (collisionBridgeSideRightInProgress) {
-				// move right along barrier
-				headingOffset = 1f;
-				barrierHeading = rightDirection;
-			}
-			else {
+			{
 				// determine which direction to move along barrier
 				float mainHeading = levelManager.mainHeading;
 				float deltaToLeftDirection;
@@ -217,17 +195,7 @@ public class PumaController : MonoBehaviour
 	void OnCollisionExit(Collision collisionInfo)
 
 	{
-		if (collisionInfo.gameObject.tag == "BridgeSideLeft") {
-			collisionBridgeSideLeftInProgress = false;
-			return;
-		}
-		
-		else if (collisionInfo.gameObject.tag == "BridgeSideRight") {
-			collisionBridgeSideRightInProgress = false;
-			return;
-		}
-
-		else if (collisionInfo.gameObject.tag == "Bridge") {
+		if (collisionInfo.gameObject.tag == "Bridge") {
 			//Debug.Log("=====================================");
 			Debug.Log("Collision End:  " + gameObject.name + " - " + collisionInfo.collider.name);
 			levelManager.PumaEndCollision();

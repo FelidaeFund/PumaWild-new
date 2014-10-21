@@ -100,14 +100,14 @@ public class GameplayDisplay : MonoBehaviour
 		// MOVEMENT CONTROLS
 		//----------------------
 		
-		float trayScaleFactor = (8.5f/7f);
+		float trayScaleFactor = (7f/7f);
 			
 		// "Jump" paw
 
-		float textureWidth = boxWidth * 0.7f * trayScaleFactor;
+		float textureWidth = boxWidth * 0.7f * trayScaleFactor * 0.8f;
 		float textureX = boxMargin + textureWidth * 0.0f;
 		float textureHeight = arrowTrayTexture.height * (textureWidth / arrowTrayTopTexture.width);
-		float textureY = Screen.height - boxHeight * 1f - boxMargin;			
+		float textureY = Screen.height - boxHeight * 0.75f - boxMargin;			
 
 		GUI.color = new Color(1f, 1f, 1f, 0.55f * movementControlsOpacity);
 		GUI.DrawTexture(new Rect(textureX, textureY + textureHeight * 0.05f, textureWidth, textureHeight * 0.9f), arrowTrayTopTexture);
@@ -123,7 +123,7 @@ public class GameplayDisplay : MonoBehaviour
 		
 		// upper right paw
 	
-		textureX = Screen.width - boxWidth * trayScaleFactor - boxMargin;
+		textureX = Screen.width - boxWidth - boxMargin;
 		textureWidth = boxWidth * trayScaleFactor;
 		textureHeight = arrowTrayTexture.height * (textureWidth / arrowTrayTopTexture.width);
 		textureY = Screen.height - boxHeight*0.13f - boxMargin;			
@@ -145,10 +145,10 @@ public class GameplayDisplay : MonoBehaviour
 			
 		// upper left paw
 	
-		textureX = Screen.width - boxWidth - boxMargin;
+		textureX = Screen.width - boxWidth * trayScaleFactor - boxMargin;
 		textureWidth = boxWidth * trayScaleFactor;
 		textureHeight = arrowTrayTexture.height * (textureWidth / arrowTrayTopTexture.width);
-		textureY = Screen.height - boxHeight - boxMargin;			
+		textureY = Screen.height - boxHeight * 1f - boxMargin;			
 		textureY -= textureHeight * 1f;
 		textureX = boxMargin;
 	
@@ -162,10 +162,10 @@ public class GameplayDisplay : MonoBehaviour
 		
 		// "Menu" paw
 
-		textureWidth = boxWidth * 0.7f * trayScaleFactor;
+		textureWidth = boxWidth * 0.7f * trayScaleFactor * 0.8f;
 		textureHeight = arrowTrayTexture.height * (textureWidth / arrowTrayTopTexture.width);
 		textureX = boxMargin + textureWidth * 1.0f;
-		textureY = Screen.height - boxHeight * 1f - boxMargin;
+		textureY = Screen.height - boxHeight * 0.75f - boxMargin;
 
 		GUI.color = new Color(1f, 1f, 1f, 0.55f * movementControlsOpacity);
 		GUI.DrawTexture(new Rect(textureX, textureY + textureHeight * 0.05f, textureWidth, textureHeight * 0.9f), arrowTrayTopTexture);
@@ -214,20 +214,21 @@ public class GameplayDisplay : MonoBehaviour
 		float statusPanelWidth = boxWidth * 1.5f;
 		float statusPanelHeight = boxHeight / 2.7f;
 		guiComponents.DrawStatusPanel(statusDisplayOpacity * 0.9f, statusPanelX, statusPanelY, statusPanelWidth, statusPanelHeight, true);
+
+
+		//----------------------
+		// EXIT BUTTON
+		//----------------------
 		
 		// 'exit' button
-		GUI.color = new Color(0f, 0f, 0f, 1f * statusDisplayOpacity);
-		GUI.Box(new Rect(Screen.width * 0.5f - boxWidth * 0.35f,  Screen.height - (boxMargin * 0.0f) - (boxHeight * 0.15f), boxWidth * 0.7f, boxHeight * 0.15f), "");
-		//GUI.color = new Color(0f, 0f, 0f, 0.3f * statusDisplayOpacity);
-		//GUI.Box(new Rect(Screen.width * 0.5f - boxWidth * 0.35f,  Screen.height - (boxMargin * 0.0f) - (boxHeight * 0.15f), boxWidth * 0.7f, boxHeight * 0.15f), "");
 		GUI.color = new Color(1f, 1f, 1f, 0.8f * statusDisplayOpacity);
 		GUI.skin = guiManager.customGUISkin;
 		guiManager.customGUISkin.button.fontSize = (int)(boxWidth * 0.0675);
 		guiManager.customGUISkin.button.fontStyle = FontStyle.Bold;	
-		float exitButtonX = Screen.width * 0.5f - boxWidth * 0.3f;
-		float exitButtonY = Screen.height - (boxMargin * 0.0f + boxHeight * 0.03f) - (boxHeight * 0.096f);
+		float exitButtonX = Screen.width * 0.33f - boxWidth * 0.3f;
+		float exitButtonY = Screen.height - (boxMargin * 0.0f + boxHeight * 0.205f) - (boxHeight * 0.096f);
 		float exitButtonWidth = boxWidth * 0.6f;
-		float exitButtonHeight = boxHeight * 0.105f;
+		float exitButtonHeight = boxHeight * 0.12f;
 		if (GUI.Button(new Rect(exitButtonX,  exitButtonY, exitButtonWidth, exitButtonHeight), "")) {
 			guiManager.SetGuiState("guiStateLeavingGameplay");
 			//guiManager.SetGuiState("guiStateOverlay");
@@ -243,6 +244,18 @@ public class GameplayDisplay : MonoBehaviour
 			//guiManager.SetGuiState("guiStateOverlay");
 			levelManager.SetGameState("gameStateLeavingGameplay");
 		}
+
+		
+		// autokill cheat button
+		GUI.color = new Color(1f, 1f, 1f, 0f * statusDisplayOpacity);
+		float killButtonX = Screen.width * 0.5f - boxWidth * 0.3f;
+		float killButtonY = Screen.height * 0.8f;
+		float killButtonWidth = boxWidth * 0.6f;
+		float killButtonHeight = Screen.height * 0.2f;
+		if (GUI.Button(new Rect(killButtonX,  killButtonY, killButtonWidth, killButtonHeight), "")) {
+			levelManager.goStraightToFeeding = true;
+		}
+		GUI.color = new Color(1f, 1f, 1f, 1f * statusDisplayOpacity);
 	}
 	
 	//===================================

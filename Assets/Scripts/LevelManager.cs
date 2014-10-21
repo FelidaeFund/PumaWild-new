@@ -7,7 +7,7 @@ using System.Collections;
 public class LevelManager : MonoBehaviour 
 {
 	// DEBUG & DEV
-	private bool goStraightToFeeding = false;
+	public bool goStraightToFeeding = false;
 	public float speedOverdrive = 1f;
 	public float guiFlybyOverdrive = 1f;
 	public float travelledDistanceOverdrive = 1f;
@@ -41,6 +41,7 @@ public class LevelManager : MonoBehaviour
 	private float stateStartTime;
 	private bool stateInitFlag;
 	public int currentLevel;
+	public bool beginLevelFlag;
 	private string carCollisionState = "None";
 	private string starvationState = "None";
 
@@ -364,13 +365,14 @@ public class LevelManager : MonoBehaviour
 		//================================
 
 		currentLevel = level;
+		beginLevelFlag = true;
 		gameState = "gameStateGui";
 		stateStartTime = Time.time;
-		mainHeading = 30f; //Random.Range(0f, 360f);
+		mainHeading = 180f; //Random.Range(0f, 360f);
 
-		pumaX = 300f; //-700f; //0f;
+		pumaX = 309f; //-700f; //0f;
 		pumaY = 36f;
-		pumaZ = 750f; //0f;			
+		pumaZ = 832f; //0f;			
 		pumaObj.transform.position = new Vector3(pumaX, pumaY, pumaZ);		
 		
 		//================================
@@ -1516,8 +1518,12 @@ public class LevelManager : MonoBehaviour
 		// Check for Skip Ahead
 		//=================================
 
-		if (goStraightToFeeding == true && gameState == "gameStateStalking") {
-			SetGameState("gameStateChasing");
+		if (goStraightToFeeding == true && (gameState == "gameStateStalking" || gameState == "gameStateChasing")) {
+			if (gameState == "gameStateStalking") {
+				SetGameState("gameStateChasing");
+				pumaAnimator.SetBool("Chasing", true);
+			}
+
 			pumaDeerDistance1 = 0;
 		}
 			
@@ -2125,7 +2131,11 @@ public class LevelManager : MonoBehaviour
 		else {
 			Debug.Log("ERROR: levelManager - got bad collision or starvation state");
 		}	
-
+		
+		displayVar1 = pumaObj.transform.position.x;
+		displayVar2 = pumaObj.transform.position.y;
+		displayVar3 = pumaObj.transform.position.z;
+		
 		//================
 		// Update Camera
 		//================
@@ -2515,15 +2525,27 @@ public class LevelManager : MonoBehaviour
 		fawn.heading = fawn.targetHeading = Random.Range(0f,360f);	
 		fawn.gameObj.transform.rotation = Quaternion.Euler(0, fawn.heading, 0);
 
-		float randomDirection = Random.Range(0f,360f);	
-		float deerDistance = Random.Range(70f,100f);
-		float positionVariance = 8f;
-		float newX = pumaX + (Mathf.Sin(randomDirection*Mathf.PI/180) * deerDistance);
-		float newZ = pumaZ + (Mathf.Cos(randomDirection*Mathf.PI/180) * deerDistance);
+		float newX;
+		float newZ;
 
+		if (beginLevelFlag == true) {
+			// set to predetermined position (TEMP)
+			newX = 440f;
+			newZ = 713f;
+			beginLevelFlag = false;
+		}
+		else {
+			// base position on puma pos
+			float randomDirection = Random.Range(0f,360f);	
+			float deerDistance = Random.Range(70f,100f);
+			newX = pumaX + (Mathf.Sin(randomDirection*Mathf.PI/180) * deerDistance);
+			newZ = pumaZ + (Mathf.Cos(randomDirection*Mathf.PI/180) * deerDistance);
+		}
+		
 		float deerX;
 		float deerZ;
 		float deerY;
+		float positionVariance = 8f;
 		
 		deerX = newX + Random.Range(-positionVariance, positionVariance);
 		deerZ = newZ + Random.Range(-positionVariance, positionVariance);
@@ -2596,17 +2618,7 @@ public class LevelManager : MonoBehaviour
 			z -= terrainSideLength;
 
 		float terrainHeight = terrainMaster.SampleHeight(new Vector3(x, 0, z));
-		
-		
-		
-		
-		//Debug.Log("GET TERRAIN HEIGHT    terrainHeight:  " + terrainHeight + "  minHeight: " +  minHeight);
-		
-		
-		
-		
-		
-		
+
 		if (minHeight > terrainHeight)
 			return minHeight;
 		else
