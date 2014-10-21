@@ -12,6 +12,8 @@ public class FeedingDisplay : MonoBehaviour
 	//===================================
 	//===================================
 
+	float flashStartTime = 0f;
+	
 	// textures based on bitmap files
 	private Texture2D buckHeadTexture;
 	private Texture2D doeHeadTexture;
@@ -22,6 +24,9 @@ public class FeedingDisplay : MonoBehaviour
 	private Texture2D closeup4Texture;
 	private Texture2D closeup5Texture;
 	private Texture2D closeup6Texture;
+	private Texture2D greenCheckTexture;	
+	private Texture2D greenOutlineRectTexture;	
+	private Texture2D redXTexture;	
 
 	// external modules
 	private GuiManager guiManager;
@@ -53,6 +58,9 @@ public class FeedingDisplay : MonoBehaviour
 		closeup4Texture = guiManager.closeup4Texture;
 		closeup5Texture = guiManager.closeup5Texture;
 		closeup6Texture = guiManager.closeup6Texture;
+		greenCheckTexture = guiManager.greenCheckTexture;
+		greenOutlineRectTexture = guiManager.greenOutlineRectTexture;
+		redXTexture = guiManager.redXTexture;
 	}
 
 	//===================================
@@ -61,7 +69,7 @@ public class FeedingDisplay : MonoBehaviour
 	//===================================
 	//===================================
 
-	public void Draw(float backgroundPanelOpacity, float mainContentOpacity, float okButtonOpacity) 
+	public void Draw(float backgroundPanelOpacity, float mainContentOpacity, float levelCompleteOpacity, float okButtonOpacity) 
 	{ 
 		float feedingDisplayX = (Screen.width / 2) - (Screen.height * 0.7f);
 		float feedingDisplayY = Screen.height * 0.025f;
@@ -396,7 +404,7 @@ public class FeedingDisplay : MonoBehaviour
 		int caloriesExpended = (int)scoringSystem.GetLastKillExpense(guiManager.selectedPuma);
 		GUI.Button(new Rect(feedingDisplayX + feedingDisplayWidth * 0.685f, feedingDisplayY + feedingDisplayHeight * (0.50f + panelOffsetY), feedingDisplayWidth * 0.1f, feedingDisplayHeight * 0.03f), caloriesExpended.ToString("n0"), style);
 		style.fontSize = (int)(fontRef * 0.125f);
-		GUI.Button(new Rect(feedingDisplayX + feedingDisplayWidth * 0.69f, feedingDisplayY + feedingDisplayHeight * (0.58f + panelOffsetY), feedingDisplayWidth * 0.1f, feedingDisplayHeight * 0.03f), "points -", style);
+		GUI.Button(new Rect(feedingDisplayX + feedingDisplayWidth * 0.69f, feedingDisplayY + feedingDisplayHeight * (0.58f + panelOffsetY), feedingDisplayWidth * 0.1f, feedingDisplayHeight * 0.03f), "effort -", style);
 		
 		guiComponents.DrawPumaHealthBar(guiManager.selectedPuma, mainContentOpacity, feedingDisplayX + feedingDisplayWidth * 0.670f + feedingDisplayHeight * 0.03f, feedingDisplayY + feedingDisplayHeight * 0.775f, feedingDisplayWidth * 0.29f - feedingDisplayHeight * 0.06f, feedingDisplayHeight * 0.11f);
 
@@ -416,7 +424,130 @@ public class FeedingDisplay : MonoBehaviour
 		guiComponents.DrawPopulationHealthBar(mainContentOpacity, feedingDisplayX + feedingDisplayWidth * 0.035f, feedingDisplayY + feedingDisplayHeight * 0.99f, feedingDisplayWidth * 0.93f, feedingDisplayHeight * 0.145f, true, true);
 		
 
+		//********************
+		// LEVEL DISPLAY
+		//********************
 
+		float levelDisplayX = feedingDisplayX + feedingDisplayWidth * 0.74f;
+		float levelDisplayY = feedingDisplayY + feedingDisplayHeight * 1.294f;
+		float levelDisplayW = feedingDisplayWidth * 0.24f; 
+		float levelDisplayH = feedingDisplayHeight * 0.55f;
+		
+		float borderPercent = 0.05f;
+		float innerX = levelDisplayX + levelDisplayW * borderPercent;
+		float innerY = levelDisplayY + levelDisplayW * borderPercent;
+		float innerW = levelDisplayW - levelDisplayW * borderPercent * 2f; 
+		float innerH = levelDisplayH - levelDisplayW * borderPercent * 2f;
+		
+		// background boxes
+		GUI.color = new Color(1f, 1f, 1f, 0.8f * levelCompleteOpacity);
+		GUI.Box(new Rect(levelDisplayX, levelDisplayY, levelDisplayW, levelDisplayH), "");
+		GUI.color = new Color(1f, 1f, 1f, 0.4f * levelCompleteOpacity);
+		GUI.Box(new Rect(levelDisplayX, levelDisplayY, levelDisplayW, levelDisplayH), "");
+		GUI.color = new Color(1f, 1f, 1f, 1f * levelCompleteOpacity);
+
+		// text background
+		GUI.color = new Color(1f, 1f, 1f, 0.8f * levelCompleteOpacity);
+		GUI.Box(new Rect(innerX, innerY, innerW, innerH * 0.45f), "");
+		GUI.color = new Color(1f, 1f, 1f, 0.4f * levelCompleteOpacity);
+		GUI.Box(new Rect(innerX, innerY, innerW, innerH * 0.45f), "");
+		GUI.color = new Color(1f, 1f, 1f, 1f * levelCompleteOpacity);
+		
+		// text labels
+		style.normal.textColor = new Color(0.90f, 0.65f, 0f, 0.8f);
+		style.fontSize = (int)(fontRef * 0.135f);
+		GUI.Button(new Rect(levelDisplayX, levelDisplayY + levelDisplayH * 0.03f, levelDisplayW, levelDisplayH * 0.3f), "3 good hunts in a row", style);
+		style.normal.textColor = new Color(0.85f, 0.75f, 0f, 0.8f);
+		style.fontSize = (int)(fontRef * 0.12f);
+		GUI.Button(new Rect(levelDisplayX, levelDisplayY + levelDisplayH * 0.185f, levelDisplayW, levelDisplayH * 0.3f), "opens the next level", style);
+
+		// hunt stat backgrounds
+		float gapSize = innerW * 0.03f;
+		GUI.color = new Color(1f, 1f, 1f, 0.8f * levelCompleteOpacity);
+		GUI.Box(new Rect(innerX, innerY + innerH * 0.50f, (innerW - gapSize * 2f) *  0.33333f, innerH * 0.50f), "");
+		GUI.color = new Color(1f, 1f, 1f, 0.4f * levelCompleteOpacity);
+		GUI.Box(new Rect(innerX, innerY + innerH * 0.50f, (innerW - gapSize * 2f) *  0.33333f, innerH * 0.50f), "");
+		GUI.color = new Color(1f, 1f, 1f, 1f * levelCompleteOpacity);
+
+		GUI.color = new Color(1f, 1f, 1f, 0.8f * levelCompleteOpacity);
+		GUI.Box(new Rect(innerX + innerW * 0.33333f + gapSize/4, innerY + innerH * 0.50f, (innerW - gapSize * 2f) *  0.33333f, innerH * 0.50f), "");
+		GUI.color = new Color(1f, 1f, 1f, 0.4f * levelCompleteOpacity);
+		GUI.Box(new Rect(innerX + innerW * 0.33333f + gapSize/4, innerY + innerH * 0.50f, (innerW - gapSize * 2f) *  0.33333f, innerH * 0.50f), "");
+		GUI.color = new Color(1f, 1f, 1f, 1f * levelCompleteOpacity);
+
+		GUI.color = new Color(1f, 1f, 1f, 0.8f * levelCompleteOpacity);
+		GUI.Box(new Rect(innerX + innerW * 0.66666f + gapSize/2, innerY + innerH * 0.50f, (innerW - gapSize * 2f) *  0.33333f, innerH * 0.50f), "");
+		GUI.color = new Color(1f, 1f, 1f, 0.4f * levelCompleteOpacity);
+		GUI.Box(new Rect(innerX + innerW * 0.666666f + gapSize/2, innerY + innerH * 0.50f, (innerW - gapSize * 2f) *  0.33333f, innerH * 0.50f), "");
+		GUI.color = new Color(1f, 1f, 1f, 1f * levelCompleteOpacity);
+
+		// hunt indicators
+		int successCount = scoringSystem.GetHuntSuccessCount();
+		float inset = innerW * 0.04f;
+		switch (successCount) {
+		case 0:
+			GUI.DrawTexture(new Rect(inset + innerX, inset + innerY + innerH * 0.50f, (innerW - gapSize * 2f) *  0.33333f - inset*2, innerH * 0.50f - inset*2), redXTexture);
+			break;
+		case 1:
+			GUI.DrawTexture(new Rect(inset + innerX, inset + innerY + innerH * 0.50f, (innerW - gapSize * 2f) *  0.33333f - inset*2, innerH * 0.50f - inset*2), greenCheckTexture);
+			break;
+		case 2:
+			GUI.DrawTexture(new Rect(inset + innerX, inset + innerY + innerH * 0.50f, (innerW - gapSize * 2f) *  0.33333f - inset*2, innerH * 0.50f - inset*2), greenCheckTexture);
+			GUI.DrawTexture(new Rect(inset + innerX + innerW * 0.33333f + gapSize/4, inset + innerY + innerH * 0.50f, (innerW - gapSize * 2f) *  0.33333f - inset*2, innerH * 0.50f - inset*2), greenCheckTexture);
+			break;
+		case 3:
+			GUI.DrawTexture(new Rect(inset + innerX, inset + innerY + innerH * 0.50f, (innerW - gapSize * 2f) *  0.33333f - inset*2, innerH * 0.50f - inset*2), greenCheckTexture);
+			GUI.DrawTexture(new Rect(inset + innerX + innerW * 0.33333f + gapSize/4, inset + innerY + innerH * 0.50f, (innerW - gapSize * 2f) *  0.33333f - inset*2, innerH * 0.50f - inset*2), greenCheckTexture);
+			GUI.DrawTexture(new Rect(inset + innerX + innerW * 0.66666f + gapSize/2, inset + innerY + innerH * 0.50f, (innerW - gapSize * 2f) *  0.33333f - inset*2, innerH * 0.50f - inset*2), greenCheckTexture);
+			break;
+		}
+		
+		// hunt success flashing rect	
+		if (successCount == 3) {
+			float flashingPeriod = 0.4f;
+			float flashingOpacity = 0f;
+			if (Time.time > flashStartTime + flashingPeriod) {
+				flashStartTime = Time.time;
+			}
+			if (Time.time < flashStartTime + flashingPeriod * 0.3f) {
+				// first half
+				flashingOpacity = (Time.time - flashStartTime) / (flashingPeriod * 0.3f);
+			}
+			else {
+				// second half
+				flashingOpacity = 1f - ((Time.time - flashStartTime - flashingPeriod * 0.3f) / (flashingPeriod * 0.7f));			
+			}	
+			flashingOpacity = 0.3f + flashingOpacity * 0.7f;
+			flashingOpacity = flashingOpacity * flashingOpacity;
+			GUI.color = new Color(1f, 1f, 1f, flashingOpacity * 0.8f * levelCompleteOpacity);
+			GUI.DrawTexture(new Rect(levelDisplayX, levelDisplayY, levelDisplayW, levelDisplayH), greenOutlineRectTexture);
+			GUI.color = new Color(1f, 1f, 1f, 1f * levelCompleteOpacity);
+		}
+
+		// hunt cheat buttons
+
+		GUI.color = new Color(1f, 1f, 1f, 0f);
+
+		if (GUI.Button(new Rect(inset + innerX, inset + innerY + innerH * 0.50f, (innerW - gapSize * 2f) *  0.33333f - inset*2, innerH * 0.50f - inset*2), "")) {
+			scoringSystem.SetHuntSuccessCount(1);
+		}
+		if (GUI.Button(new Rect(inset + innerX + innerW * 0.33333f + gapSize/4, inset + innerY + innerH * 0.50f, (innerW - gapSize * 2f) *  0.33333f - inset*2, innerH * 0.50f - inset*2), "")) {
+			scoringSystem.SetHuntSuccessCount(2);
+		}
+		if (GUI.Button(new Rect(inset + innerX + innerW * 0.66666f + gapSize/2, inset + innerY + innerH * 0.50f, (innerW - gapSize * 2f) *  0.33333f - inset*2, innerH * 0.50f - inset*2), "")) {
+			scoringSystem.SetHuntSuccessCount(3);
+		}
+
+		GUI.color = new Color(1f, 1f, 1f, 1f * okButtonOpacity);
+
+
+
+
+		
+		
+		
+
+		
 		//********************
 		// 'OK' BUTTON
 		//********************
@@ -440,8 +571,16 @@ public class FeedingDisplay : MonoBehaviour
 		guiManager.customGUISkin.button.fontSize = (int)(feedingDisplayHeight * 0.14);
 		guiManager.customGUISkin.button.fontStyle = FontStyle.Normal;
 		if (GUI.Button(new Rect(feedingDisplayX + feedingDisplayWidth * 0.81f,  feedingDisplayY + feedingDisplayHeight * 0.727f, feedingDisplayWidth * 0.14f, feedingDisplayHeight * 0.25f), "Go")) {
-			guiManager.SetGuiState("guiStateFeeding7");
-			levelManager.SetGameState("gameStateFeeding5");
+			if (scoringSystem.GetHuntSuccessCount() >= 3) {
+				// use keyboard to go to next level
+				guiManager.SetGuiState("guiStateLeavingFeeding");
+				levelManager.SetGameState("gameStateLeavingGameplay");
+			}
+			else {
+				// use keyboard to resume gameplay
+				guiManager.SetGuiState("guiStateFeeding7");
+				levelManager.SetGameState("gameStateFeeding5");
+			}
 		}	
 		
 		feedingDisplayX += feedingDisplayWidth * 0.02f;

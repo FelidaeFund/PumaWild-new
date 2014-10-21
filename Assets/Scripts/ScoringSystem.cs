@@ -12,14 +12,21 @@ public class ScoringSystem : MonoBehaviour
 	//===================================
 	//===================================
 
+	// hunt stats
+	private int huntCount = 0;
+	private int huntSuccessCount = 0;
+	private int[] huntStatsSelectedPuma;
+	private float[] huntStatsPumaHealth;
+	private float[] huntStatsHealthChange;
+	
 	// meat consumption
 	private float meatLimitForLevel;
 	private float meatTotalEaten;
 	public float meatEatenOverdrive = 1f;
 
 	// health points
-	private float maxHealth;
 	private float[] healthPoints;
+	private float[] maxHealthPoints;
 	private bool[] carKilledFlags;
 	
 	// energy usage
@@ -58,14 +65,21 @@ public class ScoringSystem : MonoBehaviour
 
     private void InitScoringSystem()
     {
+		// hunt stats
+		huntCount = 0;
+		huntSuccessCount = 0;
+		huntStatsSelectedPuma = new int[500];
+		huntStatsPumaHealth = new float[500];
+		huntStatsHealthChange = new float[500];
+
 		// meat consumption
 		meatLimitForLevel = 1000f;
 		meatTotalEaten = 0f;
 
 		// health points
-		maxHealth = 175000f;
-		healthPoints = new float[] { maxHealth * 0.5f, maxHealth * 0.5f, maxHealth * 0.5f,
-									 maxHealth * 0.5f, maxHealth * 0.5f, maxHealth * 0.5f};
+		float defaultMaxHealth = 175000f;
+		healthPoints = new float[] {defaultMaxHealth * 0.5f, defaultMaxHealth * 0.5f, defaultMaxHealth * 0.5f, defaultMaxHealth * 0.5f, defaultMaxHealth * 0.5f, defaultMaxHealth * 0.5f};
+		maxHealthPoints = new float[] {defaultMaxHealth, defaultMaxHealth, defaultMaxHealth, defaultMaxHealth, defaultMaxHealth, defaultMaxHealth};
 		carKilledFlags = new bool[] {false, false, false, false, false, false};
 
 		// energy usage
@@ -211,8 +225,19 @@ public class ScoringSystem : MonoBehaviour
 		
 		meatTotalEaten += meatEaten;
 		healthPoints[selectedPuma] += caloriesEaten;
-		if (healthPoints[selectedPuma] > maxHealth)
-			healthPoints[selectedPuma] = maxHealth;
+		if (healthPoints[selectedPuma] > maxHealthPoints[selectedPuma])
+			maxHealthPoints[selectedPuma] = healthPoints[selectedPuma];
+			
+		// remember state in 'hunting stats'	
+		huntStatsSelectedPuma[huntCount] = selectedPuma;
+		huntStatsPumaHealth[huntCount] = healthPoints[selectedPuma];
+		huntStatsHealthChange[huntCount] = caloriesEaten - lastKillExpenses[selectedPuma];
+		huntCount++;
+		
+		if ((caloriesEaten - lastKillExpenses[selectedPuma]) > 0f)
+			huntSuccessCount++;
+		else
+			huntSuccessCount = 0;
 	}
 	
 	//------------------------------------------
@@ -257,6 +282,26 @@ public class ScoringSystem : MonoBehaviour
 	//===========================================
 	//===========================================
 
+	public bool CheckLevelComplete()
+	{
+		if (huntCount >= 2 && huntStatsHealthChange[huntCount-1] > 0f && huntStatsHealthChange[huntCount-2] > 0f)
+			return true;
+		else
+			return false;
+	}
+		
+	public int GetHuntSuccessCount()
+	{
+		return huntSuccessCount;
+	}
+	
+	
+	public void SetHuntSuccessCount(int count)
+	{
+		huntSuccessCount = count;
+	}
+	
+		
 	public float GetMeatLevel()
 	{
 		return meatTotalEaten / meatLimitForLevel;
@@ -267,7 +312,19 @@ public class ScoringSystem : MonoBehaviour
 		if (pumaNum == -1)
 			return -1f;
 
-		return healthPoints[pumaNum] / maxHealth;
+		return (healthPoints[pumaNum] / maxHealthPoints[pumaNum]);
+	}
+
+	public float GetPopulationHealth()
+	{
+		float health = 0f;
+		health += healthPoints[0] / maxHealthPoints[0]; 
+		health += healthPoints[1] / maxHealthPoints[1]; 
+		health += healthPoints[2] / maxHealthPoints[2]; 
+		health += healthPoints[3] / maxHealthPoints[3]; 
+		health += healthPoints[4] / maxHealthPoints[4]; 
+		health += healthPoints[5] / maxHealthPoints[5]; 
+		return (health / 6f);
 	}
 
 	public bool WasKilledByCar(int pumaNum)

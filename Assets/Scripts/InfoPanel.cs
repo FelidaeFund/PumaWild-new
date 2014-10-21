@@ -2,6 +2,742 @@
 using System.Collections;
 
 /// InfoPanel
+/// Draw the Info panel that provides info on topics
+
+public class InfoPanel : MonoBehaviour
+{
+	//===================================
+	//===================================
+	//		MODULE VARIABLES
+	//===================================
+	//===================================
+
+	private bool newLevelFlag = true;
+	private int currentPage = 0;
+	private int currentLevel = 0;
+	
+	private Rect overlayRect;
+	private int currentScreen;
+	private int difficultyLevel;
+	private int soundEnable;
+	private float soundVolume;
+	private float pawRightFlag;
+	
+	// button styling
+	private GUIStyle buttonStyle;	
+	private GUIStyle buttonDownStyle;	
+	private GUIStyle buttonDisabledStyle;	
+	private GUIStyle bigButtonStyle;	
+	private GUIStyle bigButtonDisabledStyle;
+	private GUIStyle swapButtonStyle;
+
+	// slider styling
+	private GUISkin customSkin;
+	private GUIStyle sliderBarStyle;
+	private GUIStyle sliderThumbStyle;	
+
+	// textures based on bitmap files
+	private Texture2D logoTexture;
+	private Texture2D backgroundTexture;
+	private Texture2D pumaIconTexture;
+	private Texture2D pumaIconShadowTexture;
+	private Texture2D greenCheckTexture;	
+	private Texture2D radioButtonTexture;
+	private Texture2D radioSelectTexture;
+	private Texture2D arrowTrayTexture;
+	private Texture2D arrowTrayTopTexture;
+	private Texture2D swapButtonTexture;
+	private Texture2D swapButtonHoverTexture;
+	private Texture2D sliderBarTexture;
+	private Texture2D sliderThumbTexture;
+	private Texture2D buckHeadTexture;
+	private Texture2D doeHeadTexture;
+	private Texture2D fawnHeadTexture;
+	private Texture2D headshot1Texture;
+	private Texture2D headshot2Texture;
+	private Texture2D headshot3Texture;
+	private Texture2D headshot4Texture;
+	private Texture2D headshot5Texture;
+	private Texture2D headshot6Texture;
+	private Texture2D closeup1Texture;
+	private Texture2D closeup2Texture;
+	private Texture2D closeup3Texture;
+	private Texture2D closeup4Texture;
+	private Texture2D closeup5Texture;
+	private Texture2D closeup6Texture;
+	private Texture2D closeupBackgroundTexture;
+	private Texture2D pumaCrossbonesDarkRedTexture;
+	private Texture2D greenHeartTexture;
+
+	private Texture2D iconFacebookTexture; 
+	private Texture2D iconTwitterTexture; 
+	private Texture2D iconGoogleTexture; 
+	private Texture2D iconPinterestTexture; 
+	private Texture2D iconYouTubeTexture; 
+	private Texture2D iconLinkedInTexture; 
+	private Texture2D logoFelidaeTexture; 
+	private Texture2D logoBappTexture; 
+	
+	// external modules
+	private GuiManager guiManager;
+	private GuiComponents guiComponents;
+	private GuiUtils guiUtils;
+	private LevelManager levelManager;
+	//private InputControls inputControls;
+	private ScoringSystem scoringSystem;
+	
+
+	//===================================
+	//===================================
+	//		INITIALIZATION
+	//===================================
+	//===================================
+
+	void Start() 
+	{	
+		// connect to external modules
+		guiManager = GetComponent<GuiManager>();
+		guiComponents = GetComponent<GuiComponents>();
+		guiUtils = GetComponent<GuiUtils>();
+		levelManager = GetComponent<LevelManager>();
+		//inputControls = GetComponent<InputControls>();
+		scoringSystem = GetComponent<ScoringSystem>();
+		
+		// texture references from GuiManager
+		logoTexture = guiManager.logoTexture;
+		backgroundTexture = guiManager.backgroundTexture;
+		pumaIconTexture = guiManager.pumaIconTexture;
+		pumaIconShadowTexture = guiManager.pumaIconShadowTexture;
+		greenCheckTexture = guiManager.greenCheckTexture;
+		radioButtonTexture = guiManager.radioButtonTexture;
+		radioSelectTexture = guiManager.radioSelectTexture;
+		arrowTrayTexture = guiManager.arrowTrayTexture;
+		arrowTrayTopTexture = guiManager.arrowTrayTopTexture;
+		swapButtonTexture = guiManager.swapButtonTexture;
+		swapButtonHoverTexture = guiManager.swapButtonHoverTexture;
+		sliderBarTexture = guiManager.sliderBarTexture;
+		sliderThumbTexture = guiManager.sliderThumbTexture;
+		buckHeadTexture = guiManager.buckHeadTexture;
+		doeHeadTexture = guiManager.doeHeadTexture;
+		fawnHeadTexture = guiManager.fawnHeadTexture;
+		headshot1Texture = guiManager.headshot1Texture;
+		headshot2Texture = guiManager.headshot2Texture;
+		headshot3Texture = guiManager.headshot3Texture;
+		headshot4Texture = guiManager.headshot4Texture;
+		headshot5Texture = guiManager.headshot5Texture;
+		headshot6Texture = guiManager.headshot6Texture;
+		closeup1Texture = guiManager.closeup1Texture;
+		closeup2Texture = guiManager.closeup2Texture;
+		closeup3Texture = guiManager.closeup3Texture;
+		closeup4Texture = guiManager.closeup4Texture;
+		closeup5Texture = guiManager.closeup5Texture;
+		closeup6Texture = guiManager.closeup6Texture;
+		closeupBackgroundTexture = guiManager.closeupBackgroundTexture;
+		pumaCrossbonesDarkRedTexture = guiManager.pumaCrossbonesDarkRedTexture;		
+		greenHeartTexture = guiManager.greenHeartTexture;		
+
+		iconFacebookTexture = guiManager.iconFacebookTexture;
+		iconTwitterTexture = guiManager.iconTwitterTexture;
+		iconGoogleTexture = guiManager.iconGoogleTexture;
+		iconPinterestTexture = guiManager.iconPinterestTexture;
+		iconYouTubeTexture = guiManager.iconYouTubeTexture;
+		iconLinkedInTexture = guiManager.iconLinkedInTexture;
+		logoFelidaeTexture = guiManager.logoFelidaeTexture;
+		logoBappTexture = guiManager.logoBappTexture;
+		
+		// custom button styling
+		buttonStyle = new GUIStyle();
+		buttonStyle.normal.textColor = new Color(0.99f, 0.7f, 0.2f, 1f);
+		buttonStyle.hover.textColor = new Color(0.99f, 0.8f, 0.4f, 1f);
+		buttonStyle.alignment = TextAnchor.MiddleCenter;
+		buttonDownStyle = new GUIStyle();
+		buttonDownStyle.normal.textColor = new Color(0.99f, 0.88f, 0.6f, 1f);
+		buttonDownStyle.hover.textColor = new Color(0.99f, 0.88f, 0.6f, 1f);
+		buttonDownStyle.alignment = TextAnchor.MiddleCenter;
+		buttonDisabledStyle = new GUIStyle();
+		buttonDisabledStyle.normal.textColor = new Color(0.3f, 0.3f, 0.3f, 1f);
+		buttonDisabledStyle.hover.textColor = new Color(0.3f, 0.3f, 0.3f, 1f);
+		buttonDisabledStyle.alignment = TextAnchor.MiddleCenter;
+		bigButtonStyle = new GUIStyle();
+		bigButtonStyle.normal.textColor = new Color(0.99f, 0.7f, 0.2f, 1f);
+		bigButtonStyle.hover.textColor = new Color(0.99f, 0.8f, 0.4f, 1f);
+		bigButtonStyle.alignment = TextAnchor.MiddleCenter;
+		bigButtonDisabledStyle = new GUIStyle();
+		bigButtonDisabledStyle.normal.textColor = new Color(0.4f, 0.4f, 0.4f, 1f);
+		bigButtonDisabledStyle.hover.textColor = new Color(0.4f, 0.4f, 0.4f, 1f);
+		bigButtonDisabledStyle.alignment = TextAnchor.MiddleCenter;
+		swapButtonStyle = new GUIStyle();
+		swapButtonStyle.normal.textColor = Color.white;
+		swapButtonStyle.normal.background = swapButtonTexture;
+		swapButtonStyle.hover.textColor = Color.white;
+		swapButtonStyle.hover.background = swapButtonHoverTexture;
+		swapButtonStyle.alignment = TextAnchor.MiddleCenter;
+
+		// custom slider styling
+		sliderBarStyle = new GUIStyle();
+		sliderThumbStyle = new GUIStyle();
+		sliderThumbStyle.normal.background = sliderThumbTexture;
+		sliderThumbStyle.padding = new RectOffset(10,10,10,10);
+		customSkin = (GUISkin)ScriptableObject.CreateInstance("GUISkin");
+		customSkin.horizontalSlider = sliderBarStyle;
+		customSkin.horizontalSliderThumb = sliderThumbStyle;	
+
+		// additional initialization
+		currentScreen = 0;
+		difficultyLevel = 1;
+		soundEnable = 1;
+		soundVolume = 0.5f;
+		pawRightFlag = 1;
+	}
+	
+	//===================================
+	//===================================
+	//	 PUBLIC ACCESS TO MODULE VARS
+	//===================================
+	//===================================
+	
+	public int GetCurrentScreen()
+	{
+		return currentScreen;
+	}
+
+	public void SetCurrentScreen(int newVal)
+	{
+		currentScreen = newVal;
+	}
+	
+	public void SetNewLevelNumber(int levelNum)
+	{
+		currentLevel = levelNum;
+	}
+		
+	public void SetNewLevelFlag(bool boolVal)
+	{
+		newLevelFlag = boolVal;
+	}
+		
+
+	public void SetCurrentPage(int newPageNum)
+	{
+		currentPage = newPageNum;
+	}
+		
+
+	//===================================
+	//===================================
+	//	  DRAW THE INFO PANEL
+	//===================================
+	//===================================
+	
+	public void Draw(float infoPanelOpacity) 
+	{ 
+		overlayRect = guiManager.GetOverlayRect();
+		
+		float originalOverlayX = overlayRect.x;
+		float originalOverlayWidth = overlayRect.width;
+		overlayRect.x -= overlayRect.width * 0.06f;
+		overlayRect.width += overlayRect.width * 0.12f;
+	
+		// background panel
+		GUI.color = new Color(0f, 0f, 0f, 1f * infoPanelOpacity);
+		GUI.Box(new Rect(overlayRect.x, overlayRect.y, overlayRect.width, overlayRect.height), "");
+		//GUI.color = new Color(0f, 0f, 0f, 0.3f * infoPanelOpacity);
+		//GUI.Box(new Rect(overlayRect.x, overlayRect.y, overlayRect.width, overlayRect.height), "");
+		GUI.color = new Color(1f, 1f, 1f, 1f * infoPanelOpacity);
+		
+		//background image
+		//GUI.color = new Color(1f, 1f, 1f, 0.75f * infoPanelOpacity);
+		//GUI.color = new Color(1f, 1f, 1f, 0f * infoPanelOpacity);
+		//GUI.DrawTexture(new Rect(overlayRect.x + 4, overlayRect.y + 4, overlayRect.width-8, overlayRect.height-8), backgroundTexture);
+		//GUI.color = new Color(1f, 1f, 1f, 1f * infoPanelOpacity);
+			
+		GUIStyle style = new GUIStyle();
+		style.alignment = TextAnchor.MiddleCenter;
+		
+		// MAIN TTTLE
+		
+		float upperItemsYShift = overlayRect.height * 0.01f;
+
+		if (true) {
+			// graphical logo
+			float logoX = originalOverlayX + originalOverlayWidth * 0.36f;
+			float logoY = overlayRect.y - overlayRect.height * 0.023f + upperItemsYShift;
+			float logoWidth = originalOverlayWidth * 0.28f;
+			float logoHeight = logoTexture.height * (logoWidth / logoTexture.width);
+			//GUI.color = new Color(1f, 1f, 1f, 0.75f * infoPanelOpacity);
+			GUI.color = new Color(0f, 0f, 0f, 1f * infoPanelOpacity);
+			GUI.Box(new Rect(logoX, logoY + logoHeight * 0.2f, logoWidth, logoHeight * 0.6f), "");
+			GUI.color = new Color(1f, 1f, 1f, 1f * infoPanelOpacity);			
+			GUI.DrawTexture(new Rect(logoX, logoY, logoWidth, logoHeight), logoTexture);
+			//GUI.color = new Color(1f, 1f, 1f, 1f * infoPanelOpacity);
+		}
+		else {
+			// text-based logo -- for reference only		
+			GUI.color = new Color(1f, 1f, 1f, 0.93f * infoPanelOpacity);
+			float xPos = overlayRect.x + overlayRect.width * 0.349f;
+			style.fontSize = (int)(overlayRect.width * 0.048f);
+			style.fontStyle = FontStyle.BoldAndItalic;
+			style.normal.textColor = new Color(0.2f, 0f, 0f, 1f);
+			GUI.Button(new Rect(xPos - overlayRect.width * 0.003f, overlayRect.y + overlayRect.height * 0.008f + upperItemsYShift, overlayRect.width * 0.30f, overlayRect.height * 0.10f), "PumaWild", style);
+			GUI.Button(new Rect(xPos + overlayRect.width * 0.003f, overlayRect.y + overlayRect.height * 0.008f + upperItemsYShift, overlayRect.width * 0.30f, overlayRect.height * 0.10f), "PumaWild", style);
+			GUI.Button(new Rect(xPos - overlayRect.width * 0.003f, overlayRect.y + overlayRect.height * 0.016f + upperItemsYShift, overlayRect.width * 0.30f, overlayRect.height * 0.10f), "PumaWild", style);
+			GUI.Button(new Rect(xPos + overlayRect.width * 0.003f, overlayRect.y + overlayRect.height * 0.016f + upperItemsYShift, overlayRect.width * 0.30f, overlayRect.height * 0.10f), "PumaWild", style);
+			style.normal.textColor = new Color(0.88f, 0.55f, 0f, 1f);
+			GUI.Button(new Rect(xPos, overlayRect.y + overlayRect.height * 0.012f + upperItemsYShift, overlayRect.width * 0.30f, overlayRect.height * 0.10f), "PumaWild", style);
+			style.fontSize = (int)(overlayRect.width * 0.0228f);
+			style.normal.textColor = new Color(0.2f, 0f, 0f, 1f);
+			xPos = overlayRect.x + overlayRect.width * 0.351f;
+			GUI.Button(new Rect(xPos - overlayRect.width * 0.001f, overlayRect.y + overlayRect.height * 0.084f + upperItemsYShift, overlayRect.width * 0.30f, overlayRect.height * 0.05f), "survival is not a given", style);
+			GUI.Button(new Rect(xPos + overlayRect.width * 0.001f, overlayRect.y + overlayRect.height * 0.084f + upperItemsYShift, overlayRect.width * 0.30f, overlayRect.height * 0.05f), "survival is not a given", style);
+			GUI.Button(new Rect(xPos - overlayRect.width * 0.001f, overlayRect.y + overlayRect.height * 0.088f + upperItemsYShift, overlayRect.width * 0.30f, overlayRect.height * 0.05f), "survival is not a given", style);
+			GUI.Button(new Rect(xPos + overlayRect.width * 0.001f, overlayRect.y + overlayRect.height * 0.088f + upperItemsYShift, overlayRect.width * 0.30f, overlayRect.height * 0.05f), "survival is not a given", style);
+			style.normal.textColor = new Color(0.88f, 0.55f, 0f, 1f);
+			GUI.Button(new Rect(xPos, overlayRect.y + overlayRect.height * 0.086f + upperItemsYShift, overlayRect.width * 0.30f, overlayRect.height * 0.05f), "survival is not a given", style);
+			GUI.color = new Color(1f, 1f, 1f, 1f * infoPanelOpacity);
+		}
+
+
+		//=====================================
+		// ADD BUTTONS
+		//=====================================
+		
+
+
+		// buttons...
+		
+		if (newLevelFlag == false) {
+			// user initiated info display
+		
+			// background rectangle
+			GUI.color = new Color(0f, 0f, 0f, 1f * infoPanelOpacity);
+			GUI.Box(new Rect(overlayRect.x + overlayRect.width * 0f, overlayRect.y + overlayRect.height * 0.926f, overlayRect.width * 1f, overlayRect.height * 0.074f), "");
+			GUI.color = new Color(1f, 1f, 1f, 1f * infoPanelOpacity);
+
+			buttonStyle.fontSize = buttonDownStyle.fontSize = (int)(overlayRect.width * 0.024);
+			buttonDisabledStyle.fontSize = buttonDownStyle.fontSize = (int)(overlayRect.width * 0.024);
+			float buttonWidth = overlayRect.width * 0.11f;
+			float buttonGap = overlayRect.width * 0.015f;
+			float buttonMargin = overlayRect.x + overlayRect.width * 0.20f;
+			float buttonY = overlayRect.y + overlayRect.height * 0.924f;
+			float buttonheight = overlayRect.height * 0.075f;
+			
+			float backgroundRectWidthAdjust = (currentScreen == 4) ? buttonWidth * 0.45f : ((currentScreen == 3) ? buttonWidth * 0.03f : ((currentScreen == 2) ? buttonWidth * 0.12f : 0f));
+			float shiftRight = (currentScreen == 4) ? buttonGap * 0.8f : 0f;
+			guiUtils.DrawRect(new Rect(buttonMargin + buttonWidth*currentScreen + buttonGap*currentScreen + buttonWidth*0.05f - backgroundRectWidthAdjust*0.5f + shiftRight, buttonY + buttonheight * 0.15f, buttonWidth - buttonWidth*0.1f + backgroundRectWidthAdjust, buttonheight - buttonheight * 0.29f), new Color(0f, 0f, 0f, 0.5f));	
+
+
+			buttonDownStyle.normal.textColor = new Color(0.99f, 0.7f, 0.2f, 1f);
+			buttonStyle.normal.textColor = new Color(0.99f, 0.88f, 0.6f, 1f);
+
+			// 'Biology'
+			if (GUI.Button(new Rect(buttonMargin, buttonY, buttonWidth, buttonheight), "Biology", (currentScreen == 0) ? buttonDownStyle : buttonStyle))
+				currentScreen = 0;
+			// 'Ecology'
+			if (GUI.Button(new Rect(buttonMargin + buttonWidth + buttonGap, buttonY, buttonWidth, buttonheight), "Ecology", (currentScreen == 1) ? buttonDownStyle : buttonStyle))
+				currentScreen = 1;
+			// 'Predation'
+			if (GUI.Button(new Rect(buttonMargin + buttonWidth*2f + buttonGap*2f, buttonY, buttonWidth, buttonheight), "Predation", (currentScreen == 2) ? buttonDownStyle : buttonStyle))
+				currentScreen = 2;
+			// 'Survival'
+			if (GUI.Button(new Rect(buttonMargin + buttonWidth*3f + buttonGap*3f, buttonY, buttonWidth, buttonheight), "Survival", (currentScreen == 3) ? buttonDownStyle : buttonStyle))
+				currentScreen = 3;
+			// 'How to Help'
+			if (GUI.Button(new Rect(buttonMargin + buttonWidth*4f + buttonGap*4.8f, buttonY, buttonWidth, buttonheight), "How to Help", (currentScreen == 4) ? buttonDownStyle : buttonStyle))
+				currentScreen = 4;
+
+			buttonStyle.normal.textColor = new Color(0.99f, 0.7f, 0.2f, 1f);
+			buttonDownStyle.normal.textColor = new Color(0.99f, 0.88f, 0.6f, 1f);
+
+			// green check mark for donate button
+			GUI.color = new Color(1f, 1f, 1f, 0.6f * infoPanelOpacity);
+			GUI.DrawTexture(new Rect(buttonMargin + buttonWidth*4f + buttonGap*4.8f + buttonWidth* 1.07f, buttonY + buttonheight * 0.10f, buttonWidth * 0.26f, buttonheight * 0.4f), greenCheckTexture);
+			GUI.color = new Color(1f, 1f, 1f, 1f * infoPanelOpacity);
+
+
+
+
+			buttonStyle.fontSize = buttonDownStyle.fontSize = (int)(overlayRect.width * 0.023);
+			buttonDisabledStyle.fontSize = buttonDownStyle.fontSize = (int)(overlayRect.width * 0.023);
+			buttonWidth = overlayRect.width * 0.12f;
+	
+			GUI.color = new Color(1f, 1f, 1f, 1f * infoPanelOpacity);
+		
+			// 'play'
+			bigButtonStyle.fontSize = (int)(overlayRect.width * 0.032);;
+			bigButtonDisabledStyle.fontSize = (int)(overlayRect.width * 0.03);;
+			GUI.skin = guiManager.customGUISkin;
+			guiManager.customGUISkin.button.fontSize = (int)(overlayRect.width * 0.030);
+			guiManager.customGUISkin.button.fontStyle = FontStyle.Normal;
+			GUI.backgroundColor = new Color(1f, 1f, 1f, 1f);
+			float startButtonX = overlayRect.x + overlayRect.width * 0.07f;
+			float startButtonY = overlayRect.y + overlayRect.height * 0.932f;
+			float startButtonWidth = overlayRect.width * 0.08f;
+			float startButtonHeight = overlayRect.height * 0.06f;
+			if (GUI.Button(new Rect(startButtonX, startButtonY, startButtonWidth, startButtonHeight), "")) {
+				guiManager.CloseInfoPanel(true);
+			}
+			if (GUI.Button(new Rect(startButtonX, startButtonY, startButtonWidth, startButtonHeight), "<")) {
+				guiManager.CloseInfoPanel(true);
+			}
+
+		}
+
+
+		else {
+			// transition screen for next level
+			
+
+			// background rectangle
+			GUI.color = new Color(0f, 0f, 0f, 1f * infoPanelOpacity);
+			GUI.Box(new Rect(overlayRect.x + overlayRect.width * 0.415f, overlayRect.y + overlayRect.height * 0.902f, overlayRect.width * 0.17f, overlayRect.height * 0.088f), "");
+			GUI.color = new Color(1f, 1f, 1f, 1f * infoPanelOpacity);
+
+			GUI.color = new Color(1f, 1f, 1f, 1f * infoPanelOpacity);		
+			// 'play'
+			bigButtonStyle.fontSize = (int)(overlayRect.width * 0.032);;
+			bigButtonDisabledStyle.fontSize = (int)(overlayRect.width * 0.03);;
+			GUI.skin = guiManager.customGUISkin;
+			guiManager.customGUISkin.button.fontSize = (int)(overlayRect.width * 0.028);
+			guiManager.customGUISkin.button.fontStyle = FontStyle.Normal;
+			GUI.backgroundColor = new Color(1f, 1f, 1f, 1f);
+			float startButtonWidth = overlayRect.width * 0.12f;
+			float startButtonX = overlayRect.x + overlayRect.width/2 - startButtonWidth/2;
+			float startButtonY = overlayRect.y + overlayRect.height * 0.916f;
+			float startButtonHeight = overlayRect.height * 0.06f;
+			if (GUI.Button(new Rect(startButtonX, startButtonY, startButtonWidth, startButtonHeight), "")) {
+				guiManager.CloseInfoPanel(true);
+				guiManager.SetGuiState("guiStateStartApp2");
+			}
+			if (GUI.Button(new Rect(startButtonX, startButtonY, startButtonWidth, startButtonHeight), "Go")) {
+				guiManager.CloseInfoPanel(true);
+				guiManager.SetGuiState("guiStateStartApp2");
+			}
+		}
+
+		GUI.color = new Color(1f, 1f, 1f, 1f * infoPanelOpacity);
+	
+		if (newLevelFlag == true) {	
+			DrawLevelScreen(infoPanelOpacity);
+		}
+		else {
+			// draw selected screen
+			switch (currentScreen) {
+			case 0:
+				DrawBiologyScreen(infoPanelOpacity);
+				break;		
+			case 1:
+				DrawBiologyScreen(infoPanelOpacity);
+				break;
+			case 2:
+				DrawBiologyScreen(infoPanelOpacity);
+				break;
+			case 3:
+				DrawBiologyScreen(infoPanelOpacity);
+				break;
+			case 4:
+				DrawDonateScreen(infoPanelOpacity);
+				break;
+			}
+		}	
+	}
+
+
+
+
+	//======================================================================
+	//======================================================================
+	//======================================================================
+	//								NEW LEVEL
+	//======================================================================
+	//======================================================================
+	//======================================================================
+	
+	void DrawLevelScreen(float panelOpacity)
+	{ 
+		float panelX = overlayRect.x + overlayRect.width * 0.06f;
+		float panelY = overlayRect.y + overlayRect.height * 0.205f;
+		float panelWidth = overlayRect.width * 0.88f;
+		float panelHeight = overlayRect.height * 0.64f;
+		float fontScale = 0.8f;
+
+		GUIStyle style = new GUIStyle();
+		style.alignment = TextAnchor.MiddleCenter;
+
+		// background rectangle
+		GUI.color = new Color(0f, 0f, 0f, 1f * panelOpacity);
+		GUI.Box(new Rect(panelX - overlayRect.width * 0.02f, panelY - overlayRect.height * 0.025f, panelWidth + overlayRect.width * 0.04f, panelHeight + overlayRect.height * 0.05f), "");
+		GUI.color = new Color(0f, 0f, 0f, 0.5f * panelOpacity);
+		GUI.Box(new Rect(panelX, panelY, panelWidth, panelHeight), "");
+		GUI.color = new Color(1f, 1f, 1f, 1f * panelOpacity);
+
+
+	}	
+
+
+
+	//======================================================================
+	//======================================================================
+	//======================================================================
+	//								BIOLOGY
+	//======================================================================
+	//======================================================================
+	//======================================================================
+	
+	void DrawBiologyScreen(float panelOpacity) 
+	{ 
+		float panelX = overlayRect.x + overlayRect.width * 0.06f;
+		float panelY = overlayRect.y + overlayRect.height * 0.205f;
+		float panelWidth = overlayRect.width * 0.88f;
+		float panelHeight = overlayRect.height * 0.6575f;
+		float fontScale = 0.8f;
+
+		GUIStyle style = new GUIStyle();
+		style.alignment = TextAnchor.MiddleCenter;
+
+		float yOffset = overlayRect.height * 0.022f;
+
+		// two labels at top of panel	
+		GUI.color = new Color(0f, 0f, 0f, 1f * panelOpacity);
+		GUI.Box(new Rect(panelX - overlayRect.width * 0.02f, yOffset + overlayRect.y + overlayRect.height * 0.095f, overlayRect.width * 0.2f, overlayRect.height * 0.064f), "");
+		GUI.color = new Color(1f, 1f, 1f, 1f * panelOpacity);
+		style.fontSize = (int)(overlayRect.width * 0.021f);
+		style.fontStyle = FontStyle.BoldAndItalic;
+		style.normal.textColor = new Color(0.816f, 0.537f, 0.18f, 1f);
+		GUI.Button(new Rect(panelX - overlayRect.width * 0.09f, yOffset + overlayRect.y + overlayRect.height * 0.077f, overlayRect.width * 0.34f, overlayRect.height * 0.1f), "In the Game", style);
+
+		GUI.color = new Color(0f, 0f, 0f, 1f * panelOpacity);
+		GUI.Box(new Rect(overlayRect.x + overlayRect.width - overlayRect.width * 0.04f - overlayRect.width * 0.2f, yOffset + overlayRect.y + overlayRect.height * 0.095f, overlayRect.width * 0.2f, overlayRect.height * 0.064f), "");
+		GUI.color = new Color(1f, 1f, 1f, 1f * panelOpacity);
+		style.fontSize = (int)(overlayRect.width * 0.021f);
+		style.fontStyle = FontStyle.BoldAndItalic;
+		style.normal.textColor = new Color(0.816f, 0.537f, 0.18f, 1f);
+		GUI.Button(new Rect(overlayRect.x + overlayRect.width - overlayRect.width * 0.04f - overlayRect.width * 0.27f, yOffset + overlayRect.y + overlayRect.height * 0.077f, overlayRect.width * 0.34f, overlayRect.height * 0.1f), "The Real World", style);
+
+
+		// background rectangles
+		float gapSize = overlayRect.width * 0.02f;
+		
+		GUI.color = new Color(0f, 0f, 0f, 1f * panelOpacity);
+		GUI.Box(new Rect(panelX - overlayRect.width * 0.02f, panelY - overlayRect.height * 0.025f, panelWidth/2 + overlayRect.width * 0.02f - gapSize/2, panelHeight + overlayRect.height * 0.05f), "");
+		GUI.color = new Color(0f, 0f, 0f, 0.5f * panelOpacity);
+		GUI.Box(new Rect(panelX, panelY, panelWidth/2 - overlayRect.width * 0.02f - gapSize/2, panelHeight), "");
+		GUI.color = new Color(1f, 1f, 1f, 1f * panelOpacity);
+
+		GUI.color = new Color(0f, 0f, 0f, 1f * panelOpacity);
+		GUI.Box(new Rect(panelX + panelWidth/2 + gapSize/2, panelY - overlayRect.height * 0.025f, panelWidth/2 + overlayRect.width * 0.02f - gapSize/2, panelHeight + overlayRect.height * 0.05f), "");
+		GUI.color = new Color(0f, 0f, 0f, 0.5f * panelOpacity);
+		GUI.Box(new Rect(panelX + panelWidth/2 + overlayRect.width * 0.02f + gapSize/2, panelY, panelWidth/2 - overlayRect.width * 0.02f - gapSize/2, panelHeight), "");
+		GUI.color = new Color(1f, 1f, 1f, 1f * panelOpacity);
+		
+		
+		
+		// TEMP TEXT 
+		
+		string tempTextL = "empty text";
+		string tempTextR = "empty text";
+		
+		switch (currentScreen) {
+		case 0:
+			tempTextL = "Speed and stealth options";
+			tempTextR = "Puma physical characteristics";
+			break;
+		case 1:
+			tempTextL = "Scoring system";
+			tempTextR = "Ecological role of pumas";
+			break;
+		case 2:
+			tempTextL = "Deer hunting tips";
+			tempTextR = "How puma's take prey";
+			break;
+		case 3:
+			tempTextL = "Car avoidance tips";
+			tempTextR = "Survival threats to pumas";
+			break;
+		}
+		
+		yOffset = overlayRect.height * 0.35f;
+		float colorScale = 0.74f;
+		
+		GUI.color = new Color(1f, 1f, 1f, 1f * panelOpacity);
+		style.fontSize = (int)(overlayRect.width * 0.022f);
+		style.fontStyle = FontStyle.Normal;
+		style.normal.textColor = new Color(0.99f * colorScale, 0.88f * colorScale, 0.66f * colorScale, 1f);
+		GUI.Button(new Rect(panelX, yOffset + overlayRect.y + overlayRect.height * 0.077f, panelWidth/2 - overlayRect.width * 0.02f - gapSize/2, overlayRect.height * 0.1f), tempTextL, style);
+
+		GUI.color = new Color(1f, 1f, 1f, 1f * panelOpacity);
+		style.fontSize = (int)(overlayRect.width * 0.022f);
+		style.fontStyle = FontStyle.Normal;
+		style.normal.textColor = new Color(0.99f * colorScale, 0.88f * colorScale, 0.66f * colorScale, 1f);
+		GUI.Button(new Rect(panelX + panelWidth/2 + overlayRect.width * 0.02f + gapSize/2, yOffset + overlayRect.y + overlayRect.height * 0.077f, panelWidth/2 - overlayRect.width * 0.02f - gapSize/2, overlayRect.height * 0.1f), tempTextR, style);
+
+		
+		
+	}	
+	
+
+	//======================================================================
+	//======================================================================
+	//======================================================================
+	//								DONATE
+	//======================================================================
+	//======================================================================
+	//======================================================================
+	
+	void DrawDonateScreen(float panelOpacity)
+	{ 
+		float panelX = overlayRect.x + overlayRect.width * 0.06f;
+		float panelY = overlayRect.y + overlayRect.height * 0.205f;
+		float panelWidth = overlayRect.width * 0.88f;
+		float panelHeight = overlayRect.height * 0.6575f;
+		float fontScale = 0.8f;
+
+		GUIStyle style = new GUIStyle();
+		style.alignment = TextAnchor.MiddleCenter;
+
+		// background rectangle
+		GUI.color = new Color(0f, 0f, 0f, 1f * panelOpacity);
+		GUI.Box(new Rect(panelX - overlayRect.width * 0.02f, panelY - overlayRect.height * 0.025f, panelWidth + overlayRect.width * 0.04f, panelHeight + overlayRect.height * 0.05f), "");
+		GUI.color = new Color(0f, 0f, 0f, 0.5f * panelOpacity);
+		GUI.Box(new Rect(panelX, panelY, panelWidth, panelHeight), "");
+		GUI.color = new Color(1f, 1f, 1f, 1f * panelOpacity);
+
+
+		// Help Pumas
+		
+		// title
+		style.fontStyle = FontStyle.BoldAndItalic;
+		style.alignment = TextAnchor.MiddleCenter;
+		style.fontSize = (int)(panelWidth * 0.026f);
+		style.normal.textColor = new Color(0.85f, 0.55f, 0.03f, 1f);
+		GUI.Button(new Rect(panelX, panelY + panelHeight * 0.08f, panelWidth * 1f, panelHeight * 0.093f), "Pumas in the Real World need your help", style);
+
+		style.fontStyle = FontStyle.BoldAndItalic;
+		style.alignment = TextAnchor.MiddleCenter;
+		style.fontSize = (int)(panelWidth * 0.018f);
+		style.normal.textColor = new Color(0.6f, 0.6f, 0.6f, 1f);
+		GUI.Button(new Rect(panelX + panelWidth * 0.4f, panelY + panelHeight * 0.16f, panelWidth * 0.2f, panelHeight * 0.06f), "Help support our work to study and protect pumas and their habitats", style);
+
+		// donate button
+		guiManager.customGUISkin.button.fontSize = (int)(overlayRect.width * 0.030);
+		guiManager.customGUISkin.button.fontStyle = FontStyle.BoldAndItalic;
+		guiManager.customGUISkin.button.normal.textColor = new Color(0.85f, 0.1f, 0f, 1f);
+		Color defaultHoverColor = guiManager.customGUISkin.button.hover.textColor;
+		guiManager.customGUISkin.button.hover.textColor = new Color(0.9f, 0.12f, 0f, 1f);
+		guiUtils.DrawRect(new Rect(panelX + panelWidth * 0.36f + panelHeight * 0.01f, panelY + panelHeight * 0.383f + panelHeight * 0.01f, panelWidth * 0.28f - panelHeight * 0.02f, panelHeight * 0.15f - panelHeight * 0.023f), new Color(1f, 1f, 1f, 0.15f));	
+		if (GUI.Button(new Rect(panelX + panelWidth * 0.36f, panelY + panelHeight * 0.37f, panelWidth * 0.28f, panelHeight * 0.15f), "Donate Now")) {
+			Application.OpenURL("http://www.felidaefund.org/donate");
+		}
+		guiManager.customGUISkin.button.normal.textColor = new Color(0.90f, 0.65f, 0f, 1f);
+		guiManager.customGUISkin.button.hover.textColor = defaultHoverColor;
+
+
+		// "learn more" section
+
+		guiManager.customGUISkin.button.normal.textColor = new Color(0.88f, 0.55f, 0f, 1f);
+
+		style.fontStyle = FontStyle.BoldAndItalic;
+		style.alignment = TextAnchor.MiddleCenter;
+		style.fontSize = (int)(panelWidth * 0.018f);
+		style.normal.textColor = new Color(0.6f, 0.6f, 0.6f, 1f);
+		GUI.Button(new Rect(panelX + panelWidth * 0.4f, panelY + panelHeight * 0.675f , panelWidth * 0.2f, panelHeight * 0.06f), "Get involved...", style);
+
+		GUI.color = new Color(1f, 1f, 1f, 0.9f * panelOpacity);
+
+		guiManager.customGUISkin.button.fontSize = (int)(overlayRect.width * 0.016);
+		guiManager.customGUISkin.button.fontStyle = FontStyle.BoldAndItalic;
+		if (GUI.Button(new Rect(panelX + panelWidth * 0.21f, panelY + panelHeight * 0.765f, panelWidth * 0.28f, panelHeight * 0.085f), "Felidae Conservation Fund")) {
+			Application.OpenURL("http://www.felidaefund.org");
+		}
+	
+		guiManager.customGUISkin.button.fontSize = (int)(overlayRect.width * 0.016);
+		guiManager.customGUISkin.button.fontStyle = FontStyle.BoldAndItalic;
+		if (GUI.Button(new Rect(panelX + panelWidth * 0.51f, panelY + panelHeight * 0.765f, panelWidth * 0.28f, panelHeight * 0.085f), "Bay Area Puma Project")) {
+			Application.OpenURL("http://www.bapp.org");
+		}	
+		
+		GUI.color = new Color(1f, 1f, 1f, 1f * panelOpacity);
+		guiManager.customGUISkin.button.normal.textColor = new Color(0.90f, 0.65f, 0f, 1f);
+
+		// felidae and bapp logos
+		float textureHeight = panelHeight * 0.14f;
+		float textureWidth = logoFelidaeTexture.width * (textureHeight / logoFelidaeTexture.height);
+		float textureX = panelX + panelWidth * 0.029f;
+		float textureY = panelY + panelHeight * 0.395f;
+		GUI.color = new Color(1f, 1f, 1f, 0.7f * panelOpacity);
+		GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), logoFelidaeTexture);
+		GUI.color = new Color(1f, 1f, 1f, 1f * panelOpacity);
+
+		textureHeight = panelHeight * 0.145f;
+		textureWidth = logoBappTexture.width * (textureHeight / logoBappTexture.height);
+		textureX = panelX + panelWidth * 0.745f;
+		textureY = panelY + panelHeight * 0.39f;
+		GUI.color = new Color(1f, 1f, 1f, 0.6f * panelOpacity);
+		GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), logoBappTexture);
+		GUI.color = new Color(1f, 1f, 1f, 1f * panelOpacity);
+
+
+		GUI.color = new Color(1f, 1f, 1f, 0.7f * panelOpacity);
+		// facebook
+		textureHeight = panelHeight * 0.055f;
+		textureWidth = iconFacebookTexture.width * (textureHeight / iconFacebookTexture.height);
+		textureX = panelX + panelWidth * 0.333f;
+		textureY = panelY + panelHeight * 0.9f;
+		if (GUI.Button(new Rect(textureX, textureY, textureWidth, textureHeight), "")) {
+			Application.OpenURL("http://www.facebook.com/felidaefund");
+		}	
+		GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), iconFacebookTexture);
+		// twitter
+		textureWidth = iconTwitterTexture.width * (textureHeight / iconTwitterTexture.height);
+		textureX += panelWidth * 0.06f;
+		if (GUI.Button(new Rect(textureX, textureY, textureWidth, textureHeight), "")) {
+			Application.OpenURL("http://www.twitter.com/felidaefund");
+		}	
+		GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), iconTwitterTexture);
+		// google
+		textureWidth = iconGoogleTexture.width * (textureHeight / iconGoogleTexture.height);
+		textureX += panelWidth * 0.06f;
+		if (GUI.Button(new Rect(textureX, textureY, textureWidth, textureHeight), "")) {
+			Application.OpenURL("http://plus.google.com/u/0/118124929806137459330/posts");
+		}	
+		GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), iconGoogleTexture);
+		// pinterest
+		textureWidth = iconPinterestTexture.width * (textureHeight / iconPinterestTexture.height);
+		textureX += panelWidth * 0.06f;
+		if (GUI.Button(new Rect(textureX, textureY, textureWidth, textureHeight), "")) {
+			Application.OpenURL("http://www.pinterest.com/felidaefund");
+		}	
+		GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), iconPinterestTexture);
+		// youtube
+		textureWidth = iconYouTubeTexture.width * (textureHeight / iconYouTubeTexture.height);
+		textureX += panelWidth * 0.06f;
+		if (GUI.Button(new Rect(textureX, textureY, textureWidth, textureHeight), "")) {
+			Application.OpenURL("http://www.youtube.com/felidaefund");
+		}	
+		GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), iconYouTubeTexture);
+		// linkedin
+		textureWidth = iconLinkedInTexture.width * (textureHeight / iconLinkedInTexture.height);
+		textureX += panelWidth * 0.06f;
+		if (GUI.Button(new Rect(textureX, textureY, textureWidth, textureHeight), "")) {
+			Application.OpenURL("http://www.linkedin.com/groups/Felidae-Conservation-Fund-1108927?gid=1108927&trk=hb_side_g");
+		}	
+		GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), iconLinkedInTexture);
+		GUI.color = new Color(1f, 1f, 1f, 1f * panelOpacity);
+	}	
+}
+
+
+
+
+
+
+/*
+
+
+
+using UnityEngine;
+using System.Collections;
+
+/// InfoPanel
 /// Popup panel for scientific and conservation info
 
 public class InfoPanel : MonoBehaviour
@@ -643,3 +1379,7 @@ public class InfoPanel : MonoBehaviour
 	}
 	
 }
+
+
+
+*/

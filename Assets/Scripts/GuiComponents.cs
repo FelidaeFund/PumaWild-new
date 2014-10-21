@@ -679,15 +679,8 @@ public class GuiComponents : MonoBehaviour
 
 	public void DrawPopulationHealthBar(float healthBarOpacity, float healthBarX, float healthBarY, float healthBarWidth, float healthBarHeight, bool showPumaIcons, bool centerLabels) 
 	{ 
-		float health = 0; 
-		health += scoringSystem.GetPumaHealth(0); 
-		health += scoringSystem.GetPumaHealth(1); 
-		health += scoringSystem.GetPumaHealth(2); 
-		health += scoringSystem.GetPumaHealth(3); 
-		health += scoringSystem.GetPumaHealth(4); 
-		health += scoringSystem.GetPumaHealth(5); 
-		health /= 6;
-		
+		float health = scoringSystem.GetPopulationHealth(); 
+
 		GUIStyle style = new GUIStyle();
 		style.alignment = TextAnchor.MiddleCenter;
 

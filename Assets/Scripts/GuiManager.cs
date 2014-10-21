@@ -8,7 +8,7 @@ public class GuiManager : MonoBehaviour
 {
 	// DEBUGGING OPTIONS
 	private bool displayFrameRate = false;
-	private bool skipStraightToLevel = false;
+	private bool skipStraightToLevel = true;
 	private int  skipStraightToLevelFrameCount = 0;
 
 	//===================================
@@ -79,6 +79,8 @@ public class GuiManager : MonoBehaviour
 	public Texture2D sliderBarTexture; 
 	public Texture2D sliderThumbTexture; 
 	public Texture2D greenCheckTexture; 
+	public Texture2D greenOutlineRectTexture; 
+	public Texture2D redXTexture; 
 	public Texture2D pumaCrossbonesTexture; 
 	public Texture2D pumaCrossbonesRedTexture; 
 	public Texture2D pumaCrossbonesDarkRedTexture; 
@@ -118,6 +120,8 @@ public class GuiManager : MonoBehaviour
 	public Texture2D iconPinterestTexture; 
 	public Texture2D iconYouTubeTexture; 
 	public Texture2D iconLinkedInTexture; 
+	public Texture2D logoFelidaeTexture; 
+	public Texture2D logoBappTexture; 
 
 	// EXTERNAL MODULES
 	private GuiComponents guiComponents;		// TEMP: may not need this when this file has been fully pruned
@@ -215,7 +219,7 @@ public class GuiManager : MonoBehaviour
 			// fade-out of popup panel
 			guiStateDuration = 1.1f;
 			if (Time.time > guiStateStartTime + guiStateDuration) {
-				infoPanel.ClearIntroFlag();
+				infoPanel.SetNewLevelFlag(false);
 				SetGuiState("guiStateEnteringOverlay");
 			}
 			break;
@@ -351,16 +355,33 @@ public class GuiManager : MonoBehaviour
 
 		case "guiStateFeeding3":
 			// fade-in of feeding display main panel
-			guiStateDuration = 1f;
+			guiStateDuration = 1.5f;
 			FadeInOpacityLinear();
+			CheckForKeyboardEscapeFromFeeding();
+			if (Time.time > guiStateStartTime + guiStateDuration)
+				SetGuiState("guiStateFeeding3a");
+			break;
+
+		case "guiStateFeeding3a":
+			// brief pause
+			guiStateDuration = 0.2f;
 			CheckForKeyboardEscapeFromFeeding();
 			if (Time.time > guiStateStartTime + guiStateDuration)
 				SetGuiState("guiStateFeeding4");
 			break;
 
 		case "guiStateFeeding4":
+			// fade-in of level indicator
+			guiStateDuration = 0.75f;
+			FadeInOpacityLinear();
+			CheckForKeyboardEscapeFromFeeding();
+			if (Time.time > guiStateStartTime + guiStateDuration)
+				SetGuiState("guiStateFeeding4a");
+			break;
+
+		case "guiStateFeeding4a":
 			// brief pause
-			guiStateDuration = 1f;
+			guiStateDuration = 0.3f;
 			CheckForKeyboardEscapeFromFeeding();
 			if (Time.time > guiStateStartTime + guiStateDuration)
 				SetGuiState("guiStateFeeding5");
@@ -368,7 +389,7 @@ public class GuiManager : MonoBehaviour
 
 		case "guiStateFeeding5":
 			// fade-in of feeding display 'ok' button
-			guiStateDuration = 1f;
+			guiStateDuration = 0.7f;
 			FadeInOpacityLinear();
 			CheckForKeyboardEscapeFromFeeding();
 			if (Time.time > guiStateStartTime + guiStateDuration)
@@ -422,11 +443,27 @@ public class GuiManager : MonoBehaviour
 			if (Time.time > guiStateStartTime + guiStateDuration)
 				SetGuiState("guiStateGameplay");
 			break;
-			
+
+		case "guiStateLeavingFeeding":
+			// fade-out of feeding display, go to new level display
+			guiStateDuration = 0.7f;
+			FadeOutOpacityLinear();
+			CheckForKeyboardSelectionOfPuma();
+			if (Time.time > guiStateStartTime + guiStateDuration) {
+				SetGuiState("guiStateEnteringOverlay");
+				selectedPuma = -1;
+				overlayPanel.SetCurrentScreen(0);
+				infoPanel.SetNewLevelFlag(true);
+				infoPanel.SetNewLevelNumber(levelManager.GetCurrentLevel() + 1);
+				OpenInfoPanel(-1);
+				scoringSystem.SetHuntSuccessCount(0);
+			}
+			break;
+
 		//------------------------------
 		// Puma Done
 		//
-		// due to starvation or
+		// starvation or
 		// collision with car
 		// or reaching full health
 		//------------------------------
@@ -447,7 +484,7 @@ public class GuiManager : MonoBehaviour
 			break;
 
 		case "guiStatePumaDone3":
-			// fade-in of mortality display main panel
+			// fade-in of done display main panel
 			guiStateDuration = 1f;
 			FadeInOpacityLinear();
 			CheckForKeyboardEscapeFromPumaDone();
@@ -464,7 +501,7 @@ public class GuiManager : MonoBehaviour
 			break;
 
 		case "guiStatePumaDone5":
-			// fade-in of mortality display 'ok' button
+			// fade-in of done display 'ok' button
 			guiStateDuration = 1f;
 			FadeInOpacityLinear();
 			CheckForKeyboardEscapeFromPumaDone();
@@ -473,12 +510,12 @@ public class GuiManager : MonoBehaviour
 			break;
 
 		case "guiStatePumaDone6":
-			// ongoing view of mortality display
+			// ongoing view of done display
 			CheckForKeyboardEscapeFromPumaDone();
 			break;
 
 		case "guiStateLeavingPumaDone":
-			// fade-out of mortality display
+			// fade-out of done display
 			guiStateDuration = 0.7f;
 			FadeOutOpacityLinear();
 			CheckForKeyboardSelectionOfPuma();
@@ -528,9 +565,16 @@ public class GuiManager : MonoBehaviour
 	private void CheckForKeyboardEscapeFromFeeding()
 	{
 		if (spacePressed || rightShiftPressed) {
-			// use keyboard to resume gameplay
-			SetGuiState("guiStateFeeding7");
-			levelManager.SetGameState("gameStateFeeding5");
+			if (scoringSystem.GetHuntSuccessCount() >= 3) {
+				// use keyboard to go to next level
+				SetGuiState("guiStateLeavingFeeding");
+				levelManager.SetGameState("gameStateLeavingGameplay");
+			}
+			else {
+				// use keyboard to resume gameplay
+				SetGuiState("guiStateFeeding7");
+				levelManager.SetGameState("gameStateFeeding5");
+			}
 		}
 	}
 
@@ -621,9 +665,22 @@ public class GuiManager : MonoBehaviour
 	{	
 		CalculateOverlayRect();
 	
-		if (infoPanelVisible == false || Time.time - infoPanelTransStart < infoPanelTransTime * 0.5f) {
+		if (infoPanelVisible == false || Time.time - infoPanelTransStart < infoPanelTransTime) {
 		
-			// DRAW SOMETHING - info panel is either not showing, or in first half of fade-in
+			float infoPanelOpacityComplement = 1f;
+			float infoPanelElapsedTime = Time.time - infoPanelTransStart;
+		
+			if (infoPanelVisible == true && infoPanelElapsedTime < infoPanelTransTime) {
+				// fading in
+				infoPanelOpacityComplement = 1f - infoPanelElapsedTime / infoPanelTransTime;			
+			}
+			else if (infoPanelVisible == false && infoPanelElapsedTime < infoPanelTransTime) {
+				// fading out		
+				infoPanelOpacityComplement = infoPanelElapsedTime / infoPanelTransTime;
+			}
+			
+			
+			// DRAW SOMETHING - info panel is either not showing, or is fading in or out
 
 			switch (guiState) {
 		
@@ -637,7 +694,7 @@ public class GuiManager : MonoBehaviour
 			case "guiStateEnteringOverlay":
 			case "guiStateOverlay":
 			case "guiStateLeavingOverlay":
-				overlayPanel.Draw(guiOpacity);
+				overlayPanel.Draw(guiOpacity * infoPanelOpacityComplement);
 				break;
 							
 			//-----------------------
@@ -699,27 +756,37 @@ public class GuiManager : MonoBehaviour
 
 			case "guiStateFeeding3":
 				// fade-in of feeding display main panel
-				feedingDisplay.Draw(guiOpacity, guiOpacity, 0f);
+				feedingDisplay.Draw(guiOpacity, guiOpacity, 0f, 0f);
+				break;
+
+			case "guiStateFeeding3a":
+				// brief pause
+				feedingDisplay.Draw(1f, 1f, 0f, 0f);
 				break;
 
 			case "guiStateFeeding4":
+				// fade-in of level display
+				feedingDisplay.Draw(1f, 1f, guiOpacity, 0f);
+				break;
+
+			case "guiStateFeeding4a":
 				// brief pause
-				feedingDisplay.Draw(1f, 1f, 0f);
+				feedingDisplay.Draw(1f, 1f, 1f, 0f);
 				break;
 
 			case "guiStateFeeding5":
 				// fade-in of feeding display 'ok' button
-				feedingDisplay.Draw(1f, 1f, guiOpacity);
+				feedingDisplay.Draw(1f, 1f, 1f, guiOpacity);
 				break;
 
 			case "guiStateFeeding6":
 				// ongoing view of feeding display
-				feedingDisplay.Draw(1f, 1f, 1f);
+				feedingDisplay.Draw(1f, 1f, 1f, 1f);
 				break;
 
 			case "guiStateFeeding7":
 				// fade-out of feeding display
-				feedingDisplay.Draw(guiOpacity, guiOpacity, guiOpacity);
+				feedingDisplay.Draw(guiOpacity, guiOpacity, guiOpacity, guiOpacity);
 				break;
 
 			case "guiStateFeeding8":
@@ -742,10 +809,15 @@ public class GuiManager : MonoBehaviour
 				gameplayDisplay.Draw(1f, 1f, guiOpacity);
 				break;
 				
+			case "guiStateLeavingFeeding":
+				// fade-out of feeding display, go to overlay
+				feedingDisplay.Draw(guiOpacity, guiOpacity, guiOpacity, guiOpacity);
+				break;
+
 			//------------------------------
 			// Puma Done
 			//
-			// due to starvation or
+			// starvation or
 			// collision with car
 			// or reaching full health
 			//------------------------------
@@ -934,9 +1006,6 @@ public class GuiManager : MonoBehaviour
 	bool PumaIsSelectable(int pumaNum)
 	{	
 		if (scoringSystem.GetPumaHealth(pumaNum) <= 0f)
-			return false;
-			
-		if (scoringSystem.GetPumaHealth(pumaNum) >= 1f)
 			return false;
 			
 		return true;

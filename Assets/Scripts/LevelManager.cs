@@ -7,7 +7,7 @@ using System.Collections;
 public class LevelManager : MonoBehaviour 
 {
 	// DEBUG & DEV
-	private bool goStraightToFeeding = false;
+	private bool goStraightToFeeding = true;
 	public float speedOverdrive = 1f;
 	public float guiFlybyOverdrive = 1f;
 	public float travelledDistanceOverdrive = 1f;
@@ -354,7 +354,7 @@ public class LevelManager : MonoBehaviour
 
 		Physics.gravity = new Vector3(0f, -20f, 0f);
 		
-		InitLevel(4);
+		InitLevel(0);
 	}
 	
 	public void InitLevel(int level)
