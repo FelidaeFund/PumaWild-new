@@ -94,13 +94,22 @@ public class PumaController : MonoBehaviour
 
 		if (collisionInfo.gameObject.tag == "Vehicle") {
 
-			if (collisionOverpassInProgress == false) {
+			if (collisionOverpassInProgress == false &&
+			(levelManager.gameState == "gameStateChasing" || 
+			 levelManager.gameState == "gameStateStalking" || 
+			 levelManager.gameState == "gameStateFeeding1" || 
+			 levelManager.gameState == "gameStateFeeding2" || 
+			 levelManager.gameState == "gameStateFeeding3" || 
+			 levelManager.gameState == "gameStateFeeding4" || 
+			 levelManager.gameState == "gameStateFeeding5" || 
+			 levelManager.gameState == "gameStateDied1" || 
+			 levelManager.gameState == "gameStateDied2" || 
+			 levelManager.gameState == "gameStateDied3" || 
+			 levelManager.gameState == "gameStateDied4")) {
 
-				Debug.Log("=====================================");
-				Debug.Log("=====================================");
+				Debug.Log("======================================");
 				Debug.Log("             VEHICLE HIT:  " + gameObject.name + " - " + collisionInfo.collider.name);
-				Debug.Log("=====================================");
-				Debug.Log("=====================================");
+				Debug.Log("======================================");
 				//Debug.Log("Collision normal is " + collisionInfo.contacts[0].normal);
 				//Debug.Log("Collision relative velocity is " + collisionInfo.relativeVelocity);
 				//Debug.Log("Time.time: " + Time.time);
@@ -120,8 +129,8 @@ public class PumaController : MonoBehaviour
 
 		else if (collisionInfo.gameObject.tag == "Bridge") {
 
-			//Debug.Log("=====================================");
-			//Debug.Log("Detected collision between " + gameObject.name + " and " + collisionInfo.collider.name);
+			Debug.Log("=====================================");
+			Debug.Log("Detected collision between " + gameObject.name + " and " + collisionInfo.collider.name);
 			
 			float headingOffset;
 			float barrierHeading;
@@ -196,7 +205,7 @@ public class PumaController : MonoBehaviour
 
 	{
 		if (collisionInfo.gameObject.tag == "Bridge") {
-			//Debug.Log("=====================================");
+			Debug.Log("=====================================");
 			Debug.Log("Collision End:  " + gameObject.name + " - " + collisionInfo.collider.name);
 			levelManager.PumaEndCollision();
 		}

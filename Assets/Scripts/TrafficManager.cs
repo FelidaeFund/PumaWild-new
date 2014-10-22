@@ -77,6 +77,7 @@ public class TrafficManager : MonoBehaviour {
 	private bool disableCarsFlag = false;
 	private bool moduleInitialized = false;
 	private int preInitLevelSelection = 0;
+	private float carObjectCreationRadius = 500f;
 	
 	// NODES
 
@@ -167,6 +168,7 @@ public class TrafficManager : MonoBehaviour {
 	}
 
 	private List<VehicleInfo> vehicleList;
+	private GameObject vehiclesContainerObj;
 	
 	public GameObject[] vehicleModels;
 	
@@ -222,6 +224,7 @@ public class TrafficManager : MonoBehaviour {
 		
 		// create empty vehicleList
 		vehicleList = new List<VehicleInfo>();
+		vehiclesContainerObj = GameObject.Find("Vehicles");
 
 		moduleInitialized = true;
 		
@@ -499,24 +502,6 @@ public class TrafficManager : MonoBehaviour {
 			
 			// calculate new vehicle position
 			Vector3 vehiclePos = vehicleInfo.terrainPos + Vector3.Lerp(vehicleInfo.segmentStartPos, vehicleInfo.segmentEndPos, vehicleInfo.percentTravelled);
-
-
-
-
-			
-			/// TEMP
-			
-			if (levelManager.currentLevel == 4)
-				vehiclePos += new Vector3(0, 0, 0);
-			
-			
-			
-			
-			
-			
-			
-			
-			
 			
 			// if we're not over any terrain, adjust accordingly
 			if (vehiclePos.x < levelManager.GetTerrainMinX()) {
@@ -537,16 +522,16 @@ public class TrafficManager : MonoBehaviour {
 			}
 						
 			// no objects for vehicles far from puma
-			float maxVisibleDistance = 5000f;
 			float distanceToPuma = Vector3.Distance(levelManager.pumaObj.transform.position, vehiclePos);			
-			if (distanceToPuma < maxVisibleDistance && vehicleInfo.vehicle == null) {
+			if (distanceToPuma < carObjectCreationRadius && vehicleInfo.vehicle == null) {
 				// close to puma; create object
 				int min = 0;  int max = 10;
 				int vehicleSelect = Random.Range(min, max);
 				vehicleInfo.vehicle = Instantiate(vehicleModels[vehicleSelect], vehicleInfo.terrainPos, Quaternion.identity) as GameObject;
 				vehicleInfo.vehicleController = vehicleInfo.vehicle.GetComponent<VehicleController>();
+				vehicleInfo.vehicle.transform.parent = vehiclesContainerObj.transform;
 			}
-			else if (distanceToPuma >= maxVisibleDistance && vehicleInfo.vehicle != null) {
+			else if (distanceToPuma >= carObjectCreationRadius && vehicleInfo.vehicle != null) {
 				// far from puma; destroy object
 				Destroy(vehicleInfo.vehicle);
 				vehicleInfo.vehicle = null;

@@ -105,7 +105,7 @@ public class GameplayDisplay : MonoBehaviour
 		// "Jump" paw
 
 		float textureWidth = boxWidth * 0.7f * trayScaleFactor * 0.8f;
-		float textureX = boxMargin + textureWidth * 0.0f;
+		float textureX = boxMargin + textureWidth * 0.1f;
 		float textureHeight = arrowTrayTexture.height * (textureWidth / arrowTrayTopTexture.width);
 		float textureY = Screen.height - boxHeight * 0.75f - boxMargin;			
 
@@ -114,12 +114,12 @@ public class GameplayDisplay : MonoBehaviour
 		GUI.color = new Color(1f, 1f, 1f, 0.7f * movementControlsOpacity);
 		GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), arrowTrayTexture);
 		GUI.color = new Color(1f, 1f, 1f, 1f * movementControlsOpacity);
-		GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), arrowTurnRightTexture);
-		float rightBoxX = textureX + textureWidth * 0.1f;
+		GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), arrowTurnLeftTexture);
+		float rightBoxX = textureX + textureWidth * 0.0f;
 		float rightBoxY = textureY + textureHeight * 0.4f;
 		float rightBoxWidth = textureWidth * 0.8f;
 		float rightBoxHeight = textureHeight * 0.6f;
-		inputControls.SetRectTurnRight(new Rect(rightBoxX, rightBoxY, rightBoxWidth, rightBoxHeight));
+		inputControls.SetRectTurnLeft(new Rect(rightBoxX, rightBoxY, rightBoxWidth, rightBoxHeight));
 		
 		// upper right paw
 	
@@ -172,12 +172,12 @@ public class GameplayDisplay : MonoBehaviour
 		GUI.color = new Color(1f, 1f, 1f, 0.7f * movementControlsOpacity);
 		GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), arrowTrayTexture);
 		GUI.color = new Color(1f, 1f, 1f, 1f * movementControlsOpacity);
-		GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), arrowTurnLeftTexture);
+		GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), arrowTurnRightTexture);
 		float leftBoxX = textureX + textureWidth * 0.1f;
 		float leftBoxY = textureY + textureHeight * 0.4f;
 		float leftBoxWidth = textureWidth * 0.8f;
 		float leftBoxHeight = textureHeight * 0.6f;
-		inputControls.SetRectTurnLeft(new Rect(leftBoxX, leftBoxY, leftBoxWidth, leftBoxHeight));	
+		inputControls.SetRectTurnRight(new Rect(leftBoxX, leftBoxY, leftBoxWidth, leftBoxHeight));	
 			
 		//----------------------
 		// POSITION INDICATORS
@@ -227,7 +227,7 @@ public class GameplayDisplay : MonoBehaviour
 		guiManager.customGUISkin.button.fontStyle = FontStyle.Bold;	
 		float exitButtonX = Screen.width * 0.33f - boxWidth * 0.3f;
 		float exitButtonY = Screen.height - (boxMargin * 0.0f + boxHeight * 0.205f) - (boxHeight * 0.096f);
-		float exitButtonWidth = boxWidth * 0.6f;
+		float exitButtonWidth = boxWidth * 0.4f;
 		float exitButtonHeight = boxHeight * 0.12f;
 		if (GUI.Button(new Rect(exitButtonX,  exitButtonY, exitButtonWidth, exitButtonHeight), "")) {
 			guiManager.SetGuiState("guiStateLeavingGameplay");
@@ -248,10 +248,10 @@ public class GameplayDisplay : MonoBehaviour
 		
 		// autokill cheat button
 		GUI.color = new Color(1f, 1f, 1f, 0f * statusDisplayOpacity);
-		float killButtonX = Screen.width * 0.5f - boxWidth * 0.3f;
-		float killButtonY = Screen.height * 0.8f;
-		float killButtonWidth = boxWidth * 0.6f;
-		float killButtonHeight = Screen.height * 0.2f;
+		float killButtonX = Screen.width * 0.5f - boxWidth * 0.15f;
+		float killButtonY = 0f; //Screen.height * 0.9f;
+		float killButtonWidth = boxWidth * 0.3f;
+		float killButtonHeight = Screen.height * 0.1f;
 		if (GUI.Button(new Rect(killButtonX,  killButtonY, killButtonWidth, killButtonHeight), "")) {
 			levelManager.goStraightToFeeding = true;
 		}

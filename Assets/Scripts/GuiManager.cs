@@ -218,11 +218,13 @@ public class GuiManager : MonoBehaviour
 		//---------------------
 
 		case "guiStateStartApp1":
+			// ongoing display of new level panel
+			CheckForKeyboardEscapeFromNewLevel();
 			break;
 
 		case "guiStateStartApp2":
-			// fade-out of popup panel
-			guiStateDuration = 1.1f;
+			// fade-out of new level panel
+			guiStateDuration = 1f;
 			if (Time.time > guiStateStartTime + guiStateDuration) {
 				infoPanel.SetNewLevelFlag(false);
 				SetGuiState("guiStateEnteringOverlay");
@@ -311,6 +313,8 @@ public class GuiManager : MonoBehaviour
 		case "guiStateGameplay":
 			// ongoing game-play state
 			CheckForKeyboardEscapeFromGameplay();
+			if (leftShiftPressed) // HUNTING CHEAT KEY !!!!
+				levelManager.goStraightToFeeding = true;
 			break;
 			
 		case "guiStateLeavingGameplay":
@@ -353,9 +357,9 @@ public class GuiManager : MonoBehaviour
 			// pause during attack on deer
 			guiStateDuration = 2f;
 			if (Time.time - guiStateStartTime > guiStateDuration) {
-				if (SelectedPumaIsFullHealth() == true)
-					SetGuiState("guiStatePumaDone3");
-				else
+				//if (SelectedPumaIsFullHealth() == true)
+					//SetGuiState("guiStatePumaDone3");
+				//else
 					SetGuiState("guiStateFeeding3");
 			}
 			break;
@@ -515,6 +519,7 @@ public class GuiManager : MonoBehaviour
 			// fade out of back rect
 			guiStateDuration = 2.8f;
 			FadeOutOpacityLogarithmic();
+			CheckForKeyboardEscapeFromNewLevel();
 			if (Time.time > guiStateStartTime + guiStateDuration)
 				SetGuiState("guiStateNextLevel8");
 			break;			
@@ -523,6 +528,7 @@ public class GuiManager : MonoBehaviour
 			// fade in of 'Go' button
 			guiStateDuration = 1f;
 			FadeInOpacityLinear();
+			CheckForKeyboardEscapeFromNewLevel();
 			if (Time.time > guiStateStartTime + guiStateDuration)
 				SetGuiState("guiStateOverlay");
 			break;			
@@ -629,6 +635,15 @@ public class GuiManager : MonoBehaviour
 		}	
 	}
 	
+	private void CheckForKeyboardEscapeFromNewLevel()
+	{
+		if (spacePressed || rightShiftPressed) {
+			// use keyboard to close info panel
+			CloseInfoPanel(true);
+			SetGuiState("guiStateStartApp2");
+		}	
+	}
+	
 	private void CheckForKeyboardEscapeFromFeeding()
 	{
 		if (spacePressed || rightShiftPressed) {
@@ -660,8 +675,8 @@ public class GuiManager : MonoBehaviour
 
 	private void CheckForKeyboardSelectionOfPuma()
 	{
-		if (overlayPanel.GetCurrentScreen() == 0 || overlayPanel.GetCurrentScreen() == 2) {
-			// we are in 'select' or 'stats' screen
+		if (overlayPanel.GetCurrentScreen() == 0) {
+			// we are in 'select' screen
 			if (leftArrowPressed)
 				DecrementPuma();
 			if (rightArrowPressed)
@@ -1118,6 +1133,10 @@ public class GuiManager : MonoBehaviour
 				levelManager.SetSelectedPuma(selectedPuma);
 				return;
 			}
+		}
+		if (selectedPuma == -1) {
+			selectedPuma = 5;
+			levelManager.SetSelectedPuma(selectedPuma);
 		}
 	}
 	

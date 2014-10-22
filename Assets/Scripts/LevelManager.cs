@@ -230,8 +230,6 @@ public class LevelManager : MonoBehaviour
 	private float chaseTriggerDistance = 10.5f;
 	private float baseChaseTriggerDistance = 10.5f;
 	private float caughtTriggerDistance = 1f;
-	private float deerCaughtFinalOffsetFactor0 = 1f;
-	private float deerCaughtFinalOffsetFactor90 = 1f;
 	private bool pumaCollisionFlag = false;
 	private float pumaCollisionBarrierHeading;
 	private float pumaCollisionHeadingOffset;	
@@ -260,6 +258,8 @@ public class LevelManager : MonoBehaviour
 		public float forwardRate = 0f;
 		public float turnRate = 0f;
 		public float baseY;
+		public float deerCaughtFinalOffsetForward;
+		public float deerCaughtFinalOffsetSideways;
 	}
 	
 	public DeerClass buck;
@@ -275,6 +275,7 @@ public class LevelManager : MonoBehaviour
 	private float fawnDefaultForwardRate = 15f;
 	private float fawnDefaultTurnRate = 15f;
 	private float nextDeerRunUpdateTime = 0f;
+	private int lastAutoKilledDeerType = 0;
 
 	// CAUGHT DEER
 	
@@ -336,18 +337,24 @@ public class LevelManager : MonoBehaviour
 		buck.forwardRate = 0; //30f;
 		buck.turnRate = 0; //22.5f;
 		buck.baseY = 0f;
+		buck.deerCaughtFinalOffsetForward = 0.42f;
+		buck.deerCaughtFinalOffsetSideways = 0.28f;
 
 		doe = new DeerClass();
 		doe.type = "Doe";
 		doe.forwardRate = 0; //30f;
 		doe.turnRate = 0; //22.5f;
 		doe.baseY = 0f;
+		doe.deerCaughtFinalOffsetForward = 0.375f;
+		doe.deerCaughtFinalOffsetSideways = 0.25f;
 
 		fawn = new DeerClass();
 		fawn.type = "Fawn";
 		fawn.forwardRate = 0; //30f;
 		fawn.turnRate = 0; //22.5f;
 		fawn.baseY = 0f;
+		fawn.deerCaughtFinalOffsetForward = 0.35f;
+		fawn.deerCaughtFinalOffsetSideways = 0.125f;
 
 		buck.gameObj = GameObject.Find("Buck");
 		doe.gameObj = GameObject.Find("Doe");
@@ -355,7 +362,7 @@ public class LevelManager : MonoBehaviour
 
 		Physics.gravity = new Vector3(0f, -20f, 0f);
 		
-		InitLevel(0);
+		InitLevel(3);
 	}
 	
 	public void InitLevel(int level)
@@ -370,9 +377,9 @@ public class LevelManager : MonoBehaviour
 		stateStartTime = Time.time;
 		mainHeading = 180f; //Random.Range(0f, 360f);
 
-		pumaX = 309f; //-700f; //0f;
-		pumaY = 36f;
-		pumaZ = 832f; //0f;			
+		pumaX = -691f;
+		pumaY = 0f;
+		pumaZ = 832f;		
 		pumaObj.transform.position = new Vector3(pumaX, pumaY, pumaZ);		
 		
 		//================================
@@ -1522,9 +1529,35 @@ public class LevelManager : MonoBehaviour
 			if (gameState == "gameStateStalking") {
 				SetGameState("gameStateChasing");
 				pumaAnimator.SetBool("Chasing", true);
-			}
 
-			pumaDeerDistance1 = 0;
+				buckAnimator.SetBool("Looking", true);
+				buckAnimator.SetBool("Running", true);
+				buckAnimator.SetBool("Die", true);
+
+				doeAnimator.SetBool("Looking", true);
+				doeAnimator.SetBool("Running", true);
+				doeAnimator.SetBool("Die", true);
+
+				fawnAnimator.SetBool("Looking", true);
+				fawnAnimator.SetBool("Running", true);
+				fawnAnimator.SetBool("Die", true);
+			}
+			
+			switch (lastAutoKilledDeerType) {
+				case 0:
+					pumaDeerDistance1 = 0;
+					break;
+				case 1:
+					pumaDeerDistance2 = 0;
+					break;
+				case 2:
+					pumaDeerDistance3 = 0;
+					break;
+			}
+			
+			lastAutoKilledDeerType++;
+			if (lastAutoKilledDeerType >= 3)
+				lastAutoKilledDeerType = 0;
 		}
 			
 		//========================================
@@ -1715,11 +1748,11 @@ public class LevelManager : MonoBehaviour
 					deerCaughtHeadingLeft = (deerCaughtHeading - mainHeading <= 180) ? true : false;
 				}
 				if (deerCaughtHeadingLeft == true) {
-					deerCaughtFinalHeading = mainHeading + 90;
+					deerCaughtFinalHeading = mainHeading + 85f;
 				}
 				else {
-					//deerCaughtFinalHeading = mainHeading - 90;
-					deerCaughtFinalHeading = mainHeading + 90;
+					//deerCaughtFinalHeading = mainHeading - 90;  NOTE !! - need reverse anim to enable both final positions
+					deerCaughtFinalHeading = mainHeading + 85f;
 				}
 				if (deerCaughtFinalHeading < 0)
 					deerCaughtFinalHeading += 360;
@@ -1728,10 +1761,10 @@ public class LevelManager : MonoBehaviour
 				deerCaughtmainHeading = mainHeading;
 				deerCaughtOffsetX = caughtDeer.gameObj.transform.position.x - pumaX;
 				deerCaughtOffsetZ = caughtDeer.gameObj.transform.position.z - pumaZ;
-				deerCaughtFinalOffsetX = (Mathf.Sin(mainHeading*Mathf.PI/180) * deerCaughtFinalOffsetFactor0);
-				deerCaughtFinalOffsetZ = (Mathf.Cos(mainHeading*Mathf.PI/180) * deerCaughtFinalOffsetFactor0);
-				deerCaughtFinalOffsetX += (Mathf.Sin((mainHeading-90f)*Mathf.PI/180) * deerCaughtFinalOffsetFactor90);
-				deerCaughtFinalOffsetZ += (Mathf.Cos((mainHeading-90f)*Mathf.PI/180) * deerCaughtFinalOffsetFactor90);
+				deerCaughtFinalOffsetX = (Mathf.Sin(mainHeading*Mathf.PI/180) * caughtDeer.deerCaughtFinalOffsetForward);
+				deerCaughtFinalOffsetZ = (Mathf.Cos(mainHeading*Mathf.PI/180) * caughtDeer.deerCaughtFinalOffsetForward);
+				deerCaughtFinalOffsetX += (Mathf.Sin((mainHeading-90f)*Mathf.PI/180) * caughtDeer.deerCaughtFinalOffsetSideways);
+				deerCaughtFinalOffsetZ += (Mathf.Cos((mainHeading-90f)*Mathf.PI/180) * caughtDeer.deerCaughtFinalOffsetSideways);
 				deerCaughtNextFrameTime = 0;
 				
 				if (Time.time - stateStartTime < 5f)
@@ -2201,18 +2234,7 @@ public class LevelManager : MonoBehaviour
 			SetTerrainNeighbors();
 	}
 
-	
-	void FixedUpdate()
-	{
-	
-		pumaObj.transform.position = new Vector3(pumaX, pumaY, pumaZ);			
 		
-	}
-	
-	
-	
-	
-
 	//===================================
 	//===================================
 	//		CAR COLLISION HANDLING
@@ -2221,43 +2243,14 @@ public class LevelManager : MonoBehaviour
 	
 	public void BeginCarCollision()
 	{
+		if (CheckCarCollision() == true)
+			return;
+	
 		carCollisionState = "InProgress";
 		SetGameState("gameStateDied1");
 		guiManager.SetGuiState("guiStatePumaDone1");
 		pumaAnimator.SetBool("CarCollision", true);
 		scoringSystem.PumaHasDied(selectedPuma);
-	
-		// disable bridge colliders --- TEMP -- CURRENTLY INEFFICIENT	
-		BoxCollider[] boxColliders;
-
-		if (GameObject.Find("L3Bridge1") != null) {
-			boxColliders = GameObject.Find("L3Bridge1").GetComponents<BoxCollider>();
-			boxColliders[0].enabled = false;
-			boxColliders[1].enabled = false;
-			boxColliders = GameObject.Find("L3Bridge2").GetComponents<BoxCollider>();
-			boxColliders[0].enabled = false;
-			boxColliders[1].enabled = false;
-		}
-
-		if (GameObject.Find("L4Bridge1") != null) {
-			boxColliders = GameObject.Find("L4Bridge1").GetComponents<BoxCollider>();
-			boxColliders[0].enabled = false;
-			boxColliders[1].enabled = false;
-			boxColliders = GameObject.Find("L4Bridge2").GetComponents<BoxCollider>();
-			boxColliders[0].enabled = false;
-			boxColliders[1].enabled = false;
-		}
-
-		if (GameObject.Find("L5Bridge1") != null) {
-			boxColliders = GameObject.Find("L5Bridge1").GetComponents<BoxCollider>();
-			boxColliders[0].enabled = false;
-			boxColliders[1].enabled = false;
-			boxColliders = GameObject.Find("L5Bridge2").GetComponents<BoxCollider>();
-			boxColliders[0].enabled = false;
-			boxColliders[1].enabled = false;
-		}
-
-		// NEED TO TURN OFF BOX COLLIDERS IN INSTANTIATED TERRAINS TOO  !!!!!
 	}
 
 	public bool CheckCarCollision()
@@ -2278,38 +2271,6 @@ public class LevelManager : MonoBehaviour
 		guiFlybyOverdriveRampEndTime = Time.time + 2f;
 		
 		UpdateGuiStatePumaHeading(true); // point puma away from road
-
-		// re-enable bridge colliders --- TEMP -- CURRENTLY INEFFICIENT	
-		BoxCollider[] boxColliders;
-
-		if (GameObject.Find("L3Bridge1") != null) {
-			boxColliders = GameObject.Find("L3Bridge1").GetComponents<BoxCollider>();
-			boxColliders[0].enabled = true;
-			boxColliders[1].enabled = true;
-			boxColliders = GameObject.Find("L3Bridge2").GetComponents<BoxCollider>();
-			boxColliders[0].enabled = true;
-			boxColliders[1].enabled = true;
-		}
-
-		if (GameObject.Find("L4Bridge1") != null) {
-			boxColliders = GameObject.Find("L4Bridge1").GetComponents<BoxCollider>();
-			boxColliders[0].enabled = true;
-			boxColliders[1].enabled = true;
-			boxColliders = GameObject.Find("L4Bridge2").GetComponents<BoxCollider>();
-			boxColliders[0].enabled = true;
-			boxColliders[1].enabled = true;
-		}
-
-		if (GameObject.Find("L5Bridge1") != null) {
-			boxColliders = GameObject.Find("L5Bridge1").GetComponents<BoxCollider>();
-			boxColliders[0].enabled = true;
-			boxColliders[1].enabled = true;
-			boxColliders = GameObject.Find("L5Bridge2").GetComponents<BoxCollider>();
-			boxColliders[0].enabled = true;
-			boxColliders[1].enabled = true;
-		}
-
-		// NEED TO TURN ON BOX COLLIDERS IN INSTANTIATED TERRAINS TOO  !!!!!
 	}
 
 
@@ -2329,8 +2290,6 @@ public class LevelManager : MonoBehaviour
 		guiFlybyOverdriveRampEndVal = 2f;
 		guiFlybyOverdriveRampStartTime = Time.time;
 		guiFlybyOverdriveRampEndTime = Time.time + 2f;
-		
-		// NEED TO TURN ON BOX COLLIDERS IN INSTANTIATED TERRAINS TOO  !!!!!
 	}
 
 
@@ -2518,19 +2477,16 @@ public class LevelManager : MonoBehaviour
 
 	void PlaceDeerPositions()
 	{
-		buck.heading = buck.targetHeading = Random.Range(0f,360f);
-		buck.gameObj.transform.rotation = Quaternion.Euler(0, buck.heading, 0);
-		doe.heading = doe.targetHeading = Random.Range(0f,360f);		
-		doe.gameObj.transform.rotation = Quaternion.Euler(0, doe.heading, 0);
-		fawn.heading = fawn.targetHeading = Random.Range(0f,360f);	
-		fawn.gameObj.transform.rotation = Quaternion.Euler(0, fawn.heading, 0);
-
 		float newX;
 		float newZ;
-
+		float deerX;
+		float deerZ;
+		float deerY;
+		float positionVariance = 8f;
+		
 		if (beginLevelFlag == true) {
 			// set to predetermined position (TEMP)
-			newX = 440f;
+			newX = -560f;
 			newZ = 713f;
 			beginLevelFlag = false;
 		}
@@ -2541,11 +2497,6 @@ public class LevelManager : MonoBehaviour
 			newX = pumaX + (Mathf.Sin(randomDirection*Mathf.PI/180) * deerDistance);
 			newZ = pumaZ + (Mathf.Cos(randomDirection*Mathf.PI/180) * deerDistance);
 		}
-		
-		float deerX;
-		float deerZ;
-		float deerY;
-		float positionVariance = 8f;
 		
 		deerX = newX + Random.Range(-positionVariance, positionVariance);
 		deerZ = newZ + Random.Range(-positionVariance, positionVariance);
@@ -2561,6 +2512,14 @@ public class LevelManager : MonoBehaviour
 		deerZ = newZ + Random.Range(-positionVariance, positionVariance);
 		deerY = fawn.baseY + GetTerrainHeight(deerX, deerZ);
 		fawn.gameObj.transform.position = new Vector3(deerX, deerY, deerZ);
+
+		buck.heading = buck.targetHeading = Random.Range(0f,360f);
+		doe.heading = doe.targetHeading = Random.Range(0f,360f);		
+		fawn.heading = fawn.targetHeading = Random.Range(0f,360f);	
+
+		buck.gameObj.transform.rotation = Quaternion.Euler(0, buck.heading, 0);
+		doe.gameObj.transform.rotation = Quaternion.Euler(0, doe.heading, 0);
+		fawn.gameObj.transform.rotation = Quaternion.Euler(0, fawn.heading, 0);
 
 		//System.Console.WriteLine("PLACE DEER POSITIONS");	
 		//System.Console.WriteLine("positive variance: " + positionVariance.ToString());	
