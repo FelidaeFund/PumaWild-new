@@ -362,7 +362,7 @@ public class LevelManager : MonoBehaviour
 
 		Physics.gravity = new Vector3(0f, -20f, 0f);
 		
-		InitLevel(3);
+		InitLevel(0);
 	}
 	
 	public void InitLevel(int level)
@@ -1956,6 +1956,19 @@ public class LevelManager : MonoBehaviour
 			pumaZ += (Mathf.Cos(mainHeading*Mathf.PI/180) * distance);
 		}	
 		else if (gameState == "gameStateStalking") {	
+
+		
+		
+
+			if (Input.GetKey(KeyCode.Tab))
+				speedOverdrive = 3f;
+			else
+				speedOverdrive = 1f;
+		
+
+
+		
+		
 			// main stalking state
 			float rotationSpeed = 100f;
 			if (pumaCollisionFlag == true) {

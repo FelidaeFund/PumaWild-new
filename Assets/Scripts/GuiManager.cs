@@ -36,6 +36,7 @@ public class GuiManager : MonoBehaviour
 	
 	// KEYBOARD TRACKING
 	private bool spacePressed = false;
+	private bool tabPressed = false;
 	private bool leftShiftPressed = false;
 	private bool rightShiftPressed = false;
 	private bool leftArrowPressed = false;
@@ -43,6 +44,7 @@ public class GuiManager : MonoBehaviour
 	
 	// KEYBOARD DEBOUNCING
 	private bool debounceSpace = false;
+	private bool debounceTab = false;
 	private bool debounceLeftShift = false;
 	private bool debounceRightShift = false;
 	private bool debounceLeftArrow = false;
@@ -530,7 +532,7 @@ public class GuiManager : MonoBehaviour
 			FadeInOpacityLinear();
 			CheckForKeyboardEscapeFromNewLevel();
 			if (Time.time > guiStateStartTime + guiStateDuration)
-				SetGuiState("guiStateOverlay");
+				SetGuiState("guiStateStartApp1");
 			break;			
 
 		//------------------------------
@@ -1194,6 +1196,7 @@ public class GuiManager : MonoBehaviour
 		// filter out key repeats
 				
 		spacePressed = false;
+		tabPressed = false;
 		leftShiftPressed = false;
 		rightShiftPressed = false;
 		leftArrowPressed = false;
@@ -1210,6 +1213,15 @@ public class GuiManager : MonoBehaviour
 		else if (Input.GetKey(KeyCode.Space) == true) {
 			spacePressed = true;
 			debounceSpace = true;
+		}
+	
+		if (debounceTab == true) {
+			if (Input.GetKey(KeyCode.Tab) == false)
+				debounceTab = false;
+		}
+		else if (Input.GetKey(KeyCode.Tab) == true) {
+			tabPressed = true;
+			debounceTab = true;
 		}
 	
 		if (debounceLeftShift == true) {
