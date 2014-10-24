@@ -1961,7 +1961,7 @@ public class LevelManager : MonoBehaviour
 		
 
 			if (Input.GetKey(KeyCode.Tab))
-				speedOverdrive = 3f;
+				speedOverdrive = 2.5f;
 			else
 				speedOverdrive = 1f;
 		

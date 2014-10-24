@@ -1027,6 +1027,11 @@ public class GuiManager : MonoBehaviour
 			GUI.Box(new Rect(Screen.width * 0.24f - 80f, Screen.height - 24, 160, 24), "displayVar1:  " + levelManager.displayVar1.ToString());		
 			GUI.Box(new Rect(Screen.width * 0.50f - 80f, Screen.height - 24, 160, 24), "displayVar2:  " + levelManager.displayVar2.ToString());				
 			GUI.Box(new Rect(Screen.width * 0.76f - 80f, Screen.height - 24, 160, 24), "displayVar3:  " + levelManager.displayVar3.ToString());		
+
+			Vector3 mousePos = Input.mousePosition;
+			GUI.Box(new Rect(Screen.width * 0.24f - 80f, Screen.height - 48, 160, 24), "mouseX:  " + mousePos.x / Screen.width);		
+			GUI.Box(new Rect(Screen.width * 0.50f - 80f, Screen.height - 48, 160, 24), "mouseY:  " + mousePos.y / Screen.height);				
+			GUI.Box(new Rect(Screen.width * 0.76f - 80f, Screen.height - 48, 160, 24), "mouseZ:  " + mousePos.z);		
 		}		
 	}	
  
