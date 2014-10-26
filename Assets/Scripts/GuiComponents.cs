@@ -209,21 +209,26 @@ public class GuiComponents : MonoBehaviour
 	//===================================
 	//===================================
 	
-	public void DrawStatusPanel(float statusPanelOpacity, float statusPanelX, float statusPanelY, float statusPanelWidth, float statusPanelHeight, bool bareBonesFlag = false) 
+	public void DrawStatusPanel(float statusPanelOpacity, float statusPanelX, float statusPanelY, float statusPanelWidth, float statusPanelHeight, bool bareBonesFlag = false, bool gameplayFlag = false) 
 	{ 
 		GUIStyle style = new GUIStyle();
 		style.alignment = TextAnchor.MiddleCenter;
 		
 		if (bareBonesFlag == false) {
-			GUI.color = new Color(1f, 1f, 1f, 0.8f * statusPanelOpacity);
-			GUI.Box(new Rect(statusPanelX, statusPanelY, statusPanelWidth, statusPanelHeight), "");
-			GUI.color = new Color(1f, 1f, 1f, 0.4f * statusPanelOpacity);
-			GUI.Box(new Rect(statusPanelX, statusPanelY, statusPanelWidth, statusPanelHeight), "");
-			GUI.color = new Color(1f, 1f, 1f, 1f * statusPanelOpacity);
-			//guiUtils.DrawRect(new Rect(statusPanelX + statusPanelWidth * 0.33f, statusPanelY, statusPanelWidth * 0.005f, statusPanelHeight), new Color(0f, 0f, 0f, 0.2f));	
-			//guiUtils.DrawRect(new Rect(statusPanelX + statusPanelWidth * 0.335f, statusPanelY, statusPanelWidth * 0.005f, statusPanelHeight), new Color(1f, 1f, 1f, 0.2f));	
-			//guiUtils.DrawRect(new Rect(statusPanelX + statusPanelWidth * 0f, statusPanelY + statusPanelHeight * 0.50f, statusPanelWidth * 1f, statusPanelWidth * 0.005f), new Color(0f, 0f, 0f, 0.3f));	
-			//guiUtils.DrawRect(new Rect(statusPanelX + statusPanelWidth * 0f, statusPanelY + statusPanelHeight * 0.50f + statusPanelWidth * 0.005f, statusPanelWidth * 1f, statusPanelWidth * 0.005f), new Color(1f, 1f, 1f, 0.2f));	
+			if (gameplayFlag == true) {
+				GUI.color = new Color(1f, 1f, 1f, 0.9f * statusPanelOpacity);
+				GUI.Box(new Rect(statusPanelX, statusPanelY, statusPanelWidth, statusPanelHeight), "");
+				GUI.color = new Color(1f, 1f, 1f, 0.4f * statusPanelOpacity);
+				//GUI.Box(new Rect(statusPanelX, statusPanelY, statusPanelWidth, statusPanelHeight), "");
+				GUI.color = new Color(1f, 1f, 1f, 1f * statusPanelOpacity);
+			}
+			else {	
+				GUI.color = new Color(1f, 1f, 1f, 0.8f * statusPanelOpacity);
+				GUI.Box(new Rect(statusPanelX, statusPanelY, statusPanelWidth, statusPanelHeight), "");
+				GUI.color = new Color(1f, 1f, 1f, 0.4f * statusPanelOpacity);
+				GUI.Box(new Rect(statusPanelX, statusPanelY, statusPanelWidth, statusPanelHeight), "");
+				GUI.color = new Color(1f, 1f, 1f, 1f * statusPanelOpacity);
+			}
 		}
 		
 		float fontRef = statusPanelWidth * 1000f / 320f;
@@ -267,26 +272,46 @@ public class GuiComponents : MonoBehaviour
 
 			GUI.color = new Color(1f, 1f, 1f, 1f * statusPanelOpacity);
 
-			// puma head
 			if (bareBonesFlag == false) {
-				textureX = statusPanelX + statusPanelWidth * 0.05f;
-				textureY = statusPanelY + statusPanelHeight * 0.20f;
-				textureHeight = statusPanelHeight * 0.62f;
-				textureWidth = headshotTexture.width * (textureHeight / headshotTexture.height);
-				GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), headshotTexture);
-			}
 
-			// puma name
-			//style.normal.textColor = new Color(0.99f, 0.62f, 0f, 0.95f);
-			style.normal.textColor = new Color(0.99f, 0.66f, 0f, 0.935f);
-			style.fontSize = (int)(fontRef * 0.016f);
-			style.alignment = TextAnchor.UpperCenter;
-			//GUI.Button(new Rect(textureX, textureY + textureHeight + textureHeight * 0.035f, textureWidth, textureHeight), pumaName, style);
-			style.alignment = TextAnchor.MiddleCenter;
-			//style.fontSize = (int)(boxWidth * 0.0635);
-			//style.normal.textColor = new Color(0.93f, 0.57f, 0f, 0.95f);
-			//style.normal.textColor = new Color(0.063f, 0.059f, 0.161f, 1f);
-			//GUI.Button(new Rect(textureX, textureY + textureHeight + textureHeight * 0.1f, textureWidth, textureHeight), pumaVitals, style);
+				if (gameplayFlag == true) {
+					// puma head
+					textureHeight = statusPanelHeight * 0.58f;
+					textureWidth = headshotTexture.width * (textureHeight / headshotTexture.height);
+					textureX = statusPanelX + statusPanelWidth - textureWidth - statusPanelWidth * 0.065f;
+					textureY = statusPanelY + statusPanelHeight * 0.03f;
+					GUI.color = new Color(1f, 1f, 1f, 0.95f * statusPanelOpacity);
+					GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), headshotTexture);			
+					GUI.color = new Color(1f, 1f, 1f, 1f * statusPanelOpacity);
+					// puma name
+					//style.normal.textColor = new Color(0.99f, 0.62f, 0f, 0.95f);
+					style.normal.textColor = new Color(0.99f, 0.66f, 0f, 0.8f);
+					style.fontSize = (int)(fontRef * 0.038f);
+					style.alignment = TextAnchor.UpperCenter;
+					style.fontStyle = FontStyle.BoldAndItalic;
+					float textX = statusPanelX + statusPanelWidth * 0.075f;
+					float textY = statusPanelY + statusPanelHeight * 0.29f;
+					float textWidth = statusPanelWidth * 0.4f;
+					float textHeight = statusPanelHeight * 0.3f;
+					GUI.Button(new Rect(textX, textY, textWidth, textHeight), pumaName, style);
+					style.alignment = TextAnchor.MiddleCenter;
+					//style.fontSize = (int)(boxWidth * 0.0635);
+					//style.normal.textColor = new Color(0.93f, 0.57f, 0f, 0.95f);
+					//style.normal.textColor = new Color(0.063f, 0.059f, 0.161f, 1f);
+					//GUI.Button(new Rect(textureX, textureY + textureHeight + textureHeight * 0.1f, textureWidth, textureHeight), pumaVitals, style);
+				}
+				
+				else {
+					// normal case
+					
+					// puma head
+					textureX = statusPanelX + statusPanelWidth * 0.05f;
+					textureY = statusPanelY + statusPanelHeight * 0.20f;
+					textureHeight = statusPanelHeight * 0.62f;
+					textureWidth = headshotTexture.width * (textureHeight / headshotTexture.height);
+					GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), headshotTexture);			
+				}
+			}
 
 		}
 		else {
@@ -305,7 +330,7 @@ public class GuiComponents : MonoBehaviour
 
 		// six puma icons
 		
-		if (bareBonesFlag == false) {
+		if (bareBonesFlag == false && gameplayFlag == false) {
 		
 			Color pumaAliveColor = new Color(1f, 1f, 1f, 0.9f * statusPanelOpacity);
 			//Color pumaFullHealthColor = new Color(0.32f, 0.99f, 0f, 0.99f * statusPanelOpacity);
@@ -410,7 +435,27 @@ public class GuiComponents : MonoBehaviour
 			GUI.color = new Color(1f, 1f, 1f, 0.5f * statusPanelOpacity);
 			GUI.Box(new Rect(statusPanelX + statusPanelWidth * 0.29f, statusPanelY + statusPanelHeight * 0.59f, statusPanelWidth * 0.64f, statusPanelHeight * 0.3f), "");
 		}
-		DrawPumaHealthBar(guiManager.selectedPuma, statusPanelOpacity, statusPanelX + statusPanelWidth * 0.29f, statusPanelY + statusPanelHeight * 0.59f, statusPanelWidth * 0.64f, statusPanelHeight * 0.3f);
+		
+		
+		float healthBarX;
+		float healthBarY;
+		float healthBarWidth;
+		float healthBarHeight;
+		if (gameplayFlag == true) {
+			// gameplay overlay
+			healthBarX = statusPanelX + statusPanelWidth * 0.05f;
+			healthBarY = statusPanelY + statusPanelHeight * 0.72f;
+			healthBarWidth = statusPanelWidth * 0.90f;
+			healthBarHeight = statusPanelHeight * 0.2f;
+		}
+		else {
+			// normal case
+			healthBarX = statusPanelX + statusPanelWidth * 0.29f;
+			healthBarY = statusPanelY + statusPanelHeight * 0.59f;
+			healthBarWidth = statusPanelWidth * 0.64f;
+			healthBarHeight = statusPanelHeight * 0.3f;
+		}
+		DrawPumaHealthBar(guiManager.selectedPuma, statusPanelOpacity, healthBarX, healthBarY, healthBarWidth, healthBarHeight);
 
 	}
 

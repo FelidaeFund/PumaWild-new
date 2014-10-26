@@ -48,6 +48,7 @@ public class InputControls : MonoBehaviour
 	private float newNavVal;
 	
 	// onscreen locations for control boxes
+	private Rect rectLeftButton;
 	private Rect rectForward;
 	private Rect rectBack;
 	private Rect rectDiagLeft;
@@ -57,6 +58,7 @@ public class InputControls : MonoBehaviour
 	
 	// external modules
 	private LevelManager levelManager;
+	private GuiManager guiManager;
 
 	//===================================
 	//===================================
@@ -68,7 +70,9 @@ public class InputControls : MonoBehaviour
     {
 		// connect to external modules
 		levelManager = GetComponent<LevelManager>();
+		guiManager = GetComponent<GuiManager>();
 		
+		rectLeftButton = new Rect (0f, 0f, 0f, 0f);
 		rectForward = new Rect (0f, 0f, 0f, 0f);
 		rectBack = new Rect (0f, 0f, 0f, 0f);
 		rectDiagLeft = new Rect (0f, 0f, 0f, 0f);
@@ -123,6 +127,7 @@ public class InputControls : MonoBehaviour
 	public void ProcessControls(string gameState)
 	{
 		// initialize key states to 'off'
+		bool keyStateLeftButton = false;
 		bool keyStateForward = false;
 		bool keyStateBack = false;
 		bool keyStateDiagLeft = false;
@@ -135,6 +140,9 @@ public class InputControls : MonoBehaviour
 			float mouseX = Input.mousePosition.x;
 			float mouseY = Screen.height - Input.mousePosition.y;	
 			
+			if (mouseX >= rectLeftButton.xMin && mouseX <= rectLeftButton.xMax && mouseY >= rectLeftButton.yMin && mouseY <= rectLeftButton.yMax) {
+				keyStateLeftButton = true;
+			}
 			if (mouseX >= rectForward.xMin && mouseX <= rectForward.xMax && mouseY >= rectForward.yMin && mouseY <= rectForward.yMax) {
 				keyStateForward = true;
 			}
@@ -156,6 +164,8 @@ public class InputControls : MonoBehaviour
 		}
 	
 		// check for relevant keys pressed on the physical keyboard
+		if ((Input.GetKey(KeyCode.Space) || Input.GetKey(KeyCode.RightShift)) && rectLeftButton.xMin != rectLeftButton.xMax)
+			keyStateLeftButton = true;
 		if (Input.GetKey(KeyCode.I) || Input.GetKey(KeyCode.UpArrow))
 			keyStateForward = true;
 		if (Input.GetKey(KeyCode.K) || Input.GetKey(KeyCode.DownArrow))
@@ -193,6 +203,24 @@ public class InputControls : MonoBehaviour
 			keyStateForward = true;
 		}
 		
+		// handle left button during gameplay
+	
+		levelManager.speedOverdrive = 1f;
+		if (keyStateLeftButton == true) {
+			if (levelManager.gameState == "gameStateStalking" && inputVert > 0) {
+				// speed overdrive
+				levelManager.speedOverdrive = 2.5f;
+			}
+			else if (levelManager.gameState == "gameStateStalking" && inputVert > 0) {
+				// jump
+			}
+			else {
+				// exit gameplay
+				guiManager.SetGuiState("guiStateLeavingGameplay");
+				levelManager.SetGameState("gameStateLeavingGameplay");
+			}
+		}
+
 		// deal with interactions between forward and back keys
 	
 		if (inputVert == 0) {
@@ -337,6 +365,11 @@ public class InputControls : MonoBehaviour
 	//===================================
 	//===================================
 
+	public void SetRectLeftButton(Rect rect)
+	{
+		rectLeftButton = rect;	
+	}
+	
 	public void SetRectForward(Rect rect)
 	{
 		rectForward = rect;	

@@ -82,6 +82,7 @@ public class GuiManager : MonoBehaviour
 	public Texture2D sliderThumbTexture; 
 	public Texture2D greenCheckTexture; 
 	public Texture2D greenOutlineRectTexture; 
+	public Texture2D greenOutlineRectVertTexture; 
 	public Texture2D redXTexture; 
 	public Texture2D pumaCrossbonesTexture; 
 	public Texture2D pumaCrossbonesRedTexture; 
@@ -102,6 +103,8 @@ public class GuiManager : MonoBehaviour
 	public Texture2D closeupBackgroundTexture; 
 	public Texture2D arrowTrayTexture; 
 	public Texture2D arrowTrayTopTexture; 
+	public Texture2D arrowTrayFlippedTexture; 
+	public Texture2D arrowTrayTopFlippedTexture; 
 	public Texture2D arrowLeftTexture; 
 	public Texture2D arrowRightTexture; 
 	public Texture2D arrowUpTexture; 
@@ -623,8 +626,8 @@ public class GuiManager : MonoBehaviour
 	{
 		if (spacePressed || rightShiftPressed) {
 			// use keyboard to leave gameplay
-			SetGuiState("guiStateLeavingGameplay");
-			levelManager.SetGameState("gameStateLeavingGameplay");
+			//SetGuiState("guiStateLeavingGameplay");
+			//levelManager.SetGameState("gameStateLeavingGameplay");
 		}	
 	}
 	
@@ -747,6 +750,8 @@ public class GuiManager : MonoBehaviour
 	
 	void OnGUI()
 	{	
+		inputControls.SetRectLeftButton(new Rect(0f, 0f, 0f, 0f)); // gets overwritten during gameplayDisplay.Draw call below if controls are active
+
 		CalculateOverlayRect();
 	
 		if (infoPanelVisible == false || Time.time - infoPanelTransStart < infoPanelTransTime) {
@@ -761,8 +766,7 @@ public class GuiManager : MonoBehaviour
 			else if (infoPanelVisible == false && infoPanelElapsedTime < infoPanelTransTime) {
 				// fading out		
 				infoPanelOpacityComplement = infoPanelElapsedTime / infoPanelTransTime;
-			}
-			
+			}		
 			
 			// DRAW SOMETHING - info panel is either not showing, or is fading in or out
 

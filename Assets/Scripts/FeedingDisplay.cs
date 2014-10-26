@@ -540,13 +540,6 @@ public class FeedingDisplay : MonoBehaviour
 
 		GUI.color = new Color(1f, 1f, 1f, 1f * okButtonOpacity);
 
-
-
-
-		
-		
-		
-
 		
 		//********************
 		// 'OK' BUTTON

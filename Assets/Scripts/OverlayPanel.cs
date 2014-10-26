@@ -18,6 +18,9 @@ public class OverlayPanel : MonoBehaviour
 	private int soundEnable;
 	private float soundVolume;
 	private float pawRightFlag;
+	private bool flashingInProgress = false;
+	private float flashPumasStartTime = 0f;
+	private float flashPumasInitialStartTime = 0f;
 	
 	// button styling
 	private GUIStyle buttonStyle;	
@@ -38,6 +41,7 @@ public class OverlayPanel : MonoBehaviour
 	private Texture2D pumaIconTexture;
 	private Texture2D pumaIconShadowTexture;
 	private Texture2D greenCheckTexture;	
+	private Texture2D greenOutlineRectVertTexture;
 	private Texture2D radioButtonTexture;
 	private Texture2D radioSelectTexture;
 	private Texture2D arrowTrayTexture;
@@ -96,6 +100,7 @@ public class OverlayPanel : MonoBehaviour
 		pumaIconTexture = guiManager.pumaIconTexture;
 		pumaIconShadowTexture = guiManager.pumaIconShadowTexture;
 		greenCheckTexture = guiManager.greenCheckTexture;
+		greenOutlineRectVertTexture = guiManager.greenOutlineRectVertTexture;
 		radioButtonTexture = guiManager.radioButtonTexture;
 		radioSelectTexture = guiManager.radioSelectTexture;
 		arrowTrayTexture = guiManager.arrowTrayTexture;
@@ -428,7 +433,7 @@ public class OverlayPanel : MonoBehaviour
 
 		if (guiManager.selectedPuma == -1) {
 		
-			float yOffset = overlayRect.height * 0.01f;
+			float yOffset = overlayRect.height * 0.015f;
 		
 			//guiUtils.DrawRect(new Rect(overlayRect.width * 0.32f, overlayRect.height * 0.32f, overlayRect.width * 0.36f, overlayRect.height * 0.12f), new Color(1f, 1f, 1f, 0.4f));	
 			//guiUtils.DrawRect(new Rect(overlayRect.width * 0.30f, overlayRect.height * 0.26f, overlayRect.width * 0.40f, overlayRect.height * 0.16f), new Color(1f, 1f, 1f, 0.6f));	
@@ -532,6 +537,38 @@ public class OverlayPanel : MonoBehaviour
 		Color deadPumaAnnounceColor = new Color(0.52f, 0.05f, 0f, 1f * selectScreenOpacity);
 
 		float endingLabelDownshift = overlayRect.height * 0.036f;
+
+
+		// random flashing when no puma selected
+		bool flashPumas = false;
+		float flashPumasOpacity = 0f;
+		if (guiManager.selectedPuma == -1 && selectScreenOpacity > 0.9f) {
+			flashPumas = true;
+			float flashingPeriod = 0.9f;
+			if (Time.time > flashPumasStartTime + flashingPeriod) {
+				flashPumasStartTime = Time.time;
+			}
+			if (Time.time < flashPumasStartTime + flashingPeriod * 0.4f) {
+				// first half
+				flashPumasOpacity = (Time.time - flashPumasStartTime) / (flashingPeriod * 0.4f);
+			}
+			else {
+				// second half
+				flashPumasOpacity = 1f - ((Time.time - flashPumasStartTime - flashingPeriod * 0.4f) / (flashingPeriod * 0.6f));			
+			}	
+			flashPumasOpacity = 0.4f + flashPumasOpacity * 0.25f;
+			flashPumasOpacity = flashPumasOpacity * flashPumasOpacity;
+			if (flashingInProgress == false)
+				flashPumasInitialStartTime = Time.time;
+			flashingInProgress = true;
+			float rampInTime = 0.5f;
+			if (Time.time < flashPumasInitialStartTime + rampInTime)
+				flashPumasOpacity = flashPumasOpacity * ((Time.time - flashPumasInitialStartTime) / rampInTime);
+		}
+		else {
+			flashingInProgress = false;
+		}
+		
 		
 		// young male
 		textureX = overlayRect.x + overlayRect.width * ((guiManager.selectedPuma == -1) ? 0.102f : 0.089f);
@@ -539,6 +576,11 @@ public class OverlayPanel : MonoBehaviour
 		textureY = overlayRect.y + overlayRect.height * ((guiManager.selectedPuma == 0) ? 0.572f : 0.585f) + yOffsetForAddingPopulationBar;
 		textureWidth = overlayRect.width * ((guiManager.selectedPuma == 0) ? 0.16f : 0.115f);
 		textureHeight = pumaIconTexture.height * (textureWidth / pumaIconTexture.width);
+		if (flashPumas == true) {
+			GUI.color = new Color(1f, 1f, 1f, flashPumasOpacity * selectScreenOpacity);		
+			GUI.DrawTexture(new Rect(textureX - textureWidth * 0.05f, textureY - textureHeight * 2.24f, textureWidth * 1.1f, textureHeight * 3.45f), greenOutlineRectVertTexture);
+			GUI.color = new Color(1f, 1f, 1f, 1f * selectScreenOpacity);		
+		}		
 		if (guiManager.selectedPuma != 0) {
 			// background panel and puma head
 			headshotY = overlayRect.y + overlayRect.height * 0.355f + yOffsetForAddingPopulationBar + headUpShift;
@@ -637,6 +679,11 @@ public class OverlayPanel : MonoBehaviour
 		textureY = overlayRect.y + overlayRect.height * ((guiManager.selectedPuma == 1) ? 0.572f : 0.585f) + yOffsetForAddingPopulationBar;
 		textureWidth = overlayRect.width * ((guiManager.selectedPuma == 1) ? 0.16f : 0.115f);
 		textureHeight = pumaIconTexture.height * (textureWidth / pumaIconTexture.width);
+		if (flashPumas == true) {
+			GUI.color = new Color(1f, 1f, 1f, flashPumasOpacity * selectScreenOpacity);		
+			GUI.DrawTexture(new Rect(textureX - textureWidth * 0.05f, textureY - textureHeight * 2.24f, textureWidth * 1.1f, textureHeight * 3.45f), greenOutlineRectVertTexture);
+			GUI.color = new Color(1f, 1f, 1f, 1f * selectScreenOpacity);		
+		}		
 		if (guiManager.selectedPuma != 1) {
 			// background panel for puma head
 			headshotY = overlayRect.y + overlayRect.height * 0.355f + yOffsetForAddingPopulationBar + headUpShift;
@@ -733,6 +780,11 @@ public class OverlayPanel : MonoBehaviour
 		textureY = overlayRect.y + overlayRect.height * ((guiManager.selectedPuma == 2) ? 0.572f : 0.585f) + yOffsetForAddingPopulationBar;
 		textureWidth = overlayRect.width * ((guiManager.selectedPuma == 2) ? 0.16f : 0.115f);
 		textureHeight = pumaIconTexture.height * (textureWidth / pumaIconTexture.width);
+		if (flashPumas == true) {
+			GUI.color = new Color(1f, 1f, 1f, flashPumasOpacity * selectScreenOpacity);		
+			GUI.DrawTexture(new Rect(textureX - textureWidth * 0.05f, textureY - textureHeight * 2.24f, textureWidth * 1.1f, textureHeight * 3.45f), greenOutlineRectVertTexture);
+			GUI.color = new Color(1f, 1f, 1f, 1f * selectScreenOpacity);		
+		}		
 		if (guiManager.selectedPuma != 2) {
 			// background panel for puma head
 			headshotY = overlayRect.y + overlayRect.height * 0.355f + yOffsetForAddingPopulationBar + headUpShift;
@@ -829,6 +881,11 @@ public class OverlayPanel : MonoBehaviour
 		textureY = overlayRect.y + overlayRect.height * ((guiManager.selectedPuma == 3) ? 0.572f : 0.585f) + yOffsetForAddingPopulationBar;
 		textureWidth = overlayRect.width * ((guiManager.selectedPuma == 3) ? 0.16f : 0.115f);
 		textureHeight = pumaIconTexture.height * (textureWidth / pumaIconTexture.width);
+		if (flashPumas == true) {
+			GUI.color = new Color(1f, 1f, 1f, flashPumasOpacity * selectScreenOpacity);		
+			GUI.DrawTexture(new Rect(textureX - textureWidth * 0.05f, textureY - textureHeight * 2.24f, textureWidth * 1.1f, textureHeight * 3.45f), greenOutlineRectVertTexture);
+			GUI.color = new Color(1f, 1f, 1f, 1f * selectScreenOpacity);		
+		}		
 		if (guiManager.selectedPuma != 3) {
 			// background panel for puma head
 			headshotY = overlayRect.y + overlayRect.height * 0.355f + yOffsetForAddingPopulationBar + headUpShift;
@@ -925,6 +982,11 @@ public class OverlayPanel : MonoBehaviour
 		textureY = overlayRect.y + overlayRect.height * ((guiManager.selectedPuma == 4) ? 0.572f : 0.585f) + yOffsetForAddingPopulationBar;
 		textureWidth = overlayRect.width * ((guiManager.selectedPuma == 4) ? 0.16f : 0.115f);
 		textureHeight = pumaIconTexture.height * (textureWidth / pumaIconTexture.width);
+		if (flashPumas == true) {
+			GUI.color = new Color(1f, 1f, 1f, flashPumasOpacity * selectScreenOpacity);		
+			GUI.DrawTexture(new Rect(textureX - textureWidth * 0.05f, textureY - textureHeight * 2.24f, textureWidth * 1.1f, textureHeight * 3.45f), greenOutlineRectVertTexture);
+			GUI.color = new Color(1f, 1f, 1f, 1f * selectScreenOpacity);		
+		}		
 		if (guiManager.selectedPuma != 4) {
 			// background panel for puma head
 			headshotY = overlayRect.y + overlayRect.height * 0.355f + yOffsetForAddingPopulationBar + headUpShift;
@@ -1021,6 +1083,11 @@ public class OverlayPanel : MonoBehaviour
 		textureY = overlayRect.y + overlayRect.height * ((guiManager.selectedPuma == 5) ? 0.572f : 0.585f) + yOffsetForAddingPopulationBar;
 		textureWidth = overlayRect.width * ((guiManager.selectedPuma == 5) ? 0.16f : 0.115f);
 		textureHeight = pumaIconTexture.height * (textureWidth / pumaIconTexture.width);
+		if (flashPumas == true) {
+			GUI.color = new Color(1f, 1f, 1f, flashPumasOpacity * selectScreenOpacity);		
+			GUI.DrawTexture(new Rect(textureX - textureWidth * 0.05f, textureY - textureHeight * 2.24f, textureWidth * 1.1f, textureHeight * 3.45f), greenOutlineRectVertTexture);
+			GUI.color = new Color(1f, 1f, 1f, 1f * selectScreenOpacity);		
+		}		
 		if (guiManager.selectedPuma != 5) {
 			// background panel for puma head
 			headshotY = overlayRect.y + overlayRect.height * 0.355f + yOffsetForAddingPopulationBar + headUpShift;
