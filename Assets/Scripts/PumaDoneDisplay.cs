@@ -257,7 +257,7 @@ public class PumaDoneDisplay : MonoBehaviour
 		style.normal.textColor =  new Color(0.66f, 0f, 0f, 1f);
 		style.fontStyle = FontStyle.Bold;
 		style.fontSize = (int)(fontRef * 0.18f);
-		GUI.Button(new Rect(titleX, titleY, titleW, titleH), "Puma has been KILLED BY A CAR!", style);
+		GUI.Button(new Rect(titleX, titleY, titleW, titleH), "KILLED BY A CAR!", style);
 		
 
 
@@ -336,7 +336,7 @@ public class PumaDoneDisplay : MonoBehaviour
 		style.normal.textColor =  new Color(0.70f, 0f, 0f, 1f);
 		style.fontStyle = FontStyle.Bold;
 		style.fontSize = (int)(fontRef * 0.18f);
-		GUI.Button(new Rect(titleX, titleY, titleW, titleH), "Puma has STARVED TO DEATH!", style);
+		GUI.Button(new Rect(titleX, titleY, titleW, titleH), "STARVED TO DEATH!", style);
 
 
 

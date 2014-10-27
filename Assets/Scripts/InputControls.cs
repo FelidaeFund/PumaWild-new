@@ -49,6 +49,7 @@ public class InputControls : MonoBehaviour
 	
 	// onscreen locations for control boxes
 	private Rect rectLeftButton;
+	private Rect rectRightButton;
 	private Rect rectForward;
 	private Rect rectBack;
 	private Rect rectDiagLeft;
@@ -73,6 +74,7 @@ public class InputControls : MonoBehaviour
 		guiManager = GetComponent<GuiManager>();
 		
 		rectLeftButton = new Rect (0f, 0f, 0f, 0f);
+		rectRightButton = new Rect (0f, 0f, 0f, 0f);
 		rectForward = new Rect (0f, 0f, 0f, 0f);
 		rectBack = new Rect (0f, 0f, 0f, 0f);
 		rectDiagLeft = new Rect (0f, 0f, 0f, 0f);
@@ -128,6 +130,7 @@ public class InputControls : MonoBehaviour
 	{
 		// initialize key states to 'off'
 		bool keyStateLeftButton = false;
+		bool keyStateRightButton = false;
 		bool keyStateForward = false;
 		bool keyStateBack = false;
 		bool keyStateDiagLeft = false;
@@ -142,6 +145,9 @@ public class InputControls : MonoBehaviour
 			
 			if (mouseX >= rectLeftButton.xMin && mouseX <= rectLeftButton.xMax && mouseY >= rectLeftButton.yMin && mouseY <= rectLeftButton.yMax) {
 				keyStateLeftButton = true;
+			}
+			if (mouseX >= rectRightButton.xMin && mouseX <= rectRightButton.xMax && mouseY >= rectRightButton.yMin && mouseY <= rectRightButton.yMax) {
+				keyStateRightButton = true;
 			}
 			if (mouseX >= rectForward.xMin && mouseX <= rectForward.xMax && mouseY >= rectForward.yMin && mouseY <= rectForward.yMax) {
 				keyStateForward = true;
@@ -161,10 +167,49 @@ public class InputControls : MonoBehaviour
 			if (mouseX >= rectTurnRight.x && mouseX <= rectTurnRight.x+rectTurnRight.width && mouseY >= rectTurnRight.y && mouseY <= rectTurnRight.y+rectTurnRight.height) {
 				keyStateTurnRight = true;
 			}
+			
+			if (mouseX > Screen.width/2) {
+				if (mouseY > rectRightButton.yMax)
+					inputVert = 0f;
+				//else if (mouseY < rectRightButton.yMin)
+					//inputVert = 1f;
+				else
+					inputVert = 1f - (mouseY - rectRightButton.yMin) / (rectRightButton.yMax - rectRightButton.yMin);
+
+					
+				//if (mouseX < ((rectRightButton.xMin + rectRightButton.xMax) / 2))
+					//inputHorz = -1f;
+				//else if (mouseX > ((rectRightButton.xMin + rectRightButton.xMax) / 2))
+					//inputHorz = 1f;
+				//else
+					inputHorz = (((mouseX - rectRightButton.xMin) / (rectRightButton.xMax - rectRightButton.xMin)) * 2f) - 1f;
+					
+				if (inputVert > 1.0f)
+					inputVert = 1.0f;
+				if (inputHorz < -1.0f)
+					inputHorz = -1.0f;
+				if (inputHorz > 1.0f)
+					inputHorz = 1.0f;
+					
+				inputVert = 1f - (1f - inputVert) * (1f - inputVert);
+				inputVert = 0.35f + inputVert * 0.65f;
+				bool horzFlippedFlag = false;
+				if (inputHorz < 0f) {
+					horzFlippedFlag = true;
+					inputHorz *= -1f;
+				}
+				inputHorz = 1f - (1f - inputHorz) * (1f - inputHorz);
+				if (horzFlippedFlag == true)
+					inputHorz *= -1f;				
+			}
+		}
+		else {
+			inputVert = 0f;
+			inputHorz = 0f;
 		}
 	
 		// check for relevant keys pressed on the physical keyboard
-		if ((Input.GetKey(KeyCode.Space) || Input.GetKey(KeyCode.RightShift)) && rectLeftButton.xMin != rectLeftButton.xMax)
+		if ((Input.GetKey(KeyCode.Space) || Input.GetKey(KeyCode.RightShift)) && rectLeftButton.xMin != rectLeftButton.xMax && guiManager.guiState != "guiStateFeeding1" && guiManager.guiState != "guiStatePumaDone1")
 			keyStateLeftButton = true;
 		if (Input.GetKey(KeyCode.I) || Input.GetKey(KeyCode.UpArrow))
 			keyStateForward = true;
@@ -211,8 +256,9 @@ public class InputControls : MonoBehaviour
 				// speed overdrive
 				levelManager.speedOverdrive = 2.5f;
 			}
-			else if (levelManager.gameState == "gameStateStalking" && inputVert > 0) {
+			else if (levelManager.gameState == "gameStateChasing" && inputVert > 0) {
 				// jump
+				levelManager.PumaJump();
 			}
 			else {
 				// exit gameplay
@@ -261,8 +307,8 @@ public class InputControls : MonoBehaviour
 		navValRight = newNavVal;
 		
 		//inputVert = navValForward;				 // disable backward motion
-		inputVert = navValForward + navValBack;		 // enable backward motion
-		inputHorz = navValRight + navValLeft;
+		//inputVert = navValForward + navValBack;		 // enable backward motion
+		//inputHorz = navValRight + navValLeft;
 		
 		if (inputVert == 0) {
 			// reset heading when puma stopped
@@ -368,6 +414,11 @@ public class InputControls : MonoBehaviour
 	public void SetRectLeftButton(Rect rect)
 	{
 		rectLeftButton = rect;	
+	}
+	
+	public void SetRectRightButton(Rect rect)
+	{
+		rectRightButton = rect;	
 	}
 	
 	public void SetRectForward(Rect rect)

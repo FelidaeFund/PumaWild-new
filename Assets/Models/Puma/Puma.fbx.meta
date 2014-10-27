@@ -593,7 +593,7 @@ ModelImporter:
     - serializedVersion: 16
       name: PumaPounce
       takeName: Take 001
-      firstFrame: 179
+      firstFrame: 193
       lastFrame: 216
       wrapMode: 0
       orientationOffsetY: 0
@@ -775,8 +775,8 @@ ModelImporter:
     - serializedVersion: 16
       name: PumaStand
       takeName: Take 001
-      firstFrame: 694
-      lastFrame: 766
+      firstFrame: 698
+      lastFrame: 728
       wrapMode: 0
       orientationOffsetY: 0
       level: 0

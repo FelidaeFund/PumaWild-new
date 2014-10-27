@@ -239,7 +239,14 @@ public class LevelManager : MonoBehaviour
 	private float pumaPhysicsConcludedTime;
 	private float pumaPhysicsOffsetY;
 	private float pumaPhysicsPreviousY;
-	
+	private bool pumaJumpFlag = false;
+	private float pumaJumpVelocityUp = 0f;
+	private float pumaJumpGravityDown = 0f;
+	private float pumaJumpOffsetY = 0f;
+	private float pumaJumpVelocityForward = 0f;
+	private float pumaJumpGravityBack = 0f;
+	private float pumaJumpOffsetD = 0f;
+
 	// PUMA CHARACTERISTICS
 
 	private float[] powerArray = new float[] {0.6f, 0.4f, 0.9f, 0.7f, 0.7f, 0.5f};
@@ -379,7 +386,7 @@ public class LevelManager : MonoBehaviour
 
 		pumaX = -691f;
 		pumaY = 0f;
-		pumaZ = 832f;		
+		pumaZ = 832f;	
 		pumaObj.transform.position = new Vector3(pumaX, pumaY, pumaZ);		
 		
 		//================================
@@ -1713,7 +1720,7 @@ public class LevelManager : MonoBehaviour
 				//fawn.turnRate = 0f;
 			}
 
-			if (pumaDeerDistance1 < caughtTriggerDistance || pumaDeerDistance2 < caughtTriggerDistance || pumaDeerDistance3 < caughtTriggerDistance) {
+			if (pumaJumpFlag && (pumaDeerDistance1 < caughtTriggerDistance || pumaDeerDistance2 < caughtTriggerDistance || pumaDeerDistance3 < caughtTriggerDistance)) {
 			
 				// DEER IS CAUGHT !!!
 			
@@ -1840,6 +1847,20 @@ public class LevelManager : MonoBehaviour
 				caughtDeer.gameObj.transform.position = new Vector3(deerX, deerY, deerZ);
 				SetGameState("gameStateFeeding2");
 			}
+			// calculate deerObj rotX based on terrain in front and behind
+			float offsetDistance = 0.5f;
+			float deerAheadX = caughtDeer.gameObj.transform.position.x + (Mathf.Sin(caughtDeer.heading*Mathf.PI/180) * offsetDistance * -1f);
+			float deerAheadZ = caughtDeer.gameObj.transform.position.z + (Mathf.Cos(caughtDeer.heading*Mathf.PI/180) * offsetDistance * -1f);
+			float deerBehindX = caughtDeer.gameObj.transform.position.x + (Mathf.Sin(caughtDeer.heading*Mathf.PI/180) * offsetDistance * 1f);
+			float deerBehindZ = caughtDeer.gameObj.transform.position.z + (Mathf.Cos(caughtDeer.heading*Mathf.PI/180) * offsetDistance * 1f);
+			float deerRotX = GetAngleFromOffset(0, GetTerrainHeight(deerAheadX, deerAheadZ), offsetDistance * 2f, GetTerrainHeight(deerBehindX, deerBehindZ)) - 90f;	
+			float sidewaysHeading = caughtDeer.heading + 90f;
+			float deerLeftX = caughtDeer.gameObj.transform.position.x + (Mathf.Sin(sidewaysHeading*Mathf.PI/180) * offsetDistance * 1f);
+			float deerLeftZ = caughtDeer.gameObj.transform.position.z + (Mathf.Cos(sidewaysHeading*Mathf.PI/180) * offsetDistance * 1f);
+			float deerRightX = caughtDeer.gameObj.transform.position.x + (Mathf.Sin(sidewaysHeading*Mathf.PI/180) * offsetDistance * -1f);
+			float deerRightZ = caughtDeer.gameObj.transform.position.z + (Mathf.Cos(sidewaysHeading*Mathf.PI/180) * offsetDistance * -1f);
+			float deerRotZ = GetAngleFromOffset(0, GetTerrainHeight(deerLeftX, deerLeftZ), offsetDistance * 2f, GetTerrainHeight(deerRightX, deerRightZ)) - 90f;	
+			caughtDeer.gameObj.transform.rotation = Quaternion.Euler(deerRotX, caughtDeer.heading, deerRotZ);
 			break;
 
 		case "gameStateFeeding2":
@@ -1956,19 +1977,6 @@ public class LevelManager : MonoBehaviour
 			pumaZ += (Mathf.Cos(mainHeading*Mathf.PI/180) * distance);
 		}	
 		else if (gameState == "gameStateStalking") {	
-
-		
-		
-
-			//if (Input.GetKey(KeyCode.Tab))
-				//speedOverdrive = 2.5f;
-			//else
-				//speedOverdrive = 1f;
-		
-
-
-		
-		
 			// main stalking state
 			float rotationSpeed = 100f;
 			if (pumaCollisionFlag == true) {
@@ -2045,6 +2053,22 @@ public class LevelManager : MonoBehaviour
 			}
 			else {
 				distance = inputControls.GetInputVert() * Time.deltaTime  * pumaChasingSpeed * speedOverdrive;
+				
+				if (pumaJumpGravityBack != 0f) {
+					pumaJumpOffsetD += pumaJumpVelocityForward * Time.deltaTime;
+					pumaJumpVelocityForward += pumaJumpGravityBack * Time.deltaTime;
+					if (pumaJumpOffsetD < 0f) {
+						pumaJumpOffsetD = 0f;
+						pumaJumpVelocityForward = 0f;
+						pumaJumpGravityBack = 0f;
+						if (pumaJumpGravityDown == 0f) {
+							pumaJumpFlag = false;
+							pumaAnimator.SetBool("PumaPounce", false);
+						}
+					}
+				}
+				distance += pumaJumpOffsetD * Time.deltaTime;
+				
 				mainHeading += inputControls.GetInputHorz() * Time.deltaTime * rotationSpeed;
 				pumaHeading = mainHeading + pumaHeadingOffset;
 			}
@@ -2086,7 +2110,7 @@ public class LevelManager : MonoBehaviour
 			// normal case
 			pumaY = GetTerrainHeight(pumaX, pumaZ);
 			// calculate puma rotX based on terrain in front and behind
-			float offsetDistance = 1f;
+			float offsetDistance = 0.5f;
 			float pumaAheadX = pumaX + (Mathf.Sin(pumaHeading*Mathf.PI/180) * offsetDistance * 1f);
 			float pumaAheadZ = pumaZ + (Mathf.Cos(pumaHeading*Mathf.PI/180) * offsetDistance * 1f);
 			float pumaBehindX = pumaX + (Mathf.Sin(pumaHeading*Mathf.PI/180) * offsetDistance * -1f);
@@ -2102,8 +2126,22 @@ public class LevelManager : MonoBehaviour
 						
 			//Debug.Log(" ");
 			//Debug.Log("====================PUMA was at   " + pumaObj.transform.position);
+
+			if (pumaJumpGravityDown != 0f) {
+				pumaJumpOffsetY += pumaJumpVelocityUp * Time.deltaTime;
+				pumaJumpVelocityUp += pumaJumpGravityDown * Time.deltaTime;
+				if (pumaJumpOffsetY < 0f) {
+					pumaJumpOffsetY = 0f;
+					pumaJumpVelocityUp = 0f;
+					pumaJumpGravityDown = 0f;
+					if (pumaJumpGravityBack == 0f) {
+						pumaJumpFlag = false;
+						pumaAnimator.SetBool("PumaPounce", false);
+					}
+				}
+			}
 			
-			pumaObj.transform.position = new Vector3(pumaX, pumaY, pumaZ);			
+			pumaObj.transform.position = new Vector3(pumaX, pumaY + pumaJumpOffsetY, pumaZ);			
 			pumaObj.transform.rotation = Quaternion.Euler(pumaRotX, (pumaHeading - 180f), 0);
 						
 			//Debug.Log("====================PUMA set to   " + pumaObj.transform.position);
@@ -2178,9 +2216,9 @@ public class LevelManager : MonoBehaviour
 			Debug.Log("ERROR: levelManager - got bad collision or starvation state");
 		}	
 		
-		displayVar1 = pumaObj.transform.position.x;
-		displayVar2 = pumaObj.transform.position.y;
-		displayVar3 = pumaObj.transform.position.z;
+		//displayVar1 = pumaObj.transform.position.x;
+		//displayVar2 = pumaObj.transform.position.y;
+		//displayVar3 = pumaObj.transform.position.z;
 		
 		//================
 		// Update Camera
@@ -2311,6 +2349,22 @@ public class LevelManager : MonoBehaviour
 	//		PUMA HANDLING
 	//===================================
 	//===================================
+	
+	public void PumaJump()
+	{
+		if (pumaJumpFlag == true)
+			return;
+	
+		pumaJumpFlag = true;
+		pumaJumpVelocityUp = 7f;
+		pumaJumpGravityDown = -30f;
+		pumaJumpOffsetY = 0f;
+		pumaJumpVelocityForward = 17.5f;
+		pumaJumpGravityBack = -45f;
+		pumaJumpOffsetD = 0f;
+		pumaAnimator.SetBool("PumaPounce", true);
+	}
+
 	
 	public void PumaBeginCollision(float headingOffset, float barrierHeading)
 	{
@@ -2486,6 +2540,21 @@ public class LevelManager : MonoBehaviour
 		float deerY = deer.baseY + GetTerrainHeight(deerX, deerZ);
 
 		deer.gameObj.transform.position = new Vector3(deerX, deerY, deerZ);
+		
+		// calculate deerObj rotX based on terrain in front and behind
+		float offsetDistance = 0.5f;
+		float deerAheadX = deer.gameObj.transform.position.x + (Mathf.Sin(deer.heading*Mathf.PI/180) * offsetDistance * -1f);
+		float deerAheadZ = deer.gameObj.transform.position.z + (Mathf.Cos(deer.heading*Mathf.PI/180) * offsetDistance * -1f);
+		float deerBehindX = deer.gameObj.transform.position.x + (Mathf.Sin(deer.heading*Mathf.PI/180) * offsetDistance * 1f);
+		float deerBehindZ = deer.gameObj.transform.position.z + (Mathf.Cos(deer.heading*Mathf.PI/180) * offsetDistance * 1f);
+		float deerRotX = GetAngleFromOffset(0, GetTerrainHeight(deerAheadX, deerAheadZ), offsetDistance * 2f, GetTerrainHeight(deerBehindX, deerBehindZ)) - 90f;	
+		float sidewaysHeading = deer.heading + 90f;
+		float deerLeftX = deer.gameObj.transform.position.x + (Mathf.Sin(sidewaysHeading*Mathf.PI/180) * offsetDistance * 1f);
+		float deerLeftZ = deer.gameObj.transform.position.z + (Mathf.Cos(sidewaysHeading*Mathf.PI/180) * offsetDistance * 1f);
+		float deerRightX = deer.gameObj.transform.position.x + (Mathf.Sin(sidewaysHeading*Mathf.PI/180) * offsetDistance * -1f);
+		float deerRightZ = deer.gameObj.transform.position.z + (Mathf.Cos(sidewaysHeading*Mathf.PI/180) * offsetDistance * -1f);
+		float deerRotZ = GetAngleFromOffset(0, GetTerrainHeight(deerLeftX, deerLeftZ), offsetDistance * 2f, GetTerrainHeight(deerRightX, deerRightZ)) - 90f;	
+		deer.gameObj.transform.rotation = Quaternion.Euler(deerRotX, deer.heading, deerRotZ);
 	}
 
 	void PlaceDeerPositions()
@@ -2758,6 +2827,7 @@ public class LevelManager : MonoBehaviour
 		pumaAnimator.SetBool("DeerKill", false);
 		pumaAnimator.SetBool("CarCollision", false);
 		pumaAnimator.SetBool("PumaStarved", false);
+		pumaAnimator.SetBool("PumaPounce", false);
 	}			
 	
 

@@ -750,7 +750,10 @@ public class GuiManager : MonoBehaviour
 	
 	void OnGUI()
 	{	
-		inputControls.SetRectLeftButton(new Rect(0f, 0f, 0f, 0f)); // gets overwritten during gameplayDisplay.Draw call below if controls are active
+		// initially clear the gameplay input rects
+		// if the rects are active, these values will be filled in during gameplayDisplay.Draw call below
+		inputControls.SetRectLeftButton(new Rect(0f, 0f, 0f, 0f)); 
+		inputControls.SetRectRightButton(new Rect(0f, 0f, 0f, 0f)); 
 
 		CalculateOverlayRect();
 	

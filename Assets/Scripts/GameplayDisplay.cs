@@ -133,10 +133,8 @@ public class GameplayDisplay : MonoBehaviour
 		//GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), arrowRightTexture);
 		//GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), arrowUpTexture);
 		//GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), arrowDownTexture);
-		inputControls.SetRectForward(   new Rect(textureX + textureWidth * 0.37f, textureY + textureHeight * 0.45f, textureWidth * 0.24f, textureHeight * 0.24f));
-		inputControls.SetRectBack(      new Rect(textureX + textureWidth * 0.37f, textureY + textureHeight * 0.69f, textureWidth * 0.24f, textureHeight * 0.24f));
-		inputControls.SetRectDiagLeft(  new Rect(textureX + textureWidth * 0.11f, textureY + textureHeight * 0.63f, textureWidth * 0.26f, textureHeight * 0.3f));
-		inputControls.SetRectDiagRight( new Rect(textureX + textureWidth * 0.61f, textureY + textureHeight * 0.63f, textureWidth * 0.26f, textureHeight * 0.3f));
+		if (movementControlsOpacity > 0f)
+			inputControls.SetRectRightButton(new Rect(rightAreaX, rightAreaY, rightAreaWidth, rightAreaHeight));
 						
 		//----------------------
 		// POSITION INDICATORS
