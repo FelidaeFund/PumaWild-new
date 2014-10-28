@@ -216,7 +216,7 @@ public class GuiComponents : MonoBehaviour
 		
 		if (bareBonesFlag == false) {
 			if (gameplayFlag == true) {
-				GUI.color = new Color(1f, 1f, 1f, 0.9f * statusPanelOpacity);
+				GUI.color = new Color(1f, 1f, 1f, 0.8f * statusPanelOpacity);
 				GUI.Box(new Rect(statusPanelX, statusPanelY, statusPanelWidth, statusPanelHeight), "");
 				GUI.color = new Color(1f, 1f, 1f, 0.4f * statusPanelOpacity);
 				//GUI.Box(new Rect(statusPanelX, statusPanelY, statusPanelWidth, statusPanelHeight), "");
@@ -280,18 +280,18 @@ public class GuiComponents : MonoBehaviour
 					textureWidth = headshotTexture.width * (textureHeight / headshotTexture.height);
 					textureX = statusPanelX + statusPanelWidth - textureWidth - statusPanelWidth * 0.065f;
 					textureY = statusPanelY + statusPanelHeight * 0.03f;
-					GUI.color = new Color(1f, 1f, 1f, 0.95f * statusPanelOpacity);
+					GUI.color = new Color(1f, 1f, 1f, 0.85f * statusPanelOpacity);
 					GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), headshotTexture);			
 					GUI.color = new Color(1f, 1f, 1f, 1f * statusPanelOpacity);
 					// puma name
 					//style.normal.textColor = new Color(0.99f, 0.62f, 0f, 0.95f);
-					style.normal.textColor = new Color(0.99f, 0.66f, 0f, 0.8f);
-					style.fontSize = (int)(fontRef * 0.038f);
+					style.normal.textColor = new Color(0.99f, 0.66f, 0f, 0.7f);
+					style.fontSize = (int)(fontRef * 0.062f);
 					style.alignment = TextAnchor.UpperCenter;
 					style.fontStyle = FontStyle.BoldAndItalic;
-					float textX = statusPanelX + statusPanelWidth * 0.075f;
-					float textY = statusPanelY + statusPanelHeight * 0.29f;
-					float textWidth = statusPanelWidth * 0.4f;
+					float textX = statusPanelX;
+					float textY = statusPanelY + statusPanelHeight * 0.70f;
+					float textWidth = statusPanelWidth;
 					float textHeight = statusPanelHeight * 0.3f;
 					GUI.Button(new Rect(textX, textY, textWidth, textHeight), pumaName, style);
 					style.alignment = TextAnchor.MiddleCenter;
@@ -443,10 +443,10 @@ public class GuiComponents : MonoBehaviour
 		float healthBarHeight;
 		if (gameplayFlag == true) {
 			// gameplay overlay
-			healthBarX = statusPanelX + statusPanelWidth * 0.05f;
-			healthBarY = statusPanelY + statusPanelHeight * 0.72f;
-			healthBarWidth = statusPanelWidth * 0.90f;
-			healthBarHeight = statusPanelHeight * 0.2f;
+			healthBarWidth = Screen.height * 0.32f;
+			healthBarHeight = Screen.height * 0.031f;
+			healthBarX = Screen.width/2 - healthBarWidth/2;
+			healthBarY = Screen.height - healthBarHeight - healthBarHeight * 0.2f;
 		}
 		else {
 			// normal case
@@ -758,8 +758,8 @@ public class GuiComponents : MonoBehaviour
 		
 
 			Color pumaAliveColor = new Color(1f, 1f, 1f, 0.9f * healthBarOpacity);
-			Color pumaFullHealthColor = new Color(0.32f, 0.99f, 0f, 0.9f * healthBarOpacity);
-			Color pumaDeadColor = new Color(0.6f, 0.05f, 0f, 0.8f * healthBarOpacity);
+			Color pumaFullHealthColor = new Color(1f, 1f, 1f, 0.9f * healthBarOpacity);  // new Color(0.32f, 0.99f, 0f, 0.9f * healthBarOpacity);
+			Color pumaDeadColor = new Color(0.01f, 0.01f, 0.01f, 1f * healthBarOpacity);
 
 
 			textureX = healthBarX + healthBarWidth * 0.383f;
@@ -878,8 +878,8 @@ public class GuiComponents : MonoBehaviour
 			xOffset2 = healthBarWidth * -0.012f;
 		}
 		else if (health < 0.6f) {
-			labelColor = new Color(0.85f * 1.13f, 0.80f * 1.13f, 0f, 1f);
-			barColor = new Color(0.85f * 0.90f, 0.80f * 0.90f, 0f, 1f);
+			labelColor = new Color(0.85f * 1.13f, 0.80f * 1.13f, 0f, 0.9f);
+			barColor = new Color(0.85f * 0.90f, 0.80f * 0.90f, 0f, 0.85f);
 			displayString = "Sustaining";
 			xOffset = healthBarWidth * 0.005f;
 			xOffset2 = healthBarWidth * 0f;
@@ -910,17 +910,19 @@ public class GuiComponents : MonoBehaviour
 			style.alignment = TextAnchor.MiddleLeft;
 			style.fontSize = (int)(fontRef * 0.20f);
 			style.normal.textColor = new Color(0.88f, 0.55f, 0f, 1f);
-			GUI.Button(new Rect(xOffset + healthBarX + healthBarWidth * 0.383f, healthBarY - healthBarHeight * 1.85f + labelAdjustY, healthBarWidth * 0.3f, healthBarHeight * 0.03f), "POPULATION:", style);
+			GUI.color = new Color(1f, 1f, 1f, 0.8f * healthBarOpacity);
+			//GUI.Button(new Rect(xOffset + healthBarX + healthBarWidth * 0.383f, healthBarY - healthBarHeight * 1.85f + labelAdjustY, healthBarWidth * 0.3f, healthBarHeight * 0.03f), "POPULATION:", style);
 			style.fontSize = (int)(fontRef * 0.24f);
 			style.normal.textColor = labelColor;
-			GUI.Button(new Rect(xOffset + healthBarX + healthBarWidth * 0.505f, healthBarY - healthBarHeight * 1.85f + labelAdjustY, healthBarWidth * 0.3f, healthBarHeight * 0.03f), displayString, style);
+			//GUI.Button(new Rect(xOffset + healthBarX + healthBarWidth * 0.505f, healthBarY - healthBarHeight * 1.85f + labelAdjustY, healthBarWidth * 0.3f, healthBarHeight * 0.03f), displayString, style);
+			GUI.color = new Color(1f, 1f, 1f, 1f * healthBarOpacity);
 		}
 		else if (centerLabels == false) {
 			// labels go to sides of bar
 			style.fontStyle = FontStyle.Bold;
 			style.alignment = TextAnchor.MiddleLeft;
 			style.fontSize = (int)(fontRef * 0.21f);
-			style.normal.textColor = new Color(0.88f, 0.55f, 0f, 1f);
+			style.normal.textColor = new Color(0.88f, 0.60f, 0.01f, 1f);
 			GUI.Button(new Rect(xOffset2 + healthBarX - healthBarWidth * 0.15f, healthBarY + healthBarHeight * 0.01f, healthBarWidth * 0.3f, healthBarHeight * 1f), "POPULATION", style);
 			style.fontSize = (int)(fontRef * 0.26f);
 			style.normal.textColor = labelColor;

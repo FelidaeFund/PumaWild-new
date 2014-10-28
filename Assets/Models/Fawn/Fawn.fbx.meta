@@ -1,7 +1,7 @@
 fileFormatVersion: 2
 guid: 5c635c6e8ce184e41a6c5f544534bf7b
 ModelImporter:
-  serializedVersion: 15
+  serializedVersion: 16
   fileIDToRecycleName:
     100000: Arm_End_L
     100002: Arm_End_R
@@ -260,6 +260,7 @@ ModelImporter:
     legacyGenerateAnimations: 4
     bakeSimulation: 0
     optimizeGameObjects: 0
+    motionNodeName: 
     animationCompression: 1
     animationRotationError: .5
     animationPositionError: .5
@@ -297,7 +298,7 @@ ModelImporter:
       name: FawnDie
       takeName: Take 001
       firstFrame: 1
-      lastFrame: 33
+      lastFrame: 32
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -563,4 +564,5 @@ ModelImporter:
     rootMotionBoneName: 
   lastHumanDescriptionAvatarSource: {instanceID: 0}
   animationType: 2
+  additionalBone: 0
   userData: 

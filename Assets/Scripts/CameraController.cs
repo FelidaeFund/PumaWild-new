@@ -372,12 +372,21 @@ public class CameraController : MonoBehaviour
 
 	void ProcessKeyboardInput()
 	{
+		float inputVert = 0f;
+		float inputHorz = 0f;
+		
+		if (Input.GetKey(KeyCode.UpArrow))
+			inputVert = 1f;
+		else if (Input.GetKey(KeyCode.DownArrow))
+			inputVert = -1f;
+	
+		if (Input.GetKey(KeyCode.LeftArrow))
+			inputHorz = -1f;
+		else if (Input.GetKey(KeyCode.RightArrow))
+			inputHorz = 1f;
+	
 		if (Input.GetKey(KeyCode.LeftShift) && Input.GetKey(KeyCode.LeftControl)) {
 			// dev only: camera distance and angle
-			float inputVert = inputControls.GetInputVert();
-			float inputHorz = inputControls.GetInputHorz();
-			inputVert = (inputVert > 0f) ? 1f : ((inputVert < 0f) ? -1f : 0f);
-			inputHorz = (inputHorz > 0f) ? 1f : ((inputHorz < 0f) ? -1f : 0f);
 			targetCameraDistance -= inputVert * Time.deltaTime * 4 * levelManager.speedOverdrive;
 			targetCameraRotOffsetY += inputHorz * Time.deltaTime * 60 * levelManager.speedOverdrive;
 			inputControls.ResetControls();
@@ -385,16 +394,12 @@ public class CameraController : MonoBehaviour
 		
 		else if (Input.GetKey(KeyCode.LeftShift)) {
 			// dev only: camera height
-			float inputVert = inputControls.GetInputVert();
-			inputVert = (inputVert > 0f) ? 1f : ((inputVert < 0f) ? -1f : 0f);
 			targetCameraY += inputVert * Time.deltaTime  * 3 * levelManager.speedOverdrive;
 			inputControls.ResetControls();
 		}
 		
 		else if (Input.GetKey(KeyCode.LeftControl)) {
 			// dev only: camera pitch
-			float inputVert = inputControls.GetInputVert();
-			inputVert = (inputVert > 0f) ? 1f : ((inputVert < 0f) ? -1f : 0f);
 			targetCameraRotX += inputVert * Time.deltaTime  * 25 * levelManager.speedOverdrive;
 			inputControls.ResetControls();
 		}

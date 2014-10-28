@@ -291,10 +291,10 @@ public class OverlayPanel : MonoBehaviour
 		float helpButtonHeight = overlayRect.height * 0.05f;
 		GUI.color = new Color(1f, 1f, 1f, 1f * overlayPanelOpacity);
 		GUI.skin = guiManager.customGUISkin;
-		guiManager.customGUISkin.button.fontSize = (int)(overlayRect.width * 0.02);
+		guiManager.customGUISkin.button.fontSize = (int)(overlayRect.width * 0.026);
 		guiManager.customGUISkin.button.fontStyle = FontStyle.Normal;
 		GUI.backgroundColor = new Color(1f, 1f, 1f, 1f);
-		GUI.color = new Color(1f, 1f, 1f, 0.5f * overlayPanelOpacity);
+		GUI.color = new Color(1f, 1f, 1f, 0.3f * overlayPanelOpacity);
 		if (GUI.Button(new Rect(helpButtonX, helpButtonY, helpButtonWidth, helpButtonHeight), "")) {
 			guiManager.OpenInfoPanel(-1); // opens to current page
 		}
@@ -369,14 +369,14 @@ public class OverlayPanel : MonoBehaviour
 				guiManager.SetGuiState("guiStateLeavingOverlay");
 				levelManager.SetGameState("gameStateLeavingGui");
 			}
-			if (GUI.Button(new Rect(startButtonX, startButtonY, startButtonWidth, startButtonHeight), "Go")) {
+			if (GUI.Button(new Rect(startButtonX, startButtonY, startButtonWidth, startButtonHeight), "Go >")) {
 			//if (GUI.Button(new Rect(startButtonX, startButtonY, startButtonWidth, startButtonHeight), "Go", (guiManager.selectedPuma != -1) ? bigButtonStyle : bigButtonDisabledStyle) && (guiManager.selectedPuma != -1)) {
 				guiManager.SetGuiState("guiStateLeavingOverlay");
 				levelManager.SetGameState("gameStateLeavingGui");
 			}
 		}
 		else {
-			GUI.Button(new Rect(startButtonX, startButtonY, startButtonWidth, startButtonHeight), "Go", bigButtonDisabledStyle);
+			GUI.Button(new Rect(startButtonX, startButtonY, startButtonWidth, startButtonHeight), "Go >", bigButtonDisabledStyle);
 		}
 		
 		GUI.color = new Color(1f, 1f, 1f, 1f * overlayPanelOpacity);
@@ -537,6 +537,12 @@ public class OverlayPanel : MonoBehaviour
 		Color deadPumaTextColor = new Color(0.32f * 1.3f, 0.32f * 1.3f, 0.22f * 1.3f, 0.8f * selectScreenOpacity);
 		Color deadPumaAnnounceColor = new Color(0.52f, 0.05f, 0f, 1f * selectScreenOpacity);
 
+		
+		Color selectablePumaOutlineColor = new Color(0.05f, 0.05f, 0.05f, 0f * selectScreenOpacity);
+		Color selectedPumaOutlineColor = new Color(0.14f, 0.14f, 0.14f, 0f * selectScreenOpacity);
+		
+		
+		
 		float endingLabelDownshift = overlayRect.height * 0.036f;
 
 
@@ -581,7 +587,17 @@ public class OverlayPanel : MonoBehaviour
 			GUI.color = new Color(1f, 1f, 1f, flashPumasOpacity * selectScreenOpacity);		
 			GUI.DrawTexture(new Rect(textureX - textureWidth * 0.05f, textureY - textureHeight * 2.24f, textureWidth * 1.1f, textureHeight * 3.45f), greenOutlineRectVertTexture);
 			GUI.color = new Color(1f, 1f, 1f, 1f * selectScreenOpacity);		
-		}		
+		}
+		else if (PumaIsSelectable(0) && guiManager.selectedPuma != 0) {
+			GUI.color = selectablePumaOutlineColor;	
+			GUI.DrawTexture(new Rect(textureX - textureWidth * 0.05f, textureY - textureHeight * 2.24f, textureWidth * 1.1f, textureHeight * 3.45f), greenOutlineRectVertTexture);
+			GUI.color = new Color(1f, 1f, 1f, 1f * selectScreenOpacity);		
+		}
+		else if (guiManager.selectedPuma == 0) {
+			GUI.color = selectedPumaOutlineColor;	
+			GUI.DrawTexture(new Rect(textureX - textureWidth * 0.07f, textureY - textureHeight * 2.10f, textureWidth * 1.14f, textureHeight * 3.06f), greenOutlineRectVertTexture);
+			GUI.color = new Color(1f, 1f, 1f, 1f * selectScreenOpacity);		
+		}
 		if (guiManager.selectedPuma != 0) {
 			// background panel and puma head
 			headshotY = overlayRect.y + overlayRect.height * 0.355f + yOffsetForAddingPopulationBar + headUpShift;
@@ -685,6 +701,16 @@ public class OverlayPanel : MonoBehaviour
 			GUI.DrawTexture(new Rect(textureX - textureWidth * 0.05f, textureY - textureHeight * 2.24f, textureWidth * 1.1f, textureHeight * 3.45f), greenOutlineRectVertTexture);
 			GUI.color = new Color(1f, 1f, 1f, 1f * selectScreenOpacity);		
 		}		
+		else if (PumaIsSelectable(1) && guiManager.selectedPuma != 1) {
+			GUI.color = selectablePumaOutlineColor;	
+			GUI.DrawTexture(new Rect(textureX - textureWidth * 0.05f, textureY - textureHeight * 2.24f, textureWidth * 1.1f, textureHeight * 3.45f), greenOutlineRectVertTexture);
+			GUI.color = new Color(1f, 1f, 1f, 1f * selectScreenOpacity);		
+		}
+		else if (guiManager.selectedPuma == 1) {
+			GUI.color = selectedPumaOutlineColor;	
+			GUI.DrawTexture(new Rect(textureX - textureWidth * 0.07f, textureY - textureHeight * 2.10f, textureWidth * 1.14f, textureHeight * 3.06f), greenOutlineRectVertTexture);
+			GUI.color = new Color(1f, 1f, 1f, 1f * selectScreenOpacity);		
+		}
 		if (guiManager.selectedPuma != 1) {
 			// background panel for puma head
 			headshotY = overlayRect.y + overlayRect.height * 0.355f + yOffsetForAddingPopulationBar + headUpShift;
@@ -786,6 +812,16 @@ public class OverlayPanel : MonoBehaviour
 			GUI.DrawTexture(new Rect(textureX - textureWidth * 0.05f, textureY - textureHeight * 2.24f, textureWidth * 1.1f, textureHeight * 3.45f), greenOutlineRectVertTexture);
 			GUI.color = new Color(1f, 1f, 1f, 1f * selectScreenOpacity);		
 		}		
+		else if (PumaIsSelectable(2) && guiManager.selectedPuma != 2) {
+			GUI.color = selectablePumaOutlineColor;	
+			GUI.DrawTexture(new Rect(textureX - textureWidth * 0.05f, textureY - textureHeight * 2.24f, textureWidth * 1.1f, textureHeight * 3.45f), greenOutlineRectVertTexture);
+			GUI.color = new Color(1f, 1f, 1f, 1f * selectScreenOpacity);		
+		}
+		else if (guiManager.selectedPuma == 2) {
+			GUI.color = selectedPumaOutlineColor;	
+			GUI.DrawTexture(new Rect(textureX - textureWidth * 0.07f, textureY - textureHeight * 2.10f, textureWidth * 1.14f, textureHeight * 3.06f), greenOutlineRectVertTexture);
+			GUI.color = new Color(1f, 1f, 1f, 1f * selectScreenOpacity);		
+		}
 		if (guiManager.selectedPuma != 2) {
 			// background panel for puma head
 			headshotY = overlayRect.y + overlayRect.height * 0.355f + yOffsetForAddingPopulationBar + headUpShift;
@@ -887,6 +923,16 @@ public class OverlayPanel : MonoBehaviour
 			GUI.DrawTexture(new Rect(textureX - textureWidth * 0.05f, textureY - textureHeight * 2.24f, textureWidth * 1.1f, textureHeight * 3.45f), greenOutlineRectVertTexture);
 			GUI.color = new Color(1f, 1f, 1f, 1f * selectScreenOpacity);		
 		}		
+		else if (PumaIsSelectable(3) && guiManager.selectedPuma != 3) {
+			GUI.color = selectablePumaOutlineColor;	
+			GUI.DrawTexture(new Rect(textureX - textureWidth * 0.05f, textureY - textureHeight * 2.24f, textureWidth * 1.1f, textureHeight * 3.45f), greenOutlineRectVertTexture);
+			GUI.color = new Color(1f, 1f, 1f, 1f * selectScreenOpacity);		
+		}
+		else if (guiManager.selectedPuma == 3) {
+			GUI.color = selectedPumaOutlineColor;	
+			GUI.DrawTexture(new Rect(textureX - textureWidth * 0.07f, textureY - textureHeight * 2.10f, textureWidth * 1.14f, textureHeight * 3.06f), greenOutlineRectVertTexture);
+			GUI.color = new Color(1f, 1f, 1f, 1f * selectScreenOpacity);		
+		}
 		if (guiManager.selectedPuma != 3) {
 			// background panel for puma head
 			headshotY = overlayRect.y + overlayRect.height * 0.355f + yOffsetForAddingPopulationBar + headUpShift;
@@ -988,6 +1034,16 @@ public class OverlayPanel : MonoBehaviour
 			GUI.DrawTexture(new Rect(textureX - textureWidth * 0.05f, textureY - textureHeight * 2.24f, textureWidth * 1.1f, textureHeight * 3.45f), greenOutlineRectVertTexture);
 			GUI.color = new Color(1f, 1f, 1f, 1f * selectScreenOpacity);		
 		}		
+		else if (PumaIsSelectable(4) && guiManager.selectedPuma != 4) {
+			GUI.color = selectablePumaOutlineColor;	
+			GUI.DrawTexture(new Rect(textureX - textureWidth * 0.05f, textureY - textureHeight * 2.24f, textureWidth * 1.1f, textureHeight * 3.45f), greenOutlineRectVertTexture);
+			GUI.color = new Color(1f, 1f, 1f, 1f * selectScreenOpacity);		
+		}
+		else if (guiManager.selectedPuma == 4) {
+			GUI.color = selectedPumaOutlineColor;	
+			GUI.DrawTexture(new Rect(textureX - textureWidth * 0.07f, textureY - textureHeight * 2.10f, textureWidth * 1.14f, textureHeight * 3.06f), greenOutlineRectVertTexture);
+			GUI.color = new Color(1f, 1f, 1f, 1f * selectScreenOpacity);		
+		}
 		if (guiManager.selectedPuma != 4) {
 			// background panel for puma head
 			headshotY = overlayRect.y + overlayRect.height * 0.355f + yOffsetForAddingPopulationBar + headUpShift;
@@ -1089,6 +1145,16 @@ public class OverlayPanel : MonoBehaviour
 			GUI.DrawTexture(new Rect(textureX - textureWidth * 0.05f, textureY - textureHeight * 2.24f, textureWidth * 1.1f, textureHeight * 3.45f), greenOutlineRectVertTexture);
 			GUI.color = new Color(1f, 1f, 1f, 1f * selectScreenOpacity);		
 		}		
+		else if (PumaIsSelectable(5) && guiManager.selectedPuma != 5) {
+			GUI.color = selectablePumaOutlineColor;	
+			GUI.DrawTexture(new Rect(textureX - textureWidth * 0.05f, textureY - textureHeight * 2.24f, textureWidth * 1.1f, textureHeight * 3.45f), greenOutlineRectVertTexture);
+			GUI.color = new Color(1f, 1f, 1f, 1f * selectScreenOpacity);		
+		}
+		else if (guiManager.selectedPuma == 5) {
+			GUI.color = selectedPumaOutlineColor;	
+			GUI.DrawTexture(new Rect(textureX - textureWidth * 0.07f, textureY - textureHeight * 2.10f, textureWidth * 1.14f, textureHeight * 3.06f), greenOutlineRectVertTexture);
+			GUI.color = new Color(1f, 1f, 1f, 1f * selectScreenOpacity);		
+		}
 		if (guiManager.selectedPuma != 5) {
 			// background panel for puma head
 			headshotY = overlayRect.y + overlayRect.height * 0.355f + yOffsetForAddingPopulationBar + headUpShift;

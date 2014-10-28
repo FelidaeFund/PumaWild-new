@@ -11,6 +11,13 @@ public class InputControls : MonoBehaviour
 	//		MODULE VARIABLES
 	//===================================
 	//===================================
+	
+	private bool inputRampUpFlag = false;
+	private bool inputRampDownFlag = false;
+	private float inputRampStartTime;
+	private float inputRampTotalTime;
+	private float inputRampVertStartLevel;
+	private float inputRampHorzStartLevel;
 
 	// possible states for each direction of movement
 	enum NavState {Off, Inc, Full, Dec};
@@ -139,6 +146,12 @@ public class InputControls : MonoBehaviour
 		bool keyStateTurnRight = false;
 
 		// check for pressed mouse within any of the onscreen rects
+
+			
+		float oldInputVert = inputVert;
+		float oldInputHorz = inputHorz;
+
+
 		if (Input.GetMouseButton(0)) {
 			float mouseX = Input.mousePosition.x;
 			float mouseY = Screen.height - Input.mousePosition.y;	
@@ -168,7 +181,9 @@ public class InputControls : MonoBehaviour
 				keyStateTurnRight = true;
 			}
 			
+			
 			if (mouseX > Screen.width/2) {
+			
 				if (mouseY > rectRightButton.yMax)
 					inputVert = 0f;
 				//else if (mouseY < rectRightButton.yMin)
@@ -193,6 +208,9 @@ public class InputControls : MonoBehaviour
 					
 				inputVert = 1f - (1f - inputVert) * (1f - inputVert);
 				inputVert = 0.35f + inputVert * 0.65f;
+				
+				
+				
 				bool horzFlippedFlag = false;
 				if (inputHorz < 0f) {
 					horzFlippedFlag = true;
@@ -207,6 +225,55 @@ public class InputControls : MonoBehaviour
 			inputVert = 0f;
 			inputHorz = 0f;
 		}
+		
+		// fade in or out motion when starting or stopping
+
+		if (inputRampUpFlag == false && oldInputVert == 0f && inputVert != 0f) {
+			// starting
+			inputRampUpFlag = true;
+			inputRampDownFlag = false;
+			inputRampStartTime = Time.time;
+			inputRampTotalTime = 0.2f;
+			inputRampVertStartLevel = oldInputVert;
+			inputRampHorzStartLevel = oldInputHorz;
+			inputVert = oldInputVert;
+			inputHorz = oldInputHorz;
+		}
+		
+		else if (inputRampDownFlag == false && oldInputVert != 0f && inputVert == 0f) {
+			// stopping
+			inputRampUpFlag = false;
+			inputRampDownFlag = true;
+			inputRampStartTime = Time.time;
+			inputRampTotalTime = 0.2f;
+			inputRampVertStartLevel = oldInputVert;
+			inputRampHorzStartLevel = oldInputHorz;
+			inputVert = oldInputVert;
+			inputHorz = oldInputHorz;
+		}
+		
+		else if (inputRampUpFlag == true) {
+			if (Time.time > inputRampStartTime + inputRampTotalTime) {
+				inputRampUpFlag = false;
+			}
+			else {
+				float progressPercent = (Time.time - inputRampStartTime) / inputRampTotalTime;	
+				inputVert = progressPercent * (inputVert - inputRampVertStartLevel);
+				inputHorz = progressPercent * (inputHorz - inputRampHorzStartLevel);
+			}
+		}
+		
+		else if (inputRampDownFlag == true) {
+			if (Time.time > inputRampStartTime + inputRampTotalTime) {
+				inputRampDownFlag = false;
+			}
+			else {
+				float progressPercent = (Time.time - inputRampStartTime) / inputRampTotalTime;	
+				inputVert = inputRampVertStartLevel + progressPercent * (inputVert - inputRampVertStartLevel);
+				inputHorz = inputRampHorzStartLevel + progressPercent * (inputHorz - inputRampHorzStartLevel);
+			}
+		}
+				
 	
 		// check for relevant keys pressed on the physical keyboard
 		if ((Input.GetKey(KeyCode.Space) || Input.GetKey(KeyCode.RightShift)) && rectLeftButton.xMin != rectLeftButton.xMax && guiManager.guiState != "guiStateFeeding1" && guiManager.guiState != "guiStatePumaDone1")
@@ -252,11 +319,12 @@ public class InputControls : MonoBehaviour
 	
 		levelManager.speedOverdrive = 1f;
 		if (keyStateLeftButton == true) {
-			if (levelManager.gameState == "gameStateStalking" && inputVert > 0) {
+			//if (levelManager.gameState == "gameStateStalking" && inputVert > 0) {
 				// speed overdrive
-				levelManager.speedOverdrive = 2.5f;
-			}
-			else if (levelManager.gameState == "gameStateChasing" && inputVert > 0) {
+				//levelManager.speedOverdrive = 2.5f;
+			//}
+			//else 
+			if (levelManager.gameState == "gameStateChasing") {
 				// jump
 				levelManager.PumaJump();
 			}

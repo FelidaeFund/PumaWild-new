@@ -100,6 +100,7 @@ public class GuiManager : MonoBehaviour
 	public Texture2D closeup4Texture; 
 	public Texture2D closeup5Texture; 
 	public Texture2D closeup6Texture; 
+	public Texture2D closeup6SensesTexture; 
 	public Texture2D closeupBackgroundTexture; 
 	public Texture2D arrowTrayTexture; 
 	public Texture2D arrowTrayTopTexture; 
@@ -276,22 +277,32 @@ public class GuiManager : MonoBehaviour
 
 		case "guiStateEnteringGameplay1":
 			// no GUI during initial camera zoom
-			guiStateDuration = 1.9f;
+			guiStateDuration = 2.5f;
 			if (Time.time > guiStateStartTime + guiStateDuration)
 				SetGuiState("guiStateEnteringGameplay2");
 			break;
 			
 		case "guiStateEnteringGameplay2":
-			// fade-in of movement controls
-			guiStateDuration = 1.8f;
+			// fade-in of position indicator background
+			guiStateDuration = 1.2f;
 			FadeInOpacityLogarithmic();
+			CheckForKeyboardEscapeFromGameplay();
+			if (Time.time > guiStateStartTime + guiStateDuration)
+				SetGuiState("guiStateEnteringGameplay2a");
+			break;
+			
+		case "guiStateEnteringGameplay2a":
+			// fade-in of position indicators
+			guiStateDuration = 1.7f;
+			FadeInOpacityLogarithmic();
+			CheckForKeyboardEscapeFromGameplay();
 			if (Time.time > guiStateStartTime + guiStateDuration)
 				SetGuiState("guiStateEnteringGameplay3");
 			break;
 			
 		case "guiStateEnteringGameplay3":
-			// fade-in of position indicators
-			guiStateDuration = 0.7f;
+			// zoom the indicators to screen edges
+			guiStateDuration = 2f;
 			FadeInOpacityLogarithmic();
 			CheckForKeyboardEscapeFromGameplay();
 			if (Time.time > guiStateStartTime + guiStateDuration)
@@ -299,9 +310,9 @@ public class GuiManager : MonoBehaviour
 			break;
 			
 		case "guiStateEnteringGameplay4":
-			// brief pause
-			guiStateDuration = 0.2f;
-			CheckForKeyboardEscapeFromGameplay();
+			// fade-in of movement controls
+			guiStateDuration = 1.5f;
+			FadeInOpacityLogarithmic();
 			if (Time.time > guiStateStartTime + guiStateDuration)
 				SetGuiState("guiStateEnteringGameplay5");
 			break;
@@ -318,8 +329,6 @@ public class GuiManager : MonoBehaviour
 		case "guiStateGameplay":
 			// ongoing game-play state
 			CheckForKeyboardEscapeFromGameplay();
-			if (leftShiftPressed) // HUNTING CHEAT KEY !!!!
-				levelManager.goStraightToFeeding = true;
 			break;
 			
 		case "guiStateLeavingGameplay":
@@ -419,24 +428,33 @@ public class GuiManager : MonoBehaviour
 
 		case "guiStateFeeding7":
 			// fade-out of feeding display
-			guiStateDuration = 2f;
+			guiStateDuration = 2.6f;
 			FadeOutOpacityLinear();
 			if (Time.time > guiStateStartTime + guiStateDuration)
 				SetGuiState("guiStateFeeding8");
 			break;
 
 		case "guiStateFeeding8":
-			// fade-in of movement controls
-			guiStateDuration = 0.9f;
-			FadeInOpacityLinear();
+			//  fade-in of position indicator background
+			guiStateDuration = 1.4f;
+			FadeInOpacityLogarithmic();
+			CheckForKeyboardEscapeFromGameplay();
+			if (Time.time > guiStateStartTime + guiStateDuration)
+				SetGuiState("guiStateFeeding8a");
+			break;
+			
+		case "guiStateFeeding8a":
+			// fade-in of position indicators
+			guiStateDuration = 1.5f;
+			FadeInOpacityLogarithmic();
 			CheckForKeyboardEscapeFromGameplay();
 			if (Time.time > guiStateStartTime + guiStateDuration)
 				SetGuiState("guiStateFeeding9");
 			break;
-
+			
 		case "guiStateFeeding9":
-			// fade-in of position indicators
-			guiStateDuration = 1f;
+			// zoom the indicators to screen edges
+			guiStateDuration = 1.8f;
 			FadeInOpacityLogarithmic();
 			CheckForKeyboardEscapeFromGameplay();
 			if (Time.time > guiStateStartTime + guiStateDuration)
@@ -444,16 +462,17 @@ public class GuiManager : MonoBehaviour
 			break;
 			
 		case "guiStateFeeding10":
-			// brief pause
-			guiStateDuration = 0.1f;
+			// fade-in of movement controls
+			guiStateDuration = 1.3f;
+			FadeInOpacityLogarithmic();
 			CheckForKeyboardEscapeFromGameplay();
 			if (Time.time > guiStateStartTime + guiStateDuration)
 				SetGuiState("guiStateFeeding11");
 			break;
-			
+
 		case "guiStateFeeding11":
 			// fade-in of status indicators
-			guiStateDuration = 0.7f;
+			guiStateDuration = 1.1f;
 			FadeInOpacityLinear();
 			CheckForKeyboardEscapeFromGameplay();
 			if (Time.time > guiStateStartTime + guiStateDuration)
@@ -800,33 +819,38 @@ public class GuiManager : MonoBehaviour
 				break;
 				
 			case "guiStateEnteringGameplay2":
-				// fade-in of movement controls
-				gameplayDisplay.Draw(guiOpacity, 0f, 0f);
+				// fade-in of position indicator backgrounds
+				gameplayDisplay.Draw(0f, guiOpacity, 0f, 0f, 0f);
+				break;
+				
+			case "guiStateEnteringGameplay2a":
+				// fade-in of position indicators
+				gameplayDisplay.Draw(0f, 1f, guiOpacity, 0f, 0f);
 				break;
 				
 			case "guiStateEnteringGameplay3":
-				// fade-in of position indicators
-				gameplayDisplay.Draw(1f, guiOpacity, 0f);
+				// zoom the indicators to screen edges
+				gameplayDisplay.Draw(0f, 1f, 1f, guiOpacity, 0f);
 				break;
 				
 			case "guiStateEnteringGameplay4":
-				// brief pause
-				gameplayDisplay.Draw(1f, 1f, 0f);
+				// fade-in of movement controls
+				gameplayDisplay.Draw(guiOpacity, 1f, 1f, 1f, 0f);
 				break;
 				
 			case "guiStateEnteringGameplay5":
 				// fade-in of status displays
-				gameplayDisplay.Draw(1f, 1f, guiOpacity);
+				gameplayDisplay.Draw(1f, 1f, 1f, 1f, guiOpacity);
 				break;
 				
 			case "guiStateGameplay":
 				// ongoing game-play state
-				gameplayDisplay.Draw(1f, 1f, 1f);
+				gameplayDisplay.Draw(1f, 1f, 1f, 1f, 1f);
 				break;
 				
 			case "guiStateLeavingGameplay":
 				// fade-out of game-play controls
-				gameplayDisplay.Draw(guiOpacity, guiOpacity, guiOpacity);
+				gameplayDisplay.Draw(guiOpacity, guiOpacity, guiOpacity, 1f, guiOpacity);
 				break;
 			
 			//------------------------------
@@ -838,7 +862,7 @@ public class GuiManager : MonoBehaviour
 
 			case "guiStateFeeding1":
 				// fade-out of game-play controls
-				gameplayDisplay.Draw(guiOpacity, guiOpacity, guiOpacity);
+				gameplayDisplay.Draw(guiOpacity, guiOpacity, guiOpacity, 1f, guiOpacity);
 				break;
 
 			case "guiStateFeeding2":
@@ -881,23 +905,28 @@ public class GuiManager : MonoBehaviour
 				break;
 
 			case "guiStateFeeding8":
-				// fade-in of movement controls
-				gameplayDisplay.Draw(guiOpacity, 0f, 0f);
+				// fade-in of position indicator backgrounds
+				gameplayDisplay.Draw(0f, guiOpacity, 0f, 0f, 0f);
+				break;
+				
+			case "guiStateFeeding8a":
+				// fade-in of position indicators
+				gameplayDisplay.Draw(0f, 1f, guiOpacity, 0f, 0f);
 				break;
 				
 			case "guiStateFeeding9":
-				// fade-in of position indicators
-				gameplayDisplay.Draw(1f, guiOpacity, 0f);
+				// zoom the indicators to screen edges
+				gameplayDisplay.Draw(0f, 1f, 1f, guiOpacity, 0f);
 				break;
 				
 			case "guiStateFeeding10":
-				// brief pause
-				gameplayDisplay.Draw(1f, 1f, 0f);
+				// fade-in of movement controls
+				gameplayDisplay.Draw(guiOpacity, 1f, 1f, 1f, 0f);
 				break;
 				
 			case "guiStateFeeding11":
 				// fade-in of status indicators
-				gameplayDisplay.Draw(1f, 1f, guiOpacity);
+				gameplayDisplay.Draw(1f, 1f, 1f, 1f, guiOpacity);
 				break;
 				
 			//------------------------------
@@ -921,7 +950,7 @@ public class GuiManager : MonoBehaviour
 
 			case "guiStatePumaDone1":
 				// fade-out of game-play controls
-				gameplayDisplay.Draw(guiOpacity, guiOpacity, guiOpacity);
+				gameplayDisplay.Draw(guiOpacity, guiOpacity, guiOpacity, 1f, guiOpacity);
 				break;
 
 			case "guiStatePumaDone2":

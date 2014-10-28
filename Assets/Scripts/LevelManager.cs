@@ -273,6 +273,15 @@ public class LevelManager : MonoBehaviour
 	public DeerClass doe;
 	public DeerClass fawn;
 
+	private bool deerSet1Selected;	
+
+	private DeerClass buck1;
+	private DeerClass doe1;
+	private DeerClass fawn1;
+	private DeerClass buck2;
+	private DeerClass doe2;
+	private DeerClass fawn2;
+
 	private bool newChaseFlag = false;
 
 	private float buckDefaultForwardRate = 17f;
@@ -286,7 +295,7 @@ public class LevelManager : MonoBehaviour
 
 	// CAUGHT DEER
 	
-	private DeerClass caughtDeer;
+	private DeerClass caughtDeer = null;
 	private float deerCaughtHeading;
 	private float deerCaughtFinalHeading;
 	private bool deerCaughtHeadingLeft = false;
@@ -301,9 +310,18 @@ public class LevelManager : MonoBehaviour
 	// ANIMATORS
 	
 	public Animator pumaAnimator;
-	public Animator buckAnimator;
-	public Animator doeAnimator;
-	public Animator fawnAnimator;
+	
+	private Animator buckAnimator;
+	private Animator doeAnimator;
+	private Animator fawnAnimator;
+	
+	public Animator buck1Animator;
+	public Animator doe1Animator;
+	public Animator fawn1Animator;
+	
+	public Animator buck2Animator;
+	public Animator doe2Animator;
+	public Animator fawn2Animator;
 	
 	// EXTERNAL MODULES
 	private GuiManager guiManager;
@@ -339,34 +357,68 @@ public class LevelManager : MonoBehaviour
 		pumaController = pumaObj.GetComponent<PumaController>();
 				
 		// deer
-		buck = new DeerClass();
-		buck.type = "Buck";
-		buck.forwardRate = 0; //30f;
-		buck.turnRate = 0; //22.5f;
-		buck.baseY = 0f;
-		buck.deerCaughtFinalOffsetForward = 0.42f;
-		buck.deerCaughtFinalOffsetSideways = 0.28f;
+		buck1 = new DeerClass();
+		buck1.type = "Buck";
+		buck1.gameObj = GameObject.Find("Buck1");
+		buck1.forwardRate = 0; //30f;
+		buck1.turnRate = 0; //22.5f;
+		buck1.baseY = 0f;
+		buck1.deerCaughtFinalOffsetForward = 0.42f;
+		buck1.deerCaughtFinalOffsetSideways = 0.28f;
 
-		doe = new DeerClass();
-		doe.type = "Doe";
-		doe.forwardRate = 0; //30f;
-		doe.turnRate = 0; //22.5f;
-		doe.baseY = 0f;
-		doe.deerCaughtFinalOffsetForward = 0.375f;
-		doe.deerCaughtFinalOffsetSideways = 0.25f;
+		doe1 = new DeerClass();
+		doe1.type = "Doe";
+		doe1.gameObj = GameObject.Find("Doe1");
+		doe1.forwardRate = 0; //30f;
+		doe1.turnRate = 0; //22.5f;
+		doe1.baseY = 0f;
+		doe1.deerCaughtFinalOffsetForward = 0.375f;
+		doe1.deerCaughtFinalOffsetSideways = 0.25f;
 
-		fawn = new DeerClass();
-		fawn.type = "Fawn";
-		fawn.forwardRate = 0; //30f;
-		fawn.turnRate = 0; //22.5f;
-		fawn.baseY = 0f;
-		fawn.deerCaughtFinalOffsetForward = 0.35f;
-		fawn.deerCaughtFinalOffsetSideways = 0.125f;
+		fawn1 = new DeerClass();
+		fawn1.type = "Fawn";
+		fawn1.gameObj = GameObject.Find("Fawn1");
+		fawn1.forwardRate = 0; //30f;
+		fawn1.turnRate = 0; //22.5f;
+		fawn1.baseY = 0f;
+		fawn1.deerCaughtFinalOffsetForward = 0.35f;
+		fawn1.deerCaughtFinalOffsetSideways = 0.125f;
 
-		buck.gameObj = GameObject.Find("Buck");
-		doe.gameObj = GameObject.Find("Doe");
-		fawn.gameObj = GameObject.Find("Fawn");
+		buck2 = new DeerClass();
+		buck2.type = "Buck";
+		buck2.gameObj = GameObject.Find("Buck2");
+		buck2.forwardRate = 0; //30f;
+		buck2.turnRate = 0; //22.5f;
+		buck2.baseY = 0f;
+		buck2.deerCaughtFinalOffsetForward = 0.42f;
+		buck2.deerCaughtFinalOffsetSideways = 0.28f;
 
+		doe2 = new DeerClass();
+		doe2.type = "Doe";
+		doe2.gameObj = GameObject.Find("Doe2");
+		doe2.forwardRate = 0; //30f;
+		doe2.turnRate = 0; //22.5f;
+		doe2.baseY = 0f;
+		doe2.deerCaughtFinalOffsetForward = 0.375f;
+		doe2.deerCaughtFinalOffsetSideways = 0.25f;
+
+		fawn2 = new DeerClass();
+		fawn2.type = "Fawn";
+		fawn2.gameObj = GameObject.Find("Fawn2");
+		fawn2.forwardRate = 0; //30f;
+		fawn2.turnRate = 0; //22.5f;
+		fawn2.baseY = 0f;
+		fawn2.deerCaughtFinalOffsetForward = 0.35f;
+		fawn2.deerCaughtFinalOffsetSideways = 0.125f;
+		
+		buck = buck2;
+		doe = doe2;
+		fawn = fawn2;
+		buckAnimator = buck2Animator;
+		doeAnimator = doe2Animator;
+		fawnAnimator = fawn2Animator;
+		deerSet1Selected = false;
+		
 		Physics.gravity = new Vector3(0f, -20f, 0f);
 		
 		InitLevel(0);
@@ -1963,6 +2015,36 @@ public class LevelManager : MonoBehaviour
 			
 		float distance = 0f;
 		pumaHeading = mainHeading;
+		
+		
+						
+		if (pumaJumpGravityBack != 0f) {
+			pumaJumpOffsetD += pumaJumpVelocityForward * Time.deltaTime;
+			pumaJumpVelocityForward += pumaJumpGravityBack * Time.deltaTime;
+			if (pumaJumpOffsetD < 0f) {
+				pumaJumpOffsetD = 0f;
+				pumaJumpVelocityForward = 0f;
+				pumaJumpGravityBack = 0f;
+				if (pumaJumpGravityDown == 0f) {
+					pumaJumpFlag = false;
+				}
+			}
+		}
+		
+		if (pumaJumpGravityDown != 0f) {
+			pumaJumpOffsetY += pumaJumpVelocityUp * Time.deltaTime;
+			pumaJumpVelocityUp += pumaJumpGravityDown * Time.deltaTime;
+			if (pumaJumpOffsetY < 0f) {
+				pumaJumpOffsetY = 0f;
+				pumaJumpVelocityUp = 0f;
+				pumaJumpGravityDown = 0f;
+				if (pumaJumpGravityBack == 0f) {
+					pumaJumpFlag = false;
+				}
+			}
+		}
+				
+		
 	
 		if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.LeftControl)) {
 			// filter out the input when manual camera moves are in progress - DEV ONLY
@@ -2053,25 +2135,11 @@ public class LevelManager : MonoBehaviour
 			}
 			else {
 				distance = inputControls.GetInputVert() * Time.deltaTime  * pumaChasingSpeed * speedOverdrive;
-				
-				if (pumaJumpGravityBack != 0f) {
-					pumaJumpOffsetD += pumaJumpVelocityForward * Time.deltaTime;
-					pumaJumpVelocityForward += pumaJumpGravityBack * Time.deltaTime;
-					if (pumaJumpOffsetD < 0f) {
-						pumaJumpOffsetD = 0f;
-						pumaJumpVelocityForward = 0f;
-						pumaJumpGravityBack = 0f;
-						if (pumaJumpGravityDown == 0f) {
-							pumaJumpFlag = false;
-							pumaAnimator.SetBool("PumaPounce", false);
-						}
-					}
-				}
-				distance += pumaJumpOffsetD * Time.deltaTime;
-				
 				mainHeading += inputControls.GetInputHorz() * Time.deltaTime * rotationSpeed;
 				pumaHeading = mainHeading + pumaHeadingOffset;
 			}
+			distance += pumaJumpOffsetD * Time.deltaTime;
+			
 			float travelledDistance = (scoringSystem.GetPumaHealth(selectedPuma) > 0.05f) ? distance : distance * (scoringSystem.GetPumaHealth(selectedPuma) / 0.05f);
 			pumaX += (Mathf.Sin(pumaHeading*Mathf.PI/180) * travelledDistance);
 			pumaZ += (Mathf.Cos(pumaHeading*Mathf.PI/180) * travelledDistance);
@@ -2097,7 +2165,7 @@ public class LevelManager : MonoBehaviour
 		pumaAnimator.SetBool("GuiMode", false);
 		pumaAnimator.SetFloat("Distance", distance);
 
-			
+	
 		// get the y pos of puma based on terrain and/or overpass height
 		float pumaRotX;
 
@@ -2127,20 +2195,6 @@ public class LevelManager : MonoBehaviour
 			//Debug.Log(" ");
 			//Debug.Log("====================PUMA was at   " + pumaObj.transform.position);
 
-			if (pumaJumpGravityDown != 0f) {
-				pumaJumpOffsetY += pumaJumpVelocityUp * Time.deltaTime;
-				pumaJumpVelocityUp += pumaJumpGravityDown * Time.deltaTime;
-				if (pumaJumpOffsetY < 0f) {
-					pumaJumpOffsetY = 0f;
-					pumaJumpVelocityUp = 0f;
-					pumaJumpGravityDown = 0f;
-					if (pumaJumpGravityBack == 0f) {
-						pumaJumpFlag = false;
-						pumaAnimator.SetBool("PumaPounce", false);
-					}
-				}
-			}
-			
 			pumaObj.transform.position = new Vector3(pumaX, pumaY + pumaJumpOffsetY, pumaZ);			
 			pumaObj.transform.rotation = Quaternion.Euler(pumaRotX, (pumaHeading - 180f), 0);
 						
@@ -2356,13 +2410,13 @@ public class LevelManager : MonoBehaviour
 			return;
 	
 		pumaJumpFlag = true;
-		pumaJumpVelocityUp = 7f;
-		pumaJumpGravityDown = -30f;
+		pumaJumpVelocityUp = 3f;
+		pumaJumpGravityDown = -10f;
 		pumaJumpOffsetY = 0f;
 		pumaJumpVelocityForward = 17.5f;
-		pumaJumpGravityBack = -45f;
+		pumaJumpGravityBack = -35f;
 		pumaJumpOffsetD = 0f;
-		pumaAnimator.SetBool("PumaPounce", true);
+		pumaAnimator.SetTrigger("PumaPounce");
 	}
 
 	
@@ -2566,6 +2620,7 @@ public class LevelManager : MonoBehaviour
 		float deerY;
 		float positionVariance = 8f;
 		
+		// determine center position for deer
 		if (beginLevelFlag == true) {
 			// set to predetermined position (TEMP)
 			newX = -560f;
@@ -2579,7 +2634,41 @@ public class LevelManager : MonoBehaviour
 			newX = pumaX + (Mathf.Sin(randomDirection*Mathf.PI/180) * deerDistance);
 			newZ = pumaZ + (Mathf.Cos(randomDirection*Mathf.PI/180) * deerDistance);
 		}
+
+
+		if (caughtDeer != null) {
 		
+			// hide current deer set (except caught deer)
+			if (caughtDeer != buck)
+				buck.gameObj.transform.position = new Vector3(-2f, 0f, 0f);
+			if (caughtDeer != doe)
+				doe.gameObj.transform.position = new Vector3(0f, 0f, 0f);
+			if (caughtDeer != fawn)
+				fawn.gameObj.transform.position = new Vector3(2f, 0f, 0f);
+
+			caughtDeer = null;
+		
+			// swap the deer set so that caught deer can stay in place
+			if (deerSet1Selected == true) {
+				buck = buck2;
+				doe = doe2;
+				fawn = fawn2;
+				buckAnimator = buck2Animator;
+				doeAnimator = doe2Animator;
+				fawnAnimator = fawn2Animator;
+				deerSet1Selected = false;
+			}
+			else {
+				buck = buck1;
+				doe = doe1;
+				fawn = fawn1;
+				buckAnimator = buck1Animator;
+				doeAnimator = doe1Animator;
+				fawnAnimator = fawn1Animator;
+				deerSet1Selected = true;
+			}	
+		}
+	
 		deerX = newX + Random.Range(-positionVariance, positionVariance);
 		deerZ = newZ + Random.Range(-positionVariance, positionVariance);
 		deerY = buck.baseY + GetTerrainHeight(deerX, deerZ);
@@ -2827,7 +2916,7 @@ public class LevelManager : MonoBehaviour
 		pumaAnimator.SetBool("DeerKill", false);
 		pumaAnimator.SetBool("CarCollision", false);
 		pumaAnimator.SetBool("PumaStarved", false);
-		pumaAnimator.SetBool("PumaPounce", false);
+		pumaAnimator.ResetTrigger("PumaPounce");
 	}			
 	
 

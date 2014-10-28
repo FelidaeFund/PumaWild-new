@@ -672,20 +672,20 @@ public class InfoPanel : MonoBehaviour
 
 		// two labels at top of panel	
 		GUI.color = new Color(0f, 0f, 0f, 1f * panelOpacity);
-		GUI.Box(new Rect(panelX - overlayRect.width * 0.02f, yOffset + overlayRect.y + overlayRect.height * 0.095f, overlayRect.width * 0.2f, overlayRect.height * 0.064f), "");
+		GUI.Box(new Rect(panelX - overlayRect.width * 0.02f, yOffset + overlayRect.y + overlayRect.height * 0.095f, overlayRect.width * 0.14f, overlayRect.height * 0.064f), "");
 		GUI.color = new Color(1f, 1f, 1f, 1f * panelOpacity);
 		style.fontSize = (int)(overlayRect.width * 0.021f);
 		style.fontStyle = FontStyle.BoldAndItalic;
 		style.normal.textColor = new Color(0.816f, 0.537f, 0.18f, 1f);
-		GUI.Button(new Rect(panelX - overlayRect.width * 0.09f, yOffset + overlayRect.y + overlayRect.height * 0.077f, overlayRect.width * 0.34f, overlayRect.height * 0.1f), "In the Game", style);
+		GUI.Button(new Rect(panelX - overlayRect.width * 0.02f, yOffset + overlayRect.y + overlayRect.height * 0.077f, overlayRect.width * 0.14f, overlayRect.height * 0.1f), "In Game", style);
 
 		GUI.color = new Color(0f, 0f, 0f, 1f * panelOpacity);
-		GUI.Box(new Rect(overlayRect.x + overlayRect.width - overlayRect.width * 0.04f - overlayRect.width * 0.2f, yOffset + overlayRect.y + overlayRect.height * 0.095f, overlayRect.width * 0.2f, overlayRect.height * 0.064f), "");
+		GUI.Box(new Rect(overlayRect.x + overlayRect.width - overlayRect.width * 0.2f, yOffset + overlayRect.y + overlayRect.height * 0.095f, overlayRect.width * 0.16f, overlayRect.height * 0.064f), "");
 		GUI.color = new Color(1f, 1f, 1f, 1f * panelOpacity);
 		style.fontSize = (int)(overlayRect.width * 0.021f);
 		style.fontStyle = FontStyle.BoldAndItalic;
 		style.normal.textColor = new Color(0.816f, 0.537f, 0.18f, 1f);
-		GUI.Button(new Rect(overlayRect.x + overlayRect.width - overlayRect.width * 0.04f - overlayRect.width * 0.27f, yOffset + overlayRect.y + overlayRect.height * 0.077f, overlayRect.width * 0.34f, overlayRect.height * 0.1f), "The Real World", style);
+		GUI.Button(new Rect(overlayRect.x + overlayRect.width - overlayRect.width * 0.2f, yOffset + overlayRect.y + overlayRect.height * 0.077f, overlayRect.width * 0.16f, overlayRect.height * 0.1f), "Real World", style);
 
 
 		// background rectangles

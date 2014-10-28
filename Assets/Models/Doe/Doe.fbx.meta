@@ -1,7 +1,7 @@
 fileFormatVersion: 2
 guid: 5ec325b85d26b5641b73d7f0cf902a32
 ModelImporter:
-  serializedVersion: 15
+  serializedVersion: 16
   fileIDToRecycleName:
     100000: Chest_ctrl
     100002: cluster10Handle
@@ -236,6 +236,7 @@ ModelImporter:
     legacyGenerateAnimations: 4
     bakeSimulation: 0
     optimizeGameObjects: 0
+    motionNodeName: 
     animationCompression: 1
     animationRotationError: .5
     animationPositionError: .5
@@ -273,7 +274,7 @@ ModelImporter:
       name: DoeDie
       takeName: Take 001
       firstFrame: 1
-      lastFrame: 33
+      lastFrame: 32
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -539,4 +540,5 @@ ModelImporter:
     rootMotionBoneName: 
   lastHumanDescriptionAvatarSource: {instanceID: 0}
   animationType: 2
+  additionalBone: 0
   userData: 

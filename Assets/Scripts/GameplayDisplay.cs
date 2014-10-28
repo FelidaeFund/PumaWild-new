@@ -12,6 +12,14 @@ public class GameplayDisplay : MonoBehaviour
 	//===================================
 	//===================================
 
+	private float flashStartTime;
+	
+	// outside dimensions for deer head indicators
+	private float indicatorMinX;
+	private float indicatorMinY;
+	private float indicatorMaxX;
+	private float indicatorMaxY;
+
 	// textures based on bitmap files
 	private Texture2D arrowTrayTexture;
 	private Texture2D arrowTrayTopTexture;
@@ -27,6 +35,8 @@ public class GameplayDisplay : MonoBehaviour
 	private Texture2D indicatorDoe; 
 	private Texture2D indicatorFawn; 
 	private Texture2D indicatorBkgnd; 
+	private Texture2D closeup6Texture;
+	private Texture2D closeup6SensesTexture;
 
 	// external modules
 	private GuiManager guiManager;
@@ -65,6 +75,8 @@ public class GameplayDisplay : MonoBehaviour
 		indicatorDoe = guiManager.indicatorDoe;
 		indicatorFawn = guiManager.indicatorFawn;
 		indicatorBkgnd = guiManager.indicatorBkgnd;
+		closeup6Texture = guiManager.closeup6Texture;
+		closeup6SensesTexture = guiManager.closeup6SensesTexture;
 	}
 
 	//===================================
@@ -73,7 +85,7 @@ public class GameplayDisplay : MonoBehaviour
 	//===================================
 	//===================================
 	
-	public void Draw(float movementControlsOpacity, float positionIndicatorOpacity, float statusDisplayOpacity) 
+	public void Draw(float movementControlsOpacity, float positionIndicatorBackgroundOpacity, float positionIndicatorOpacity, float positionIndicatorZoom, float statusDisplayOpacity) 
 	{ 
 		GUIStyle style = new GUIStyle();
 		style.alignment = TextAnchor.MiddleCenter;
@@ -90,9 +102,6 @@ public class GameplayDisplay : MonoBehaviour
 
 		//guiUtils.DrawRect(new Rect(leftAreaX, leftAreaY, leftAreaWidth, leftAreaHeight), new Color(0f, 0f, 0f, 0.3f));
 		//guiUtils.DrawRect(new Rect(rightAreaX, rightAreaY, rightAreaWidth, rightAreaHeight), new Color(0f, 0f, 0f, 0.3f));
-
-
-
 
 
 		// establish scale factor for movement controls tray and health meter / exit button
@@ -141,13 +150,60 @@ public class GameplayDisplay : MonoBehaviour
 		//----------------------
 						
 		// outer edge display
-		GUI.color = new Color(1f, 1f, 1f, 0.9f * positionIndicatorOpacity);
+		GUI.color = new Color(1f, 1f, 1f, 0.9f * positionIndicatorBackgroundOpacity);
 		int borderThickness = (int)(Screen.height * 0.06f);
 		Color edgeColor = new Color(0f, 0f, 0f, 0.35f);	
-		guiUtils.DrawRect(new Rect(0, 0, Screen.width, borderThickness), edgeColor);
-		guiUtils.DrawRect(new Rect(0, Screen.height-borderThickness, Screen.width, borderThickness), edgeColor);
-		guiUtils.DrawRect(new Rect(0, borderThickness, borderThickness, Screen.height-(borderThickness*2)), edgeColor);
-		guiUtils.DrawRect(new Rect(Screen.width-borderThickness, borderThickness, borderThickness, Screen.height-(borderThickness*2)), edgeColor);
+
+		indicatorMinX = Screen.width * 0.25f * (1f-positionIndicatorZoom);
+		indicatorMinY = Screen.height * 0.05f * (1f-positionIndicatorZoom);
+		indicatorMaxX = Screen.width - indicatorMinX;
+		indicatorMaxY = Screen.height - (Screen.height * 0.45f * (1f-positionIndicatorZoom));
+
+		float zoom = positionIndicatorZoom > 0.5f ? 1f : positionIndicatorZoom * 2f;
+		
+		float scaleFactor = 1f - (1f-zoom)*(1f-zoom);
+		//float scaleFactor = zoom * zoom;
+		//float scaleFactor = zoom;
+
+		// background for indicator rect
+		GUI.color = new Color(1f, 1f, 1f, 1f * positionIndicatorBackgroundOpacity * (1f - scaleFactor));
+		GUI.Box(new Rect(indicatorMinX, indicatorMinY, indicatorMaxX - indicatorMinX, indicatorMaxY - indicatorMinY), "");
+			
+		// puma head with flashing nose and ear
+		float pumaHeadHeight = (indicatorMaxY - indicatorMinY) / 2;
+		float pumaHeadWidth = 
+		
+		textureWidth = (indicatorMaxX - indicatorMinX) * 0.2f;
+		textureHeight = closeup6Texture.height * (textureWidth / closeup6Texture.width);
+		textureX = (indicatorMaxX + indicatorMinX) / 2 - textureWidth/2;
+		textureY = (indicatorMaxY + indicatorMinY) / 2 - textureHeight/2;
+		
+		GUI.color = new Color(1f, 1f, 1f, 0.8f * positionIndicatorBackgroundOpacity * (1f - scaleFactor));
+		GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), closeup6Texture);
+		float flashingPeriod = 0.3f;
+		float flashingOpacity = 0f;
+		if (Time.time > flashStartTime + flashingPeriod) {
+			flashStartTime = Time.time;
+		}
+		if (Time.time < flashStartTime + flashingPeriod * 0.3f) {
+			// first half
+			flashingOpacity = (Time.time - flashStartTime) / (flashingPeriod * 0.3f);
+		}
+		else {
+			// second half
+			flashingOpacity = 1f - ((Time.time - flashStartTime - flashingPeriod * 0.3f) / (flashingPeriod * 0.7f));			
+		}	
+		flashingOpacity = 0.3f + flashingOpacity * 0.7f;
+		flashingOpacity = flashingOpacity * flashingOpacity;
+		GUI.color = new Color(1f, 1f, 1f, 0.8f * flashingOpacity * positionIndicatorBackgroundOpacity * (1f - scaleFactor));
+		GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), closeup6SensesTexture);
+		GUI.color = new Color(1f, 1f, 1f, 1f * positionIndicatorBackgroundOpacity);
+
+		// indicator borders
+		guiUtils.DrawRect(new Rect(indicatorMinX, indicatorMinY, indicatorMaxX-indicatorMinX, borderThickness), edgeColor);
+		guiUtils.DrawRect(new Rect(indicatorMinX, indicatorMaxY-borderThickness, indicatorMaxX-indicatorMinX, borderThickness), edgeColor);
+		guiUtils.DrawRect(new Rect(indicatorMinX, indicatorMinY + borderThickness, borderThickness, (indicatorMaxY-indicatorMinY)-(borderThickness*2)), edgeColor);
+		guiUtils.DrawRect(new Rect(indicatorMaxX-borderThickness, indicatorMinY + borderThickness, borderThickness, (indicatorMaxY-indicatorMinY)-(borderThickness*2)), edgeColor);
 
 		// deer head indicators
 		if (levelManager.buck != null && levelManager.doe != null && levelManager.fawn != null ) {
@@ -160,7 +216,8 @@ public class GameplayDisplay : MonoBehaviour
 		// STATUS DISPLAYS
 		//----------------------
 		
-		float statusPanelWidth = Screen.height * 0.23f;
+		GUI.color = new Color(1f, 1f, 1f, 1f * statusDisplayOpacity);
+		float statusPanelWidth = Screen.height * 0.16f;
 		float statusPanelHeight = leftAreaHeight * 0.88f;
 		float statusPanelX = leftAreaX + leftAreaWidth * 0.52f;
 		float statusPanelY = leftAreaY + leftAreaHeight - statusPanelHeight - leftAreaHeight * 0.05f;
@@ -195,8 +252,8 @@ public class GameplayDisplay : MonoBehaviour
 		float yPos = 0;
 		float xOffset = 0;
 		float yOffset = 0;
-		float rangeX = Screen.width - borderThickness;
-		float rangeY = Screen.height - borderThickness;
+		float rangeX = (indicatorMaxX - indicatorMinX) - borderThickness;
+		float rangeY = (indicatorMaxY - indicatorMinY) - borderThickness;
 		float deerToPumaAngle = 0;
 		float deerToPumaDistance = 0;
 
@@ -238,7 +295,7 @@ public class GameplayDisplay : MonoBehaviour
 		}
 					
 		xPos = (Screen.width - borderThickness) / 2 + xOffset;
-		yPos = Screen.height - borderThickness - yOffset;
+		yPos = indicatorMaxY - borderThickness - yOffset;
 
 		//--------------------------------------------
 		// Determine settings for distance indication
