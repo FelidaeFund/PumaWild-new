@@ -69,7 +69,7 @@ public class FeedingDisplay : MonoBehaviour
 	//===================================
 	//===================================
 
-	public void Draw(float backgroundPanelOpacity, float mainContentOpacity, float levelCompleteOpacity, float okButtonOpacity) 
+	public void Draw(float mainContentOpacity, float rollingScoreFactor, float levelCompleteOpacity, float okButtonOpacity) 
 	{ 
 		float feedingDisplayX = (Screen.width / 2) - (Screen.height * 0.7f);
 		float feedingDisplayY = Screen.height * 0.025f;
@@ -84,11 +84,11 @@ public class FeedingDisplay : MonoBehaviour
 		//********************
 
 		// panel background
-		GUI.color = new Color(1f, 1f, 1f, 0.8f * backgroundPanelOpacity);
+		GUI.color = new Color(1f, 1f, 1f, 0.8f * mainContentOpacity);
 		GUI.Box(new Rect(feedingDisplayX, feedingDisplayY + feedingDisplayHeight * 0.06f, feedingDisplayWidth, feedingDisplayHeight * 1.15f - feedingDisplayHeight * 0.06f), "");
-		GUI.color = new Color(1f, 1f, 1f, 0.3f * backgroundPanelOpacity);
+		GUI.color = new Color(1f, 1f, 1f, 0.3f * mainContentOpacity);
 		GUI.Box(new Rect(feedingDisplayX, feedingDisplayY + feedingDisplayHeight * 0.06f, feedingDisplayWidth, feedingDisplayHeight * 1.15f - feedingDisplayHeight * 0.06f), "");
-		GUI.color = new Color(1f, 1f, 1f, 1f * backgroundPanelOpacity);
+		GUI.color = new Color(1f, 1f, 1f, 1f * mainContentOpacity);
 	
 		// main text
 		Color topColor;
@@ -118,6 +118,7 @@ public class FeedingDisplay : MonoBehaviour
 		float calorieChange = lastKillCaloriesEaten - lastKillExpense;
 		if (calorieChange < 0)
 			calorieChange = -calorieChange;
+		calorieChange *= rollingScoreFactor;
 		int calorieDisplay = (int)calorieChange;
 
 		switch (efficiencyLevel) {
@@ -178,15 +179,15 @@ public class FeedingDisplay : MonoBehaviour
 
 		// main title
 
-		GUI.color = new Color(1f, 1f, 1f, 0.8f * backgroundPanelOpacity);
+		GUI.color = new Color(1f, 1f, 1f, 0.8f * mainContentOpacity);
 		GUI.Box(new Rect(feedingDisplayX, feedingDisplayY + feedingDisplayHeight * 0.06f, feedingDisplayWidth, feedingDisplayHeight * 0.17f), "");
-		GUI.color = new Color(1f, 1f, 1f, 1f * backgroundPanelOpacity);
+		GUI.color = new Color(1f, 1f, 1f, 1f * mainContentOpacity);
 
-		GUI.color = new Color(1f, 1f, 1f, 0.9f * backgroundPanelOpacity);
+		GUI.color = new Color(1f, 1f, 1f, 0.9f * mainContentOpacity);
 		GUI.Box(new Rect(feedingDisplayX + feedingDisplayWidth * 0.22f + backgroundOffset, feedingDisplayY + feedingDisplayHeight * 0.1f, feedingDisplayWidth * 0.56f - backgroundOffset * 02f, feedingDisplayHeight * 0.11f), "");
-		GUI.color = new Color(1f, 1f, 1f, 1f * backgroundPanelOpacity);
+		GUI.color = new Color(1f, 1f, 1f, 1f * mainContentOpacity);
 
-		GUI.color = new Color(1f, 1f, 1f, 0.1f * backgroundPanelOpacity);
+		GUI.color = new Color(1f, 1f, 1f, 0.1f * mainContentOpacity);
 		//GUI.Box(new Rect(feedingDisplayX + feedingDisplayWidth * 0.23f + backgroundOffset, feedingDisplayY + feedingDisplayHeight * 0.1f, feedingDisplayWidth * 0.54f - backgroundOffset * 02f, feedingDisplayHeight * 0.11f), "");
 
 

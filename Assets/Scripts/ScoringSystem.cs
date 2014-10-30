@@ -12,6 +12,9 @@ public class ScoringSystem : MonoBehaviour
 	//===================================
 	//===================================
 
+	// enable 'expressive' displays
+	private float scoreReductionFactor = 0f;
+	
 	// hunt stats
 	private int huntCount = 0;
 	private int huntSuccessCount = 0;
@@ -52,6 +55,9 @@ public class ScoringSystem : MonoBehaviour
 	private float[] fawnExpenses;
 	private float[] fawnCalories;
 
+	// EXTERNAL MODULES
+	private GuiManager guiManager;
+
 	//===================================
 	//===================================
 	//		INITIALIZATION
@@ -60,6 +66,9 @@ public class ScoringSystem : MonoBehaviour
 
     void Start()
     {
+		// connect to external modules
+		guiManager = GetComponent<GuiManager>();
+
 		InitScoringSystem();
 	}
 
@@ -282,6 +291,13 @@ public class ScoringSystem : MonoBehaviour
 	//===========================================
 	//===========================================
 
+	
+	public void SetScoreReduction(float reductionFactor)
+	{
+		scoreReductionFactor = reductionFactor;
+	}
+		
+	
 	public bool CheckLevelComplete()
 	{
 		if (huntCount >= 2 && huntStatsHealthChange[huntCount-1] > 0f && huntStatsHealthChange[huntCount-2] > 0f)
@@ -312,18 +328,76 @@ public class ScoringSystem : MonoBehaviour
 		if (pumaNum == -1)
 			return -1f;
 
-		return (healthPoints[pumaNum] / maxHealthPoints[pumaNum]);
+		float effectiveHealthPoints = healthPoints[pumaNum];
+
+		if (pumaNum == guiManager.selectedPuma && scoreReductionFactor > 0f) {
+			effectiveHealthPoints -= lastKillCaloriesEaten * scoreReductionFactor;
+			effectiveHealthPoints += lastKillExpenses[guiManager.selectedPuma] * scoreReductionFactor;
+		}
+
+		return (effectiveHealthPoints / maxHealthPoints[pumaNum]);
 	}
 
 	public float GetPopulationHealth()
 	{
 		float health = 0f;
-		health += healthPoints[0] / maxHealthPoints[0]; 
-		health += healthPoints[1] / maxHealthPoints[1]; 
-		health += healthPoints[2] / maxHealthPoints[2]; 
-		health += healthPoints[3] / maxHealthPoints[3]; 
-		health += healthPoints[4] / maxHealthPoints[4]; 
-		health += healthPoints[5] / maxHealthPoints[5]; 
+		float pumaHealth = 0f;
+		int selectedPuma = guiManager.selectedPuma;
+
+		pumaHealth += healthPoints[0];
+		if (selectedPuma == 0 && scoreReductionFactor > 0f) {
+			pumaHealth -= lastKillCaloriesEaten * scoreReductionFactor;
+			pumaHealth += lastKillExpenses[selectedPuma] * scoreReductionFactor;
+		}
+		pumaHealth /= maxHealthPoints[0]; 
+		health += pumaHealth;
+
+
+		pumaHealth += healthPoints[1];
+		if (selectedPuma == 1 && scoreReductionFactor > 0f) {
+			pumaHealth -= lastKillCaloriesEaten * scoreReductionFactor;
+			pumaHealth += lastKillExpenses[selectedPuma] * scoreReductionFactor;
+		}
+		pumaHealth /= maxHealthPoints[1]; 
+		health += pumaHealth;
+
+
+		pumaHealth += healthPoints[2];
+		if (selectedPuma == 2 && scoreReductionFactor > 0f) {
+			pumaHealth -= lastKillCaloriesEaten * scoreReductionFactor;
+			pumaHealth += lastKillExpenses[selectedPuma] * scoreReductionFactor;
+		}
+		pumaHealth /= maxHealthPoints[2]; 
+		health += pumaHealth;
+
+
+		pumaHealth += healthPoints[3];
+		if (selectedPuma == 3 && scoreReductionFactor > 0f) {
+			pumaHealth -= lastKillCaloriesEaten * scoreReductionFactor;
+			pumaHealth += lastKillExpenses[selectedPuma] * scoreReductionFactor;
+		}
+		pumaHealth /= maxHealthPoints[3]; 
+		health += pumaHealth;
+
+
+		pumaHealth += healthPoints[4];
+		if (selectedPuma == 4 && scoreReductionFactor > 0f) {
+			pumaHealth -= lastKillCaloriesEaten * scoreReductionFactor;
+			pumaHealth += lastKillExpenses[selectedPuma] * scoreReductionFactor;
+		}
+		pumaHealth /= maxHealthPoints[4]; 
+		health += pumaHealth;
+
+
+		pumaHealth += healthPoints[5];
+		if (selectedPuma == 5 && scoreReductionFactor > 0f) {
+			pumaHealth -= lastKillCaloriesEaten * scoreReductionFactor;
+			pumaHealth += lastKillExpenses[selectedPuma] * scoreReductionFactor;
+		}
+		pumaHealth /= maxHealthPoints[5]; 
+		health += pumaHealth;
+		
+		
 		return (health / 6f);
 	}
 

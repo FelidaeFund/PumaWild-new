@@ -18,6 +18,13 @@ public class InputControls : MonoBehaviour
 	private float inputRampTotalTime;
 	private float inputRampVertStartLevel;
 	private float inputRampHorzStartLevel;
+	
+	private bool inputVertExternalSetFlag = false;
+	private float inputVertExternal;
+	
+	private bool navInProgress = false;
+	private bool navBasedOnZero;
+	private bool chasingBeganWithSideStalk = false;
 
 	// possible states for each direction of movement
 	enum NavState {Off, Inc, Full, Dec};
@@ -151,8 +158,15 @@ public class InputControls : MonoBehaviour
 		float oldInputVert = inputVert;
 		float oldInputHorz = inputHorz;
 
-
-		if (Input.GetMouseButton(0)) {
+		
+		if (inputVertExternalSetFlag == true) {
+			inputVert = inputVertExternal;
+			inputHorz = 0f;
+			if (inputVertExternal == 0f) {
+				inputVertExternalSetFlag = false;
+			}
+		}
+		else if (Input.GetMouseButton(0)) {
 			float mouseX = Input.mousePosition.x;
 			float mouseY = Screen.height - Input.mousePosition.y;	
 			
@@ -182,7 +196,12 @@ public class InputControls : MonoBehaviour
 			}
 			
 			
-			if (mouseX > Screen.width/2) {
+			if (mouseX > Screen.width/2  && rectRightButton.xMin != rectRightButton.xMax) {
+			
+				if (navInProgress == false) {
+					navInProgress = true;
+					navBasedOnZero = (mouseY > rectRightButton.yMax) ? true : false;
+				}
 			
 				if (mouseY > rectRightButton.yMax)
 					inputVert = 0f;
@@ -190,7 +209,10 @@ public class InputControls : MonoBehaviour
 					//inputVert = 1f;
 				else
 					inputVert = 1f - (mouseY - rectRightButton.yMin) / (rectRightButton.yMax - rectRightButton.yMin);
-
+					
+					
+				if (inputVert > 0f)
+					navBasedOnZero = false;
 					
 				//if (mouseX < ((rectRightButton.xMin + rectRightButton.xMax) / 2))
 					//inputHorz = -1f;
@@ -207,8 +229,13 @@ public class InputControls : MonoBehaviour
 					inputHorz = 1.0f;
 					
 				inputVert = 1f - (1f - inputVert) * (1f - inputVert);
-				inputVert = 0.35f + inputVert * 0.65f;
 				
+				if (navBasedOnZero == false) {
+					if (levelManager.gameState == "gameStateStalking")
+						inputVert = 0.20f + inputVert * 0.80f;
+					else if (levelManager.gameState == "gameStateChasing")
+						inputVert = 0.35f + inputVert * 0.65f;
+				}
 				
 				
 				bool horzFlippedFlag = false;
@@ -222,13 +249,14 @@ public class InputControls : MonoBehaviour
 			}
 		}
 		else {
+			navInProgress = false;
 			inputVert = 0f;
 			inputHorz = 0f;
 		}
 		
 		// fade in or out motion when starting or stopping
 
-		if (inputRampUpFlag == false && oldInputVert == 0f && inputVert != 0f) {
+		if (inputRampUpFlag == false && ((oldInputVert == 0f && inputVert != 0f) || (oldInputHorz == 0f && inputHorz != 0f))) {
 			// starting
 			inputRampUpFlag = true;
 			inputRampDownFlag = false;
@@ -240,7 +268,7 @@ public class InputControls : MonoBehaviour
 			inputHorz = oldInputHorz;
 		}
 		
-		else if (inputRampDownFlag == false && oldInputVert != 0f && inputVert == 0f) {
+		else if (inputRampDownFlag == false && ((oldInputVert != 0f && inputVert == 0f) || (oldInputHorz != 0f && inputHorz == 0f))) {
 			// stopping
 			inputRampUpFlag = false;
 			inputRampDownFlag = true;
@@ -274,7 +302,7 @@ public class InputControls : MonoBehaviour
 			}
 		}
 				
-	
+				
 		// check for relevant keys pressed on the physical keyboard
 		if ((Input.GetKey(KeyCode.Space) || Input.GetKey(KeyCode.RightShift)) && rectLeftButton.xMin != rectLeftButton.xMax && guiManager.guiState != "guiStateFeeding1" && guiManager.guiState != "guiStatePumaDone1")
 			keyStateLeftButton = true;
@@ -302,7 +330,7 @@ public class InputControls : MonoBehaviour
 			levelManager.SwapLevel(4);
 			
 		// set the heading to either straight ahead or diagonal
-	
+/*	
 		if (keyStateForward == true)
 			levelManager.pumaHeadingOffset = 0f;
 
@@ -314,25 +342,43 @@ public class InputControls : MonoBehaviour
 			levelManager.pumaHeadingOffset = 60f;
 			keyStateForward = true;
 		}
-		
+*/		
 		// handle left button during gameplay
-	
 		levelManager.speedOverdrive = 1f;
 		if (keyStateLeftButton == true) {
-			//if (levelManager.gameState == "gameStateStalking" && inputVert > 0) {
-				// speed overdrive
-				//levelManager.speedOverdrive = 2.5f;
-			//}
-			//else 
-			if (levelManager.gameState == "gameStateChasing") {
-				// jump
-				levelManager.PumaJump();
+			if (levelManager.gameState == "gameStateChasing" && levelManager.GetPumaSideStalk() == true) {
+				levelManager.SetPumaSideStalk(false);
+				chasingBeganWithSideStalk = true;
 			}
-			else {
-				// exit gameplay
-				guiManager.SetGuiState("guiStateLeavingGameplay");
-				levelManager.SetGameState("gameStateLeavingGameplay");
+			else if (chasingBeganWithSideStalk == true) {
+				// do nothing until button has been released
 			}
+			else if (levelManager.gameState == "gameStateStalking") {
+				if (inputVert > 0) {
+					// side-stalk				
+					levelManager.SetPumaSideStalk(true);		
+				}
+				else {
+					// exit gameplay
+					guiManager.SetGuiState("guiStateLeavingGameplay");
+					levelManager.SetGameState("gameStateLeavingGameplay");
+				}
+			}
+			else if (levelManager.gameState == "gameStateChasing") {
+				if (inputVert > 0) {
+					// jump
+					levelManager.PumaJump();
+				}
+				else {
+					// exit chase
+					guiManager.SetGuiState("guiStateFeeding1");
+					levelManager.SetGameState("gameStateFeeding1a");
+				}
+			}
+		}
+		else {
+			levelManager.SetPumaSideStalk(false);
+			chasingBeganWithSideStalk = false;
 		}
 
 		// deal with interactions between forward and back keys
@@ -378,10 +424,6 @@ public class InputControls : MonoBehaviour
 		//inputVert = navValForward + navValBack;		 // enable backward motion
 		//inputHorz = navValRight + navValLeft;
 		
-		if (inputVert == 0) {
-			// reset heading when puma stopped
-			levelManager.pumaHeadingOffset = 0;
-		}
 	}
 
 	private void UpdateNavChannel(NavState previousNavState, float previousNavVal, bool keyPressed, float incStep, float decStep)
@@ -472,6 +514,14 @@ public class InputControls : MonoBehaviour
 	{
 		return inputHorz;
 	}
+	
+	
+	public void SetInputVert(float val)
+	{	
+		inputVertExternal = val;
+		inputVertExternalSetFlag = true;
+	}
+	
 	
 	//===================================
 	//===================================

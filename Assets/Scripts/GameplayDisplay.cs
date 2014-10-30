@@ -35,7 +35,18 @@ public class GameplayDisplay : MonoBehaviour
 	private Texture2D indicatorDoe; 
 	private Texture2D indicatorFawn; 
 	private Texture2D indicatorBkgnd; 
+	private Texture2D closeupBackgroundTexture;
+	private Texture2D closeup1Texture;
+	private Texture2D closeup2Texture;
+	private Texture2D closeup3Texture;
+	private Texture2D closeup4Texture;
+	private Texture2D closeup5Texture;
 	private Texture2D closeup6Texture;
+	private Texture2D closeup1SensesTexture;
+	private Texture2D closeup2SensesTexture;
+	private Texture2D closeup3SensesTexture;
+	private Texture2D closeup4SensesTexture;
+	private Texture2D closeup5SensesTexture;
 	private Texture2D closeup6SensesTexture;
 
 	// external modules
@@ -75,7 +86,18 @@ public class GameplayDisplay : MonoBehaviour
 		indicatorDoe = guiManager.indicatorDoe;
 		indicatorFawn = guiManager.indicatorFawn;
 		indicatorBkgnd = guiManager.indicatorBkgnd;
+		closeupBackgroundTexture = guiManager.closeupBackgroundTexture;
+		closeup1Texture = guiManager.closeup1Texture;
+		closeup2Texture = guiManager.closeup2Texture;
+		closeup3Texture = guiManager.closeup3Texture;
+		closeup4Texture = guiManager.closeup4Texture;
+		closeup5Texture = guiManager.closeup5Texture;
 		closeup6Texture = guiManager.closeup6Texture;
+		closeup1SensesTexture = guiManager.closeup1SensesTexture;
+		closeup2SensesTexture = guiManager.closeup2SensesTexture;
+		closeup3SensesTexture = guiManager.closeup3SensesTexture;
+		closeup4SensesTexture = guiManager.closeup4SensesTexture;
+		closeup5SensesTexture = guiManager.closeup5SensesTexture;
 		closeup6SensesTexture = guiManager.closeup6SensesTexture;
 	}
 
@@ -154,13 +176,13 @@ public class GameplayDisplay : MonoBehaviour
 		int borderThickness = (int)(Screen.height * 0.06f);
 		Color edgeColor = new Color(0f, 0f, 0f, 0.35f);	
 
+		// initial onscreen rect
 		indicatorMinX = Screen.width * 0.25f * (1f-positionIndicatorZoom);
 		indicatorMinY = Screen.height * 0.05f * (1f-positionIndicatorZoom);
 		indicatorMaxX = Screen.width - indicatorMinX;
 		indicatorMaxY = Screen.height - (Screen.height * 0.45f * (1f-positionIndicatorZoom));
 
 		float zoom = positionIndicatorZoom > 0.5f ? 1f : positionIndicatorZoom * 2f;
-		
 		float scaleFactor = 1f - (1f-zoom)*(1f-zoom);
 		//float scaleFactor = zoom * zoom;
 		//float scaleFactor = zoom;
@@ -168,19 +190,49 @@ public class GameplayDisplay : MonoBehaviour
 		// background for indicator rect
 		GUI.color = new Color(1f, 1f, 1f, 1f * positionIndicatorBackgroundOpacity * (1f - scaleFactor));
 		GUI.Box(new Rect(indicatorMinX, indicatorMinY, indicatorMaxX - indicatorMinX, indicatorMaxY - indicatorMinY), "");
+		GUI.color = new Color(0.4f, 0.4f, 0.4f, 0.6f * positionIndicatorBackgroundOpacity * (1f - scaleFactor));
+		//GUI.DrawTexture(new Rect(indicatorMinX, indicatorMinY, indicatorMaxX - indicatorMinX, indicatorMaxY - indicatorMinY), closeupBackgroundTexture);
 			
 		// puma head with flashing nose and ear
-		float pumaHeadHeight = (indicatorMaxY - indicatorMinY) / 2;
-		float pumaHeadWidth = 
 		
+		Texture2D closeupTexture = null;
+		Texture2D closeupSensesTexture = null;
+		
+		switch (guiManager.selectedPuma) {
+		case 0:
+			closeupTexture = closeup1Texture;
+			closeupSensesTexture = closeup1SensesTexture;
+			break;
+		case 1:
+			closeupTexture = closeup2Texture;
+			closeupSensesTexture = closeup2SensesTexture;
+			break;
+		case 2:
+			closeupTexture = closeup3Texture;
+			closeupSensesTexture = closeup3SensesTexture;
+			break;
+		case 3:
+			closeupTexture = closeup4Texture;
+			closeupSensesTexture = closeup4SensesTexture;
+			break;
+		case 4:
+			closeupTexture = closeup5Texture;
+			closeupSensesTexture = closeup5SensesTexture;
+			break;
+		case 5:
+			closeupTexture = closeup6Texture;
+			closeupSensesTexture = closeup6SensesTexture;
+			break;
+		}
+				
 		textureWidth = (indicatorMaxX - indicatorMinX) * 0.2f;
-		textureHeight = closeup6Texture.height * (textureWidth / closeup6Texture.width);
+		textureHeight = closeupTexture.height * (textureWidth / closeupTexture.width);
 		textureX = (indicatorMaxX + indicatorMinX) / 2 - textureWidth/2;
 		textureY = (indicatorMaxY + indicatorMinY) / 2 - textureHeight/2;
 		
-		GUI.color = new Color(1f, 1f, 1f, 0.8f * positionIndicatorBackgroundOpacity * (1f - scaleFactor));
-		GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), closeup6Texture);
-		float flashingPeriod = 0.3f;
+		GUI.color = new Color(1f, 1f, 1f, 0.82f * positionIndicatorBackgroundOpacity * (1f - scaleFactor));
+		GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), closeupTexture);
+		float flashingPeriod = 0.5f;
 		float flashingOpacity = 0f;
 		if (Time.time > flashStartTime + flashingPeriod) {
 			flashStartTime = Time.time;
@@ -193,10 +245,10 @@ public class GameplayDisplay : MonoBehaviour
 			// second half
 			flashingOpacity = 1f - ((Time.time - flashStartTime - flashingPeriod * 0.3f) / (flashingPeriod * 0.7f));			
 		}	
-		flashingOpacity = 0.3f + flashingOpacity * 0.7f;
+		flashingOpacity = 0.3f + flashingOpacity * 0.5f;
 		flashingOpacity = flashingOpacity * flashingOpacity;
-		GUI.color = new Color(1f, 1f, 1f, 0.8f * flashingOpacity * positionIndicatorBackgroundOpacity * (1f - scaleFactor));
-		GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), closeup6SensesTexture);
+		GUI.color = new Color(1f, 1f, 1f, 0.6f * flashingOpacity * positionIndicatorBackgroundOpacity * (1f - scaleFactor));
+		GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), closeupSensesTexture);
 		GUI.color = new Color(1f, 1f, 1f, 1f * positionIndicatorBackgroundOpacity);
 
 		// indicator borders

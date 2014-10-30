@@ -100,6 +100,11 @@ public class GuiManager : MonoBehaviour
 	public Texture2D closeup4Texture; 
 	public Texture2D closeup5Texture; 
 	public Texture2D closeup6Texture; 
+	public Texture2D closeup1SensesTexture; 
+	public Texture2D closeup2SensesTexture; 
+	public Texture2D closeup3SensesTexture; 
+	public Texture2D closeup4SensesTexture; 
+	public Texture2D closeup5SensesTexture; 
 	public Texture2D closeup6SensesTexture; 
 	public Texture2D closeupBackgroundTexture; 
 	public Texture2D arrowTrayTexture; 
@@ -277,14 +282,14 @@ public class GuiManager : MonoBehaviour
 
 		case "guiStateEnteringGameplay1":
 			// no GUI during initial camera zoom
-			guiStateDuration = 2.5f;
+			guiStateDuration = 2.7f;
 			if (Time.time > guiStateStartTime + guiStateDuration)
 				SetGuiState("guiStateEnteringGameplay2");
 			break;
 			
 		case "guiStateEnteringGameplay2":
 			// fade-in of position indicator background
-			guiStateDuration = 1.2f;
+			guiStateDuration = 1.1f;
 			FadeInOpacityLogarithmic();
 			CheckForKeyboardEscapeFromGameplay();
 			if (Time.time > guiStateStartTime + guiStateDuration)
@@ -293,7 +298,7 @@ public class GuiManager : MonoBehaviour
 			
 		case "guiStateEnteringGameplay2a":
 			// fade-in of position indicators
-			guiStateDuration = 1.7f;
+			guiStateDuration = 1.4f;
 			FadeInOpacityLogarithmic();
 			CheckForKeyboardEscapeFromGameplay();
 			if (Time.time > guiStateStartTime + guiStateDuration)
@@ -369,7 +374,7 @@ public class GuiManager : MonoBehaviour
 
 		case "guiStateFeeding2":
 			// pause during attack on deer
-			guiStateDuration = 2f;
+			guiStateDuration = (levelManager.caughtDeer != null) ? 2f : 0.5f;
 			if (Time.time - guiStateStartTime > guiStateDuration) {
 				//if (SelectedPumaIsFullHealth() == true)
 					//SetGuiState("guiStatePumaDone3");
@@ -382,14 +387,17 @@ public class GuiManager : MonoBehaviour
 			// fade-in of feeding display main panel
 			guiStateDuration = 1.5f;
 			FadeInOpacityLinear();
+			scoringSystem.SetScoreReduction(1f);
 			CheckForKeyboardEscapeFromFeeding();
 			if (Time.time > guiStateStartTime + guiStateDuration)
 				SetGuiState("guiStateFeeding3a");
 			break;
 
 		case "guiStateFeeding3a":
-			// brief pause
-			guiStateDuration = 0.2f;
+			// scroll the score numbers
+			guiStateDuration = 2f;
+			FadeInOpacityLinear();
+			scoringSystem.SetScoreReduction(1f - guiOpacity);
 			CheckForKeyboardEscapeFromFeeding();
 			if (Time.time > guiStateStartTime + guiStateDuration)
 				SetGuiState("guiStateFeeding4");
@@ -399,6 +407,7 @@ public class GuiManager : MonoBehaviour
 			// fade-in of level indicator
 			guiStateDuration = 0.75f;
 			FadeInOpacityLinear();
+			scoringSystem.SetScoreReduction(0f);
 			CheckForKeyboardEscapeFromFeeding();
 			if (Time.time > guiStateStartTime + guiStateDuration)
 				SetGuiState("guiStateFeeding4a");
@@ -431,12 +440,19 @@ public class GuiManager : MonoBehaviour
 			guiStateDuration = 2.6f;
 			FadeOutOpacityLinear();
 			if (Time.time > guiStateStartTime + guiStateDuration)
+				SetGuiState("guiStateFeeding7a");
+			break;
+
+		case "guiStateFeeding7a":
+			// pause for puma to step over deer
+			guiStateDuration = 1.4f;
+			if (Time.time > guiStateStartTime + guiStateDuration)
 				SetGuiState("guiStateFeeding8");
 			break;
 
 		case "guiStateFeeding8":
 			//  fade-in of position indicator background
-			guiStateDuration = 1.4f;
+			guiStateDuration = 1.7f;
 			FadeInOpacityLogarithmic();
 			CheckForKeyboardEscapeFromGameplay();
 			if (Time.time > guiStateStartTime + guiStateDuration)
@@ -445,7 +461,7 @@ public class GuiManager : MonoBehaviour
 			
 		case "guiStateFeeding8a":
 			// fade-in of position indicators
-			guiStateDuration = 1.5f;
+			guiStateDuration = 1.2f;
 			FadeInOpacityLogarithmic();
 			CheckForKeyboardEscapeFromGameplay();
 			if (Time.time > guiStateStartTime + guiStateDuration)
@@ -454,7 +470,7 @@ public class GuiManager : MonoBehaviour
 			
 		case "guiStateFeeding9":
 			// zoom the indicators to screen edges
-			guiStateDuration = 1.8f;
+			guiStateDuration = 1.75f;
 			FadeInOpacityLogarithmic();
 			CheckForKeyboardEscapeFromGameplay();
 			if (Time.time > guiStateStartTime + guiStateDuration)
@@ -463,7 +479,7 @@ public class GuiManager : MonoBehaviour
 			
 		case "guiStateFeeding10":
 			// fade-in of movement controls
-			guiStateDuration = 1.3f;
+			guiStateDuration = 1.1f;
 			FadeInOpacityLogarithmic();
 			CheckForKeyboardEscapeFromGameplay();
 			if (Time.time > guiStateStartTime + guiStateDuration)
@@ -472,7 +488,7 @@ public class GuiManager : MonoBehaviour
 
 		case "guiStateFeeding11":
 			// fade-in of status indicators
-			guiStateDuration = 1.1f;
+			guiStateDuration = 0.9f;
 			FadeInOpacityLinear();
 			CheckForKeyboardEscapeFromGameplay();
 			if (Time.time > guiStateStartTime + guiStateDuration)
@@ -871,12 +887,12 @@ public class GuiManager : MonoBehaviour
 
 			case "guiStateFeeding3":
 				// fade-in of feeding display main panel
-				feedingDisplay.Draw(guiOpacity, guiOpacity, 0f, 0f);
+				feedingDisplay.Draw(guiOpacity, 0f, 0f, 0f);
 				break;
 
 			case "guiStateFeeding3a":
-				// brief pause
-				feedingDisplay.Draw(1f, 1f, 0f, 0f);
+				// brief pause for rolling score
+				feedingDisplay.Draw(1f, guiOpacity, 0f, 0f);
 				break;
 
 			case "guiStateFeeding4":
@@ -901,7 +917,7 @@ public class GuiManager : MonoBehaviour
 
 			case "guiStateFeeding7":
 				// fade-out of feeding display
-				feedingDisplay.Draw(guiOpacity, guiOpacity, guiOpacity, guiOpacity);
+				feedingDisplay.Draw(guiOpacity, 1f, guiOpacity, guiOpacity);
 				break;
 
 			case "guiStateFeeding8":
@@ -937,7 +953,7 @@ public class GuiManager : MonoBehaviour
 
 			case "guiStateNextLevel1":
 				// fade-out of feeding display
-				feedingDisplay.Draw(guiOpacity, guiOpacity, guiOpacity, guiOpacity);
+				feedingDisplay.Draw(guiOpacity, 1f, guiOpacity, guiOpacity);
 				break;
 
 			//------------------------------
