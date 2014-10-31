@@ -234,6 +234,7 @@ public class LevelManager : MonoBehaviour
 	private float chaseTriggerDistance = 10.5f;
 	private float baseChaseTriggerDistance = 10.5f;
 	private float caughtTriggerDistance = 1f;
+	private float deerGotAwayDistance = 130f;
 	private bool pumaCollisionFlag = false;
 	private float pumaCollisionBarrierHeading;
 	private float pumaCollisionHeadingOffset;	
@@ -1568,6 +1569,7 @@ public class LevelManager : MonoBehaviour
 	void Update() 
 	{	
 		float fadeTime;
+		float inputPercent = 1f;
 
 		//pumaAnimator.SetLayerWeight(1, 1f);
 	
@@ -1844,6 +1846,11 @@ public class LevelManager : MonoBehaviour
 				pumaAnimator.SetBool("DeerKill", true);
 				SetGameState("gameStateFeeding1");
 			}
+			else if (pumaDeerDistance1 > deerGotAwayDistance && pumaDeerDistance2 > deerGotAwayDistance && pumaDeerDistance3 > deerGotAwayDistance) {
+				// DEER GOT AWAY !!	
+				guiManager.SetGuiState("guiStateFeeding1");
+				SetGameState("gameStateFeeding1a");
+			}
 			break;
 
 		case "gameStateLeavingGameplay":
@@ -1922,12 +1929,17 @@ public class LevelManager : MonoBehaviour
 			break;
 
 		case "gameStateFeeding1a":
-			// enter into feeding loop when ending prey-less hunt
-			fadeTime = 1.3f;
+			// enter into feeding display after prey-less hunt
+			fadeTime = 1.8f;
 			SelectCameraPosition("cameraPosCloseup", -160f, fadeTime, "mainCurveSBackward", "curveRotXLogarithmic"); 
-			
-			if (Time.time > stateStartTime + fadeTime)
+			scoringSystem.SetHuntSuccessCount(0);
+			if (Time.time < stateStartTime + fadeTime) {
+				inputPercent = 1f - ((Time.time - stateStartTime) / fadeTime);
+			}
+			else {
+				inputPercent = 1f;
 				SetGameState("gameStateFeeding2");
+			}
 			break;
 
 		case "gameStateFeeding2":
@@ -1982,7 +1994,7 @@ public class LevelManager : MonoBehaviour
 	
 		case "gameStateFeeding7":
 			// puma takes a few steps
-			fadeTime = (caughtDeer != null) ? 1.3f : 1.2f;
+			fadeTime = (caughtDeer != null) ? 1.3f : 1.3f;
 			if (Time.time >= stateStartTime + fadeTime) {
 				inputControls.SetInputVert(0f);
 				caughtDeer = null;
@@ -2101,8 +2113,8 @@ public class LevelManager : MonoBehaviour
 			closestDeerDistance = pumaDeerDistance3;
 		float deerProximityFactor = 1f;
 		float deerProximityMinVal = 0.65f;
-		float deerProximityMaxDist = 30f;
-		float deerProximityMinDist = 18f;
+		float deerProximityMaxDist = chaseTriggerDistance * 2f;
+		float deerProximityMinDist = chaseTriggerDistance * 1.1f;
 		if (closestDeerDistance < deerProximityMaxDist) {
 			if (closestDeerDistance > deerProximityMinDist)
 				deerProximityFactor = ((closestDeerDistance-deerProximityMinDist) / (deerProximityMaxDist-deerProximityMinDist)) * (1f - deerProximityMinVal) + deerProximityMinVal;
@@ -2187,11 +2199,11 @@ public class LevelManager : MonoBehaviour
 				pumaPhysicsPreviousY = pumaY;
 			}
 		}
-		else if (gameState == "gameStateChasing") {
+		else if (gameState == "gameStateChasing" || gameState == "gameStateFeeding1a") {
 			// main chasing state
 			float rotationSpeed = 150f;
 			if (pumaCollisionFlag == true) {
-				distance = inputControls.GetInputVert() * Time.deltaTime  * pumaChasingSpeed * speedOverdrive;
+				distance = inputControls.GetInputVert() * Time.deltaTime  * pumaChasingSpeed * speedOverdrive * inputPercent;
 				mainHeading += inputControls.GetInputHorz() * Time.deltaTime * rotationSpeed;
 				if (pumaCollisionHeadingOffset > 0f) {
 					// turning right
@@ -2215,7 +2227,7 @@ public class LevelManager : MonoBehaviour
 				}
 			}
 			else {
-				distance = inputControls.GetInputVert() * Time.deltaTime  * pumaChasingSpeed * speedOverdrive;
+				distance = inputControls.GetInputVert() * Time.deltaTime  * pumaChasingSpeed * speedOverdrive * inputPercent;
 				mainHeading += inputControls.GetInputHorz() * Time.deltaTime * rotationSpeed;
 				pumaHeading = mainHeading + pumaHeadingOffset;
 			}
@@ -2738,7 +2750,7 @@ public class LevelManager : MonoBehaviour
 		float deerX;
 		float deerZ;
 		float deerY;
-		float positionVariance = 8f;
+		float positionVariance = 20f;
 		
 		// determine center position for deer
 		if (beginLevelFlag == true) {
@@ -2809,6 +2821,13 @@ public class LevelManager : MonoBehaviour
 		buck.gameObj.transform.rotation = Quaternion.Euler(0, buck.heading, 0);
 		doe.gameObj.transform.rotation = Quaternion.Euler(0, doe.heading, 0);
 		fawn.gameObj.transform.rotation = Quaternion.Euler(0, fawn.heading, 0);
+
+		buck.forwardRate = 0f;
+		buck.turnRate = 0f;
+		doe.forwardRate = 0f;
+		doe.turnRate = 0f;
+		fawn.forwardRate = 0f;
+		fawn.turnRate = 0f;
 
 		//System.Console.WriteLine("PLACE DEER POSITIONS");	
 		//System.Console.WriteLine("positive variance: " + positionVariance.ToString());	

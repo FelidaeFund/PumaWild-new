@@ -227,8 +227,12 @@ public class InputControls : MonoBehaviour
 					inputHorz = -1.0f;
 				if (inputHorz > 1.0f)
 					inputHorz = 1.0f;
-					
-				inputVert = 1f - (1f - inputVert) * (1f - inputVert);
+
+				if (levelManager.gameState == "gameStateStalking" || levelManager.gameState == "gameStateFeeding7")
+					inputVert = 1f - (1f - inputVert) * (1f - inputVert);
+				else if (levelManager.gameState == "gameStateChasing" || levelManager.gameState == "gameStateFeeding1a")
+					//inputVert = inputVert * inputVert;
+					inputVert = inputVert;
 				
 				if (navBasedOnZero == false) {
 					if (levelManager.gameState == "gameStateStalking")
@@ -273,7 +277,7 @@ public class InputControls : MonoBehaviour
 			inputRampUpFlag = false;
 			inputRampDownFlag = true;
 			inputRampStartTime = Time.time;
-			inputRampTotalTime = 0.2f;
+			inputRampTotalTime = levelManager.gameState == "gameStateChasing" ? 0.45f : 0.25f;
 			inputRampVertStartLevel = oldInputVert;
 			inputRampHorzStartLevel = oldInputHorz;
 			inputVert = oldInputVert;

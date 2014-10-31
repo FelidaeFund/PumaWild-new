@@ -307,7 +307,7 @@ public class GuiManager : MonoBehaviour
 			
 		case "guiStateEnteringGameplay3":
 			// zoom the indicators to screen edges
-			guiStateDuration = 2f;
+			guiStateDuration = 1.75f;
 			FadeInOpacityLogarithmic();
 			CheckForKeyboardEscapeFromGameplay();
 			if (Time.time > guiStateStartTime + guiStateDuration)
@@ -374,7 +374,7 @@ public class GuiManager : MonoBehaviour
 
 		case "guiStateFeeding2":
 			// pause during attack on deer
-			guiStateDuration = (levelManager.caughtDeer != null) ? 2f : 0.5f;
+			guiStateDuration = (levelManager.caughtDeer != null) ? 2f : 0.7f;
 			if (Time.time - guiStateStartTime > guiStateDuration) {
 				//if (SelectedPumaIsFullHealth() == true)
 					//SetGuiState("guiStatePumaDone3");
@@ -470,7 +470,7 @@ public class GuiManager : MonoBehaviour
 			
 		case "guiStateFeeding9":
 			// zoom the indicators to screen edges
-			guiStateDuration = 1.75f;
+			guiStateDuration = 1.5f;
 			FadeInOpacityLogarithmic();
 			CheckForKeyboardEscapeFromGameplay();
 			if (Time.time > guiStateStartTime + guiStateDuration)

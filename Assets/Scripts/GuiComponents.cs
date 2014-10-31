@@ -443,8 +443,8 @@ public class GuiComponents : MonoBehaviour
 		float healthBarHeight;
 		if (gameplayFlag == true) {
 			// gameplay overlay
-			healthBarWidth = Screen.height * 0.32f;
-			healthBarHeight = Screen.height * 0.031f;
+			healthBarWidth = Screen.height * 0.36f;
+			healthBarHeight = Screen.height * 0.032f;
 			healthBarX = Screen.width/2 - healthBarWidth/2;
 			healthBarY = Screen.height - healthBarHeight - healthBarHeight * 0.2f;
 		}

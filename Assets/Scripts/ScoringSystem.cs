@@ -92,8 +92,8 @@ public class ScoringSystem : MonoBehaviour
 		carKilledFlags = new bool[] {false, false, false, false, false, false};
 
 		// energy usage
-		expensePerMeterChasing = 150f;
-		expensePerMeterStalking = expensePerMeterChasing * 0.25f;
+		expensePerMeterChasing = 120f;
+		expensePerMeterStalking = 40f;
 
 		// amounts for last kill
 		lastKillMeatEaten = 0f;
@@ -161,9 +161,6 @@ public class ScoringSystem : MonoBehaviour
 	
 	public void PumaHasRun(int selectedPuma, float distance)
 	{
-		//distance *= 5f;  // TEMP !!!!!!
-	
-	
 		if (selectedPuma == -1)
 			return;
 
@@ -176,6 +173,7 @@ public class ScoringSystem : MonoBehaviour
 		if (healthPoints[selectedPuma] < 0)
 			healthPoints[selectedPuma] = 0;
 	}
+
 	
 	//--------------------------------------------
 	// DeerCaught()
