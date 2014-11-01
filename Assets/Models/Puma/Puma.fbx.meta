@@ -671,8 +671,8 @@ ModelImporter:
     - serializedVersion: 16
       name: PumaShake
       takeName: Take 001
-      firstFrame: 378
-      lastFrame: 499
+      firstFrame: 382
+      lastFrame: 420
       wrapMode: 0
       orientationOffsetY: 0
       level: 0

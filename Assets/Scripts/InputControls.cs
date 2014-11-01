@@ -221,6 +221,7 @@ public class InputControls : MonoBehaviour
 				//else
 					inputHorz = (((mouseX - rectRightButton.xMin) / (rectRightButton.xMax - rectRightButton.xMin)) * 2f) - 1f;
 					
+
 				if (inputVert > 1.0f)
 					inputVert = 1.0f;
 				if (inputHorz < -1.0f)
@@ -241,7 +242,6 @@ public class InputControls : MonoBehaviour
 						inputVert = 0.35f + inputVert * 0.65f;
 				}
 				
-				
 				bool horzFlippedFlag = false;
 				if (inputHorz < 0f) {
 					horzFlippedFlag = true;
@@ -249,7 +249,16 @@ public class InputControls : MonoBehaviour
 				}
 				inputHorz = 1f - (1f - inputHorz) * (1f - inputHorz);
 				if (horzFlippedFlag == true)
-					inputHorz *= -1f;				
+					inputHorz *= -1f;	
+					
+					
+				// lastly, filter all this out during tree collision, so when it resumes it ramps up
+
+				if (levelManager.gameState == "gameStateTree1" || levelManager.gameState == "gameStateTree2") {
+					navInProgress = false;
+					inputVert = 0f;
+					inputHorz = 0f;
+				}
 			}
 		}
 		else {
@@ -257,6 +266,8 @@ public class InputControls : MonoBehaviour
 			inputVert = 0f;
 			inputHorz = 0f;
 		}
+		
+		
 		
 		// fade in or out motion when starting or stopping
 
@@ -332,6 +343,11 @@ public class InputControls : MonoBehaviour
 			levelManager.SwapLevel(3);
 		if (Input.GetKey(KeyCode.G))
 			levelManager.SwapLevel(4);
+
+		if (Input.GetKey(KeyCode.Tab))
+			levelManager.speedOverdrive = 3f;
+		else
+			levelManager.speedOverdrive = 1f;
 			
 		// set the heading to either straight ahead or diagonal
 /*	
@@ -348,7 +364,6 @@ public class InputControls : MonoBehaviour
 		}
 */		
 		// handle left button during gameplay
-		levelManager.speedOverdrive = 1f;
 		if (keyStateLeftButton == true) {
 			if (levelManager.gameState == "gameStateChasing" && levelManager.GetPumaSideStalk() == true) {
 				levelManager.SetPumaSideStalk(false);

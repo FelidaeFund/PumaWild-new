@@ -43,6 +43,7 @@ public class LevelManager : MonoBehaviour
 	public int currentLevel;
 	public bool beginLevelFlag;
 	private string carCollisionState = "None";
+	private string treeCollisionState = "None";
 	private string starvationState = "None";
 
 	// TERRAIN
@@ -487,21 +488,32 @@ public class LevelManager : MonoBehaviour
 			terrainMaster = terrain5.GetComponent<Terrain>();
 			break;		
 		}
-
+		
 		terrainA.SetActive(true);
 		terrainA.transform.position = new Vector3(terrainPosInitNEG, 0, terrainPosInitPOS);
-
-		terrainB = Terrain.CreateTerrainGameObject(terrainMaster.terrainData);
+		terrainA.GetComponent<TerrainCollider>().enabled = false; // make sure tree colliders work
+		terrainA.GetComponent<TerrainCollider>().enabled = true;
+		
+		//terrainB = Terrain.CreateTerrainGameObject(terrainMaster.terrainData);
+		terrainB = (GameObject)Instantiate(terrainA, new Vector3(0, 0, 0), Quaternion.identity);
 		terrainB.transform.position = new Vector3(terrainPosInitPOS, 0, terrainPosInitPOS);
+		terrainB.GetComponent<TerrainCollider>().enabled = false; // make sure tree colliders work
+		terrainB.GetComponent<TerrainCollider>().enabled = true;
 		
-		terrainC = Terrain.CreateTerrainGameObject(terrainMaster.terrainData);
+		//terrainC = Terrain.CreateTerrainGameObject(terrainMaster.terrainData);
+		terrainC = (GameObject)Instantiate(terrainA, new Vector3(0, 0, 0), Quaternion.identity);
 		terrainC.transform.position = new Vector3(terrainPosInitNEG, 0, terrainPosInitNEG);
+		terrainC.GetComponent<TerrainCollider>().enabled = false; // make sure tree colliders work
+		terrainC.GetComponent<TerrainCollider>().enabled = true;
 		
-		terrainD = Terrain.CreateTerrainGameObject(terrainMaster.terrainData);
+		//terrainD = Terrain.CreateTerrainGameObject(terrainMaster.terrainData);
+		terrainD = (GameObject)Instantiate(terrainA, new Vector3(0, 0, 0), Quaternion.identity);
 		terrainD.transform.position = new Vector3(terrainPosInitPOS, 0, terrainPosInitNEG);
+		terrainD.GetComponent<TerrainCollider>().enabled = false; // make sure tree colliders work
+		terrainD.GetComponent<TerrainCollider>().enabled = true;
 		
 		SetTerrainNeighbors();
-		
+/*		
 		//================================
 		// Set Up Road Objects
 		//================================
@@ -962,7 +974,7 @@ public class LevelManager : MonoBehaviour
 			underpass7D = (GameObject)Instantiate(underpass7A, underpass7A.transform.position + terrainOffsetD, underpass7A.transform.rotation);
 			underpass7D.transform.parent = terrainD.transform;
 		}
-
+*/
 		//================================
 		// Set Up Car Objects
 		//================================
@@ -1024,18 +1036,29 @@ public class LevelManager : MonoBehaviour
 
 		terrainA.SetActive(true);
 		terrainA.transform.position = new Vector3(terrainAx, 0, terrainAz);
+		terrainA.GetComponent<TerrainCollider>().enabled = false; // make sure tree colliders work
+		terrainA.GetComponent<TerrainCollider>().enabled = true;
 
-		terrainB = Terrain.CreateTerrainGameObject(terrainMaster.terrainData);
+		//terrainB = Terrain.CreateTerrainGameObject(terrainMaster.terrainData);
+		terrainB = (GameObject)Instantiate(terrainA, new Vector3(0, 0, 0), Quaternion.identity);
 		terrainB.transform.position = new Vector3(terrainBx, 0, terrainBz);
+		terrainB.GetComponent<TerrainCollider>().enabled = false; // make sure tree colliders work
+		terrainB.GetComponent<TerrainCollider>().enabled = true;
 		
-		terrainC = Terrain.CreateTerrainGameObject(terrainMaster.terrainData);
+		//terrainC = Terrain.CreateTerrainGameObject(terrainMaster.terrainData);
+		terrainC = (GameObject)Instantiate(terrainA, new Vector3(0, 0, 0), Quaternion.identity);
 		terrainC.transform.position = new Vector3(terrainCx, 0, terrainCz);
+		terrainC.GetComponent<TerrainCollider>().enabled = false; // make sure tree colliders work
+		terrainC.GetComponent<TerrainCollider>().enabled = true;
 		
-		terrainD = Terrain.CreateTerrainGameObject(terrainMaster.terrainData);
+		//terrainD = Terrain.CreateTerrainGameObject(terrainMaster.terrainData);
+		terrainD = (GameObject)Instantiate(terrainA, new Vector3(0, 0, 0), Quaternion.identity);
 		terrainD.transform.position = new Vector3(terrainDx, 0, terrainDz);
+		terrainD.GetComponent<TerrainCollider>().enabled = false; // make sure tree colliders work
+		terrainD.GetComponent<TerrainCollider>().enabled = true;
 		
 		SetTerrainNeighbors();
-		
+/*		
 		//================================
 		// Set Up Road Objects
 		//================================
@@ -1502,7 +1525,7 @@ public class LevelManager : MonoBehaviour
 			underpass7D = (GameObject)Instantiate(underpass7A, terrainD.transform.position + underpassPosition, underpass7A.transform.rotation);
 			underpass7D.transform.parent = terrainD.transform;
 		}
-
+*/
 		//================================
 		// Set Up Car Objects
 		//================================
@@ -2003,6 +2026,50 @@ public class LevelManager : MonoBehaviour
 			break;	
 	
 		//------------------------------
+		// Tree Collision States
+		//
+		// puma has hit a tree
+		//------------------------------
+
+		case "gameStateTree1":
+			 // to avoid triggering walking anim (needs to happen not too early, not too late)
+			fadeTime = 0.2f;
+			if (Time.time >= stateStartTime + fadeTime) {
+				pumaAnimator.SetFloat("Distance", 0f);
+				SetGameState("gameStateTree2");
+			}
+			break;
+
+		case "gameStateTree2":
+			// pause for puma to recover
+			fadeTime = 1.8f;
+			if (Time.time >= stateStartTime + fadeTime) {
+				EndTreeCollision();
+				SetGameState("gameStateStalking");
+			}
+			break;
+
+		case "gameStateTree1a":
+			 // to avoid triggering walking anim (needs to happen not too early, not too late)
+			fadeTime = 0.2f;
+			if (Time.time >= stateStartTime + fadeTime) {
+				pumaAnimator.SetFloat("Distance", 0f);
+				SetGameState("gameStateTree2a");
+			}
+			break;
+
+		case "gameStateTree2a":
+			// enter into feeding display after prey-less hunt
+			fadeTime = 3.8f;
+			SelectCameraPosition("cameraPosCloseup", -160f, fadeTime, "mainCurveSBackward", "curveRotXLogarithmic"); 
+			scoringSystem.SetHuntSuccessCount(0);
+			if (Time.time > stateStartTime + fadeTime) {
+				EndTreeCollision();
+				SetGameState("gameStateFeeding2");
+			}
+			break;
+
+		//------------------------------
 		// Died States
 		//
 		// puma has died
@@ -2180,7 +2247,7 @@ public class LevelManager : MonoBehaviour
 					//pumaHeadingOffset = pumaHeadingSpread;
 					//inputHorz = (inputHorz + inputHorzCutoff) / (1f - inputHorzCutoff);
 				}
-				mainHeading += inputHorz * Time.deltaTime * rotationSpeed;
+				mainHeading += inputHorz * Time.deltaTime * rotationSpeed * (treeCollisionState == "None" ? 1f : 0f);
 				pumaHeading = mainHeading + pumaHeadingOffset*deerProximityFactorReversed;
 			}
 			float travelledDistance = (scoringSystem.GetPumaHealth(selectedPuma) > 0.025f) ? distance : distance * (scoringSystem.GetPumaHealth(selectedPuma) / 0.025f);
@@ -2228,7 +2295,7 @@ public class LevelManager : MonoBehaviour
 			}
 			else {
 				distance = inputControls.GetInputVert() * Time.deltaTime  * pumaChasingSpeed * speedOverdrive * inputPercent;
-				mainHeading += inputControls.GetInputHorz() * Time.deltaTime * rotationSpeed;
+				mainHeading += inputControls.GetInputHorz() * Time.deltaTime * rotationSpeed* (treeCollisionState == "None" ? 1f : 0f);
 				pumaHeading = mainHeading + pumaHeadingOffset;
 			}
 			distance += pumaJumpOffsetD * Time.deltaTime;
@@ -2256,7 +2323,10 @@ public class LevelManager : MonoBehaviour
 			mainHeading += 360f;	
 		
 		pumaAnimator.SetBool("GuiMode", false);
-		pumaAnimator.SetFloat("Distance", distance);
+		if (treeCollisionState == "None") {
+			// distance=0 switches to idle, but only if no tree collision
+			pumaAnimator.SetFloat("Distance", distance);
+		}
 
 	
 		// get the y pos of puma based on terrain and/or overpass height
@@ -2282,7 +2352,7 @@ public class LevelManager : MonoBehaviour
 
 		// write out the position and rotation of puma obj
 		
-		if (carCollisionState == "None" && starvationState == "None") {
+		if (carCollisionState == "None" && treeCollisionState == "None" && starvationState == "None") {
 			// normal case: update pumaObj every frame
 						
 			//Debug.Log(" ");
@@ -2314,18 +2384,27 @@ public class LevelManager : MonoBehaviour
 				controller.Move(moveDirection * Time.deltaTime);
 			} */		
 		}
-		else if (carCollisionState == "InProgress") {
+		else if (carCollisionState == "InProgress" || treeCollisionState == "InProgress") {
 			// physics takes over
 			pumaX = pumaObj.transform.position.x;
 			pumaY = pumaObj.transform.position.y;
 			pumaZ = pumaObj.transform.position.z;
 
-			// adjust position of puma within box collider based on which side is down
-			bool flippedFlag = (Mathf.Abs(pumaObj.transform.rotation.x) + Mathf.Abs(pumaObj.transform.rotation.z) > 1f) ? true : false;	
-			pumaObjCollider.center = new Vector3(pumaObjCollider.center.x, flippedFlag ? 0.14f : -0.04f, pumaObjCollider.center.z);
-			if (pumaObj.transform.position.y < GetTerrainHeight(pumaObj.transform.position.x, pumaObj.transform.position.z)) {
-				// prevent falling through terrain due to box collider adjustment
-				pumaObj.transform.position = new Vector3(pumaObj.transform.position.x, GetTerrainHeight(pumaObj.transform.position.x, pumaObj.transform.position.z), pumaObj.transform.position.z);
+			if (carCollisionState == "InProgress") {
+				// adjust position of puma within box collider based on which side is down
+				bool flippedFlag = (Mathf.Abs(pumaObj.transform.rotation.x) + Mathf.Abs(pumaObj.transform.rotation.z) > 1f) ? true : false;	
+				pumaObjCollider.center = new Vector3(pumaObjCollider.center.x, flippedFlag ? 0.14f : -0.04f, pumaObjCollider.center.z);
+				if (pumaObj.transform.position.y < GetTerrainHeight(pumaObj.transform.position.x, pumaObj.transform.position.z)) {
+					// prevent falling through terrain due to box collider adjustment
+					pumaObj.transform.position = new Vector3(pumaObj.transform.position.x, GetTerrainHeight(pumaObj.transform.position.x, pumaObj.transform.position.z), pumaObj.transform.position.z);
+				}
+			}
+			
+			if (treeCollisionState == "InProgress") {
+					
+				//float officialPumaRotation = Quaternion.Euler(pumaRotX, (pumaHeading - 180f), 0);			
+			
+				mainHeading = pumaObj.transform.rotation.eulerAngles.y + 180f;
 			}
 
 			/* enable manual positioning post-collision */ {
@@ -2428,20 +2507,36 @@ public class LevelManager : MonoBehaviour
 		while (terrainZ - pumaZ >  500) {  terrainZ -= terrainShiftDistance; terrainShiftedFlag = true; }
 		terrainD.transform.position = new Vector3 (terrainX, 0, terrainZ);
 		
-		if (terrainShiftedFlag == true)
+		if (terrainShiftedFlag == true) {
+
 			SetTerrainNeighbors();
+			
+			// make sure tree colliders get updated...
+		
+			terrainA.GetComponent<TerrainCollider>().enabled = false;
+			terrainA.GetComponent<TerrainCollider>().enabled = true;
+
+			terrainB.GetComponent<TerrainCollider>().enabled = false;
+			terrainB.GetComponent<TerrainCollider>().enabled = true;
+
+			terrainC.GetComponent<TerrainCollider>().enabled = false;
+			terrainC.GetComponent<TerrainCollider>().enabled = true;
+
+			terrainD.GetComponent<TerrainCollider>().enabled = false;
+			terrainD.GetComponent<TerrainCollider>().enabled = true;	
+		}
 	}
 
 		
 	//===================================
 	//===================================
-	//		CAR COLLISION HANDLING
+	//		COLLISION HANDLING
 	//===================================
 	//===================================
 	
 	public void BeginCarCollision()
 	{
-		if (CheckCarCollision() == true)
+		if (CheckCarCollision() == true || selectedPuma == -1)
 			return;
 	
 		carCollisionState = "InProgress";
@@ -2459,6 +2554,9 @@ public class LevelManager : MonoBehaviour
 	public void EndCarCollision()
 	{	
 		carCollisionState = "Concluded";
+		pumaObj.GetComponent<PumaController>().SetNormalCollider();  // happens here, or later ?  
+
+		
 		pumaPhysicsOffsetY = pumaY - GetTerrainHeight(pumaX, pumaZ);
 		pumaPhysicsConcludedTime = Time.time;
 
@@ -2471,6 +2569,52 @@ public class LevelManager : MonoBehaviour
 		UpdateGuiStatePumaHeading(true); // point puma away from road
 	}
 
+	////////////////////////////////
+	////////////////////////////////
+
+	public void BeginTreeCollision()
+	{
+		if (CheckTreeCollision() == true || selectedPuma == -1)
+			return;
+
+		treeCollisionState = "InProgress";
+		pumaAnimator.SetBool("TreeCollision", true);
+
+		if (gameState == "gameStateStalking") {
+			SetGameState("gameStateTree1");
+		}
+		else if (gameState == "gameStateChasing") {
+			SetGameState("gameStateTree1a");
+			guiManager.SetGuiState("guiStateFeeding1");
+		}
+	}
+
+	public bool CheckTreeCollision()
+	{	
+		return (treeCollisionState != "None");
+	}
+
+	public void EndTreeCollision()
+	{	
+		treeCollisionState = "None";
+		pumaObj.GetComponent<PumaController>().SetNormalCollider();
+		pumaAnimator.SetBool("TreeCollision", false);
+
+
+		//pumaPhysicsOffsetY = pumaY - GetTerrainHeight(pumaX, pumaZ);
+		//pumaPhysicsConcludedTime = Time.time;
+
+		//guiFlybyOverdriveRampFlag = true;
+		//guiFlybyOverdriveRampStartVal = guiFlybyOverdrive;
+		//guiFlybyOverdriveRampEndVal = 2f;
+		//guiFlybyOverdriveRampStartTime = Time.time;
+		//guiFlybyOverdriveRampEndTime = Time.time + 2f;
+		
+		//UpdateGuiStatePumaHeading(true); // point puma away from road
+	}
+
+	////////////////////////////////
+	////////////////////////////////
 
 	public bool CheckStarvation()
 	{	

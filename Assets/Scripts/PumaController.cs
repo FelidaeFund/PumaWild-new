@@ -39,13 +39,15 @@ public class PumaController : MonoBehaviour
 		
 	private GameObject collisionObject;
 	private bool collisionOverpassInProgress = false;
-	private float collisionCarForceTimeRemaining = 0;
-	private float collisionCarForceOffsetX;
-	private float collisionCarForceOffsetZ;
+	private float collisionForceTimeRemaining = 0;
+	private float collisionForceOffsetX;
+	private float collisionForceOffsetZ;
 	public float forceFactor = 100f;
 	
 	// EXTERNAL MODULES
 	private LevelManager levelManager;	
+	private InputControls inputControls;	
+	private GuiUtils guiUtils;	
 	
 	//===================================
 	//===================================
@@ -57,6 +59,8 @@ public class PumaController : MonoBehaviour
     {
 		// connect to external modules
 		levelManager = GameObject.Find("Scripts").GetComponent<LevelManager>();
+		inputControls = GameObject.Find("Scripts").GetComponent<InputControls>();
+		guiUtils = GameObject.Find("Scripts").GetComponent<GuiUtils>();
 	}
 	
  	//===================================
@@ -71,14 +75,14 @@ public class PumaController : MonoBehaviour
 
  	void FixedUpdate()
     {
-		if (collisionCarForceTimeRemaining > 0f) {
-			Vector3 forceVector = new Vector3(collisionCarForceOffsetX * Time.deltaTime, 0f, collisionCarForceOffsetZ * Time.deltaTime);
+		if (collisionForceTimeRemaining > 0f) {
+			Vector3 forceVector = new Vector3(collisionForceOffsetX * Time.deltaTime, 0f, collisionForceOffsetZ * Time.deltaTime);
 			//Debug.Log("=======    ===========   =======");
 			//Debug.Log("Time.time: " + Time.time +  "   forceVector: " + forceVector);
 			//Debug.Log("=======    ===========   =======");
 			
 			rigidbody.AddForce(forceVector);
-			collisionCarForceTimeRemaining -= Time.deltaTime;
+			collisionForceTimeRemaining -= Time.deltaTime;
 		}		
     }
     
@@ -90,8 +94,39 @@ public class PumaController : MonoBehaviour
 
 	void OnCollisionEnter(Collision collisionInfo)
 	{
-		// VEHICLE
 
+		if (collisionInfo.gameObject.tag == "Terrain") {
+		
+			if (collisionInfo.contacts[0].normal.y > 0.5f){
+				// TERRAIN CHANGE
+				//Debug.Log("======================================");
+				//Debug.Log("             TERRAIN CHANGE:  " + gameObject.name + " - " + collisionInfo.collider.name);
+				//Debug.Log("======================================");
+			}
+			else {
+				// TREE COLLISION
+				Debug.Log("======================================");
+				Debug.Log("             TREE COLLISION:  " + gameObject.name + " - " + collisionInfo.collider.name);
+				Debug.Log("				Collision normal is " + collisionInfo.contacts[0].normal);
+				Debug.Log("				Collision relative velocity is " + collisionInfo.relativeVelocity);		
+				Debug.Log("======================================");
+
+				if (levelManager.gameState == "gameStateStalking" || levelManager.gameState == "gameStateChasing") {
+					float forceFactor = (levelManager.gameState == "gameStateStalking") ? 0.10f : 0.30f;
+					levelManager.BeginTreeCollision();
+					// create force to push puma back from tree
+					float collisionScale = 1.6f * 75000f * inputControls.GetInputVert() * forceFactor;
+					float heading = guiUtils.GetAngleFromOffset(0f, 0f, collisionInfo.contacts[0].normal.x, collisionInfo.contacts[0].normal.z);
+					heading += Random.Range(20f, 40f);
+					collisionForceOffsetX = Mathf.Sin(heading*Mathf.PI/180) * collisionScale;
+					collisionForceOffsetZ = Mathf.Cos(heading*Mathf.PI/180) * collisionScale;
+					collisionForceTimeRemaining = 0.30f;
+					SetTreeCollisionCollider(); // box collider becomes platform below puma
+				}
+			}
+		}
+
+		
 		if (collisionInfo.gameObject.tag == "Vehicle") {
 
 			if (collisionOverpassInProgress == false &&
@@ -119,9 +154,10 @@ public class PumaController : MonoBehaviour
 				float collisionScale = 75000f;
 				float heading = collisionInfo.gameObject.GetComponent<VehicleController>().heading;
 				heading += Random.Range(20f, 40f);
-				collisionCarForceOffsetX = Mathf.Sin(heading*Mathf.PI/180) * collisionScale;
-				collisionCarForceOffsetZ = Mathf.Cos(heading*Mathf.PI/180) * collisionScale;
-				collisionCarForceTimeRemaining = 0.30f;
+				collisionForceOffsetX = Mathf.Sin(heading*Mathf.PI/180) * collisionScale;
+				collisionForceOffsetZ = Mathf.Cos(heading*Mathf.PI/180) * collisionScale;
+				collisionForceTimeRemaining = 0.30f;
+				SetCarCollisionCollider(); // box collider becomes platform below puma
 			}
 		}
 		
@@ -234,8 +270,35 @@ public class PumaController : MonoBehaviour
 	{
 		return (collisionOverpassInProgress == true);
 	}
+
 	
+	public void SetNormalCollider()
+	{
+		// set collider box as box around cat
+		BoxCollider boxCollider = (BoxCollider)collider;
+		boxCollider.center = new Vector3(0f, 0.45f, 0.1f);
+		boxCollider.size = new Vector3(0.33f, 0.6f, 1.5f);
+	}
+
 	
+	public void SetCarCollisionCollider()
+	{
+		// set collider box as platform below cat
+		BoxCollider boxCollider = (BoxCollider)collider;
+		boxCollider.center = new Vector3(-0.15f, -0.04f, 0.25f);
+		boxCollider.size = new Vector3(1.2f, 0.1f, 1.8f);
+	}
+
+	public void SetTreeCollisionCollider()
+	{
+		// set collider box as box around cat
+		BoxCollider boxCollider = (BoxCollider)collider;
+		boxCollider.center = new Vector3(0f, 0.05f, 0.25f);
+		boxCollider.size = new Vector3(2.6f, 0.1f, 1.8f);
+	}
+
+	
+
 	
 	/*
 	//=======================

@@ -374,7 +374,7 @@ public class GuiManager : MonoBehaviour
 
 		case "guiStateFeeding2":
 			// pause during attack on deer
-			guiStateDuration = (levelManager.caughtDeer != null) ? 2f : 0.7f;
+			guiStateDuration = (levelManager.caughtDeer != null) ? 2f : (levelManager.gameState == "gameStateTree1a" || levelManager.gameState == "gameStateTree2a") ?  1.8f : 0.7f;
 			if (Time.time - guiStateStartTime > guiStateDuration) {
 				//if (SelectedPumaIsFullHealth() == true)
 					//SetGuiState("guiStatePumaDone3");
