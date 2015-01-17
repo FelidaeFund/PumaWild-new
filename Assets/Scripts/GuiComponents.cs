@@ -14,6 +14,7 @@ public class GuiComponents : MonoBehaviour
 
 	// textures based on bitmap files
 	private Texture2D pumaIconTexture;
+	private Texture2D pumaIconShadowTexture;
 	private Texture2D pumaIconShadowYellowTexture;
 	private Texture2D greenCheckTexture;	
 	private Texture2D greenHeartTexture;	
@@ -49,6 +50,7 @@ public class GuiComponents : MonoBehaviour
 		
 		// texture references from GuiManager
 		pumaIconTexture = guiManager.pumaIconTexture;
+		pumaIconShadowTexture = guiManager.pumaIconShadowTexture;	
 		pumaIconShadowYellowTexture = guiManager.pumaIconShadowYellowTexture;	
 		greenCheckTexture = guiManager.greenCheckTexture;
 		greenHeartTexture = guiManager.greenHeartTexture;
@@ -606,7 +608,7 @@ public class GuiComponents : MonoBehaviour
 		}
 		else {
 			labelColor = new Color(0f, 0.85f, 0f, 1f);
-			barColor = (health >= 1f) ? new Color(0f, 0.75f, 0f, 0.45f) : new Color(0f, 0.75f, 0f, 0.95f);
+			barColor = (health >= 1f) ? new Color(0f, 0.75f, 0f, 0.95f) : new Color(0f, 0.75f, 0f, 0.95f);
 		}			
 
 		float fontRef = healthBarHeight * 2f;
@@ -673,16 +675,16 @@ public class GuiComponents : MonoBehaviour
 			float textLeftShift = 0f;
 
 			if (health <= 0f) {
-				displayString = " Starved to Death";
+				displayString = scoringSystem.WasKilledByCar(pumaNum) ? "VEHICLE" : "STARVED";
 				style.fontStyle = FontStyle.BoldAndItalic;
 				style.fontSize = (int)(fontRef * 0.37f);
-				style.normal.textColor = new Color(0.54f, 0.02f, 0f, 0.99f);
+				style.normal.textColor = new Color(0.64f, 0.02f, 0f, 0.99f);
 			}
 			else if (health >= 1f) {
 				displayString = "Full Health";
 				style.fontStyle = FontStyle.BoldAndItalic;
 				style.fontSize = (int)(fontRef * 0.37f);
-				style.normal.textColor = new Color(0.05f, 0.62f, 0f, 0.9f);			
+				style.normal.textColor = new Color(0.05f, 0.68f, 0f, 0.99f);			
 				float checkMarkWidth = meterStatWidth * 0.2f;
 				float checkMarkHeight = greenCheckTexture.height * (checkMarkWidth / greenCheckTexture.width);
 				float checkMarkX = meterStatX + meterStatWidth * 0.8f;
@@ -722,7 +724,7 @@ public class GuiComponents : MonoBehaviour
 	//===================================
 	//===================================
 
-	public void DrawPopulationHealthBar(float healthBarOpacity, float healthBarX, float healthBarY, float healthBarWidth, float healthBarHeight, bool showPumaIcons, bool centerLabels) 
+	public void DrawPopulationHealthBar(float healthBarOpacity, float healthBarX, float healthBarY, float healthBarWidth, float healthBarHeight, bool showPumaIcons, bool centerLabels, bool narrowFlag = false) 
 	{ 
 		float health = scoringSystem.GetPopulationHealth(); 
 
@@ -743,12 +745,14 @@ public class GuiComponents : MonoBehaviour
 
 
 		if (showPumaIcons == true) {
+			
+			Texture2D currentIconTexture;		
 
 			// six puma icons
 			
 			float pumaIconWidth = healthBarHeight * 0.85f;
 			float pumaIncrementX = healthBarWidth * 0.038f;
-			float pumaIconY = healthBarY - healthBarHeight * 1.32f;
+			float pumaIconY = healthBarY - healthBarHeight * 1.41f;
 			
 			if (centerLabels == true)
 				pumaIconY += healthBarHeight * 0.4f;
@@ -762,94 +766,100 @@ public class GuiComponents : MonoBehaviour
 			Color pumaDeadColor = new Color(0.01f, 0.01f, 0.01f, 1f * healthBarOpacity);
 
 
+			currentIconTexture = guiManager.selectedPuma == 0 ? pumaIconShadowYellowTexture : pumaIconTexture;
 			textureX = healthBarX + healthBarWidth * 0.383f;
 			textureY = pumaIconY;
-			textureWidth = pumaIconWidth;
-			textureHeight = pumaIconTexture.height * (textureWidth / pumaIconTexture.width);
+			textureWidth = pumaIconWidth * (guiManager.selectedPuma == 0 ? 1.12f : 1f);
+			textureHeight = currentIconTexture.height * (textureWidth / currentIconTexture.width);
 			if (guiManager.selectedPuma == -1) {
 				GUI.color = new Color(1f, 1f, 1f, 0.8f * healthBarOpacity);
 				GUI.DrawTexture(new Rect(textureX - (textureWidth * 0.1f), textureY - (textureHeight * 0.11f), textureWidth * 1.2f, textureHeight * 1.2f), pumaIconShadowYellowTexture);
 				GUI.color = new Color(1f, 1f, 1f, 1f * healthBarOpacity);
-				GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), pumaIconTexture);
+				GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), currentIconTexture);
 			}
 			else {
 				GUI.color = (scoringSystem.GetPumaHealth(0) <= 0f) ? pumaDeadColor : ((scoringSystem.GetPumaHealth(0) >= 1f) ? pumaFullHealthColor : pumaAliveColor);
-				GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), pumaIconTexture);
+				GUI.DrawTexture(new Rect(textureX, textureY - (guiManager.selectedPuma == 0 ? textureHeight * 0.1f : 0f), textureWidth, textureHeight), currentIconTexture);
 			}
 			
+			currentIconTexture = guiManager.selectedPuma == 1 ? pumaIconShadowYellowTexture : pumaIconTexture;
 			textureX += pumaIncrementX;
 			textureY = pumaIconY;
-			textureWidth = pumaIconWidth;
-			textureHeight = pumaIconTexture.height * (textureWidth / pumaIconTexture.width);
+			textureWidth = pumaIconWidth * (guiManager.selectedPuma == 1 ? 1.12f : 1f);
+			textureHeight = currentIconTexture.height * (textureWidth / currentIconTexture.width);
 			if (guiManager.selectedPuma == -1) {
 				GUI.color = new Color(1f, 1f, 1f, 0.8f * healthBarOpacity);
 				GUI.DrawTexture(new Rect(textureX - (textureWidth * 0.1f), textureY - (textureHeight * 0.11f), textureWidth * 1.2f, textureHeight * 1.2f), pumaIconShadowYellowTexture);
 				GUI.color = new Color(1f, 1f, 1f, 1f * healthBarOpacity);
-				GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), pumaIconTexture);
+				GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), currentIconTexture);
 			}
 			else {
 				GUI.color = (scoringSystem.GetPumaHealth(1) <= 0f) ? pumaDeadColor : ((scoringSystem.GetPumaHealth(1) >= 1f) ? pumaFullHealthColor : pumaAliveColor);
-				GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), pumaIconTexture);
+				GUI.DrawTexture(new Rect(textureX, textureY - (guiManager.selectedPuma == 1 ? textureHeight * 0.1f : 0f), textureWidth, textureHeight), currentIconTexture);
 			}
 
+			currentIconTexture = guiManager.selectedPuma == 2 ? pumaIconShadowYellowTexture : pumaIconTexture;
 			textureX += pumaIncrementX;
 			textureY = pumaIconY;
-			textureWidth = pumaIconWidth;
-			textureHeight = pumaIconTexture.height * (textureWidth / pumaIconTexture.width);
+			textureWidth = pumaIconWidth * (guiManager.selectedPuma == 2 ? 1.12f : 1f);
+			textureHeight = currentIconTexture.height * (textureWidth / currentIconTexture.width);
 			if (guiManager.selectedPuma == -1) {
 				GUI.color = new Color(1f, 1f, 1f, 0.8f * healthBarOpacity);
 				GUI.DrawTexture(new Rect(textureX - (textureWidth * 0.1f), textureY - (textureHeight * 0.11f), textureWidth * 1.2f, textureHeight * 1.2f), pumaIconShadowYellowTexture);
 				GUI.color = new Color(1f, 1f, 1f, 1f * healthBarOpacity);
-				GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), pumaIconTexture);
+				GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), currentIconTexture);
 			}
 			else {
 				GUI.color = (scoringSystem.GetPumaHealth(2) <= 0f) ? pumaDeadColor : ((scoringSystem.GetPumaHealth(2) >= 1f) ? pumaFullHealthColor : pumaAliveColor);
-				GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), pumaIconTexture);
+				GUI.DrawTexture(new Rect(textureX, textureY - (guiManager.selectedPuma == 2 ? textureHeight * 0.1f : 0f), textureWidth, textureHeight), currentIconTexture);
 			}
 
+			currentIconTexture = guiManager.selectedPuma == 3 ? pumaIconShadowYellowTexture : pumaIconTexture;
 			textureX += pumaIncrementX;
 			textureY = pumaIconY;
-			textureWidth = pumaIconWidth;
-			textureHeight = pumaIconTexture.height * (textureWidth / pumaIconTexture.width);
+			textureWidth = pumaIconWidth * (guiManager.selectedPuma == 3 ? 1.12f : 1f);
+			textureHeight = currentIconTexture.height * (textureWidth / currentIconTexture.width);
 			if (guiManager.selectedPuma == -1) {
 				GUI.color = new Color(1f, 1f, 1f, 0.8f * healthBarOpacity);
 				GUI.DrawTexture(new Rect(textureX - (textureWidth * 0.1f), textureY - (textureHeight * 0.11f), textureWidth * 1.2f, textureHeight * 1.2f), pumaIconShadowYellowTexture);
 				GUI.color = new Color(1f, 1f, 1f, 1f * healthBarOpacity);
-				GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), pumaIconTexture);
+				GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), currentIconTexture);
 			}
 			else {
 				GUI.color = (scoringSystem.GetPumaHealth(3) <= 0f) ? pumaDeadColor : ((scoringSystem.GetPumaHealth(3) >= 1f) ? pumaFullHealthColor : pumaAliveColor);
-				GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), pumaIconTexture);
+				GUI.DrawTexture(new Rect(textureX, textureY - (guiManager.selectedPuma == 3 ? textureHeight * 0.1f : 0f), textureWidth, textureHeight), currentIconTexture);
 			}
 
+			currentIconTexture = guiManager.selectedPuma == 4 ? pumaIconShadowYellowTexture : pumaIconTexture;
 			textureX += pumaIncrementX;
 			textureY = pumaIconY;
-			textureWidth = pumaIconWidth;
-			textureHeight = pumaIconTexture.height * (textureWidth / pumaIconTexture.width);
+			textureWidth = pumaIconWidth * (guiManager.selectedPuma == 4 ? 1.12f : 1f);
+			textureHeight = currentIconTexture.height * (textureWidth / currentIconTexture.width);
 			if (guiManager.selectedPuma == -1) {
 				GUI.color = new Color(1f, 1f, 1f, 0.8f * healthBarOpacity);
 				GUI.DrawTexture(new Rect(textureX - (textureWidth * 0.1f), textureY - (textureHeight * 0.11f), textureWidth * 1.2f, textureHeight * 1.2f), pumaIconShadowYellowTexture);
 				GUI.color = new Color(1f, 1f, 1f, 1f * healthBarOpacity);
-				GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), pumaIconTexture);
+				GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), currentIconTexture);
 			}
 			else {
 				GUI.color = (scoringSystem.GetPumaHealth(4) <= 0f) ? pumaDeadColor : ((scoringSystem.GetPumaHealth(4) >= 1f) ? pumaFullHealthColor : pumaAliveColor);
-				GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), pumaIconTexture);
+				GUI.DrawTexture(new Rect(textureX, textureY - (guiManager.selectedPuma == 4 ? textureHeight * 0.1f : 0f), textureWidth, textureHeight), currentIconTexture);
 			}
 
+			currentIconTexture = guiManager.selectedPuma == 5 ? pumaIconShadowYellowTexture : pumaIconTexture;
 			textureX += pumaIncrementX;
 			textureY = pumaIconY;
-			textureWidth = pumaIconWidth;
-			textureHeight = pumaIconTexture.height * (textureWidth / pumaIconTexture.width);
+			textureWidth = pumaIconWidth * (guiManager.selectedPuma == 5 ? 1.12f : 1f);
+			textureHeight = currentIconTexture.height * (textureWidth / currentIconTexture.width);
 			if (guiManager.selectedPuma == -1) {
 				GUI.color = new Color(1f, 1f, 1f, 0.8f * healthBarOpacity);
 				GUI.DrawTexture(new Rect(textureX - (textureWidth * 0.1f), textureY - (textureHeight * 0.11f), textureWidth * 1.2f, textureHeight * 1.2f), pumaIconShadowYellowTexture);
 				GUI.color = new Color(1f, 1f, 1f, 1f * healthBarOpacity);
-				GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), pumaIconTexture);
+				GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), currentIconTexture);
 			}
 			else {
 				GUI.color = (scoringSystem.GetPumaHealth(5) <= 0f) ? pumaDeadColor : ((scoringSystem.GetPumaHealth(5) >= 1f) ? pumaFullHealthColor : pumaAliveColor);
-				GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), pumaIconTexture);
+				GUI.DrawTexture(new Rect(textureX, textureY - (guiManager.selectedPuma == 5 ? textureHeight * 0.1f : 0f), textureWidth, textureHeight), currentIconTexture);
 			}
 		}
 
@@ -922,23 +932,24 @@ public class GuiComponents : MonoBehaviour
 			style.fontStyle = FontStyle.Bold;
 			style.alignment = TextAnchor.MiddleLeft;
 			style.fontSize = (int)(fontRef * 0.21f);
-			style.normal.textColor = new Color(0.88f, 0.60f, 0.01f, 1f);
-			GUI.Button(new Rect(xOffset2 + healthBarX - healthBarWidth * 0.15f, healthBarY + healthBarHeight * 0.01f, healthBarWidth * 0.3f, healthBarHeight * 1f), "POPULATION", style);
+			//style.normal.textColor = new Color(0.88f, 0.60f, 0.01f, 1f);
+			style.normal.textColor = new Color(0.72f, 0.64f, 0.50f, 1f);
+			GUI.Button(new Rect(xOffset2 + healthBarX - healthBarWidth * 0.31f, healthBarY + healthBarHeight * 0.01f, healthBarWidth * 0.3f, healthBarHeight * 1f), "POPULATION:", style);
 			style.fontSize = (int)(fontRef * 0.26f);
 			style.normal.textColor = labelColor;
-			GUI.Button(new Rect(xOffset2 + healthBarX + healthBarWidth * 1.027f, healthBarY - healthBarHeight * 0.0255f, healthBarWidth * 0.3f, healthBarHeight * 1f), displayString, style);
+			GUI.Button(new Rect(xOffset2 + healthBarX  - healthBarWidth * 0.16f, healthBarY - healthBarHeight * 0.0255f, healthBarWidth * 0.3f, healthBarHeight * 1f), displayString, style);
 		}
 		else {
 			// labels go stacked above bar
 			style.fontStyle = FontStyle.Bold;
-			style.alignment = TextAnchor.MiddleCenter;
+			style.alignment = (narrowFlag == true) ? TextAnchor.MiddleLeft : TextAnchor.MiddleCenter;
 			style.fontSize = (int)(fontRef * 0.20f);
 			//style.normal.textColor = new Color(0.88f, 0.55f, 0f, 1f);
 			style.normal.textColor = new Color(0.99f * 0.9f, 0.75f * 0.9f, 0.3f * 0.9f, 0.95f);
 			//GUI.Button(new Rect(healthBarX, healthBarY - healthBarHeight * 2.27f, healthBarWidth, healthBarHeight * 0.03f), "- STATUS -", style);
 			style.fontSize = (int)(fontRef * 0.275f);
 			style.normal.textColor = labelColor;
-			GUI.Button(new Rect(healthBarX, healthBarY - healthBarHeight * 1.9f, healthBarWidth, healthBarHeight * 0.03f), displayString, style);
+			GUI.Button(new Rect(healthBarX + (narrowFlag == true ? healthBarWidth * 0.08f : 0f), healthBarY - healthBarHeight * (narrowFlag == true ? 0.62f : 1.9f), healthBarWidth, healthBarHeight * 0.03f), displayString, style);
 		}
 
 		// puma crossbones
@@ -953,8 +964,8 @@ public class GuiComponents : MonoBehaviour
 
 
 		// health meter
-		float meterLeft = 0.065f;
-		float meterRight = 0.065f;
+		float meterLeft = narrowFlag == true ? 0.15f : 0.065f;
+		float meterRight = narrowFlag == true ? 0.15f : 0.065f;
 		float meterTop = 0.287f;		
 		float meterX = healthBarX + healthBarWidth * meterLeft;
 		float meterWidth = healthBarWidth - healthBarWidth * (meterLeft + meterRight);
@@ -968,24 +979,26 @@ public class GuiComponents : MonoBehaviour
 		meterTop += 0.12f;		
 		meterX = healthBarX + healthBarWidth * meterLeft;
 		meterWidth = healthBarWidth - healthBarWidth * (meterLeft + meterRight);
-		float meterStatWidth = meterWidth * 0.065f;
+		float meterStatWidth = narrowFlag == true ? meterWidth * 0.4f : meterWidth * 0.065f;
 		meterY = healthBarY + healthBarHeight * meterTop;
 		meterHeight = healthBarHeight - healthBarHeight * meterTop * 2;
 		guiUtils.DrawRect(new Rect(meterX, meterY, meterWidth, meterHeight), new Color(0.47f, 0.5f, 0.45f, 0.5f));	
 		if (health >= 0)
-			guiUtils.DrawRect(new Rect(meterX, meterY, (meterWidth - meterStatWidth) * health, meterHeight), barColor);			
-
+			guiUtils.DrawRect(new Rect(meterX, meterY, (meterWidth - (narrowFlag == true ? 0f : meterStatWidth)) * health, meterHeight), barColor);			
+		if (narrowFlag == true)
+			meterHeight *= 1.2f;
+			
 			
 		// display current value
 		meterTop -= 0.12f;		
-		meterY = healthBarY + healthBarHeight * meterTop;
+		meterY = narrowFlag == true ? healthBarY - healthBarHeight * 0.85f : healthBarY + healthBarHeight * meterTop;
 		meterHeight = healthBarHeight - healthBarHeight * meterTop * 2;
 		int healthPercent = (int)(health * 100f);
-		float meterStatX = meterX + (meterWidth - meterStatWidth) * health;
-		GUI.Box(new Rect(meterStatX, meterY - meterHeight * 0.25f, meterStatWidth, meterHeight + meterHeight * 0.5f), "");
+		float meterStatX = meterX + (meterWidth - meterStatWidth) * (narrowFlag == true ? 1.16f : health);
+		GUI.Box(new Rect(meterStatX, meterY - meterHeight * 0.45f, meterStatWidth, meterHeight + meterHeight * 0.9f), "");
 		//guiUtils.DrawRect(new Rect(meterStatX, meterY - meterHeight * 0.25f, meterStatWidth, meterHeight + meterHeight * 0.5f), new Color(0f, 0f, 0f, 1f));	
 		displayString = healthPercent.ToString() + "%";
-		style.fontSize = (int)(fontRef * 0.26f);
+		style.fontSize = (int)(fontRef * (narrowFlag == true ? 0.32f : 0.26f));
 		style.alignment = TextAnchor.MiddleCenter;
 		style.normal.textColor = labelColor;
 		style.fontStyle = FontStyle.Bold;
@@ -993,7 +1006,7 @@ public class GuiComponents : MonoBehaviour
 			
 		
 		// green heart
-		textureX = healthBarX + healthBarWidth * 0.947f;
+		textureX = healthBarX + healthBarWidth * (narrowFlag == true ? 0.86f : 0.947f);
 		textureY = healthBarY + healthBarHeight * 0.17f;
 		textureWidth = healthBarHeight * 0.64f;
 		textureHeight = greenHeartTexture.height * (textureWidth / greenHeartTexture.width) * 1f;

@@ -156,6 +156,8 @@ public class PumaDoneDisplay : MonoBehaviour
 		float leftLabelY1;
 		float leftLabelY2;
 		float leftLabelY3;
+		float leftLabelY4;
+		float leftLabelY5;
 		float leftLabelW;
 		float leftLabelH;
 		
@@ -236,7 +238,7 @@ public class PumaDoneDisplay : MonoBehaviour
 		float barY = pumaDoneDisplayY + pumaDoneDisplayHeight * 0.81f + vertShiftAmount;
 		float barW = pumaDoneDisplayWidth * 0.29f - pumaDoneDisplayHeight * 0.06f;
 		float barH = pumaDoneDisplayHeight * 0.11f;
-		guiComponents.DrawPumaHealthBar(guiManager.selectedPuma, backgroundPanelOpacity, barX, barY, barW, barH);
+		guiComponents.DrawPumaHealthBar(guiManager.selectedPuma, backgroundPanelOpacity, barX, barY, barW, barH, true);
 		
 
 
@@ -247,77 +249,96 @@ public class PumaDoneDisplay : MonoBehaviour
 					
 		GUI.color = new Color(1f, 1f, 1f, 1f * carCollisionOpacity);
 
+		if (carCollisionOpacity > 0f) {
 		
-		// header title
-		titleX = pumaDoneDisplayX + pumaDoneDisplayWidth * 0.3f;
-		titleY = pumaDoneDisplayY + pumaDoneDisplayHeight * 0.136f;
-		titleW = pumaDoneDisplayWidth * 0.4f;
-		titleH = pumaDoneDisplayHeight * 0.03f;
-		style.fontSize = (int)(fontRef * 0.22f);
-		style.normal.textColor =  new Color(0.66f, 0f, 0f, 1f);
-		style.fontStyle = FontStyle.Bold;
-		style.fontSize = (int)(fontRef * 0.18f);
-		GUI.Button(new Rect(titleX, titleY, titleW, titleH), "KILLED BY A CAR!", style);
-		
-
-
-
-		// crossbones
-		GUI.color = new Color(0.9f, 0.9f, 0.9f, 1f * carCollisionOpacity);
-		textureY = pumaDoneDisplayY + pumaDoneDisplayHeight * (0.5f + panelOffsetY) + vertShiftAmount;
-		textureWidth = pumaDoneDisplayHeight * 0.3f;
-		textureHeight = pumaCrossbonesRedTexture.height * (textureWidth / pumaCrossbonesRedTexture.width);
-		textureX = pumaDoneDisplayX + pumaDoneDisplayWidth/2  - textureWidth/2 - pumaDoneDisplayWidth * 0.13f;
-		GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), pumaCrossbonesRedTexture);
-		GUI.color = new Color(1f, 1f, 1f, 1f * carCollisionOpacity);
-		textureX = pumaDoneDisplayX + pumaDoneDisplayWidth/2  - textureWidth/2 + pumaDoneDisplayWidth * 0.13f;
-		GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), pumaCrossbonesRedTexture);
-		GUI.color = new Color(1f, 1f, 1f, 1f * carCollisionOpacity);
-		
-
-
-
-		// left and right label boxes
-		boxY = pumaDoneDisplayY + pumaDoneDisplayHeight * 0.43f;
-		boxW = pumaDoneDisplayWidth * 0.22f;
-		boxH = pumaDoneDisplayHeight * 0.51f;
-		boxX = pumaDoneDisplayX + pumaDoneDisplayWidth/2 - boxW/2 - pumaDoneDisplayWidth * 0.35f;
-		GUI.color = new Color(1f, 1f, 1f, 0.8f * carCollisionOpacity);
-		GUI.Box(new Rect(boxX, boxY, boxW, boxH), "");
-		GUI.color = new Color(1f, 1f, 1f, 1f * carCollisionOpacity);
-		boxX = pumaDoneDisplayX + pumaDoneDisplayWidth/2 - boxW/2 + pumaDoneDisplayWidth * 0.35f;
-		GUI.color = new Color(1f, 1f, 1f, 0.8f * carCollisionOpacity);
-		GUI.Box(new Rect(boxX, boxY, boxW, boxH), "");
-		GUI.color = new Color(1f, 1f, 1f, 1f * carCollisionOpacity);
-
+			// header title
+			titleX = pumaDoneDisplayX + pumaDoneDisplayWidth * 0.3f;
+			titleY = pumaDoneDisplayY + pumaDoneDisplayHeight * 0.136f;
+			titleW = pumaDoneDisplayWidth * 0.4f;
+			titleH = pumaDoneDisplayHeight * 0.03f;
+			style.fontSize = (int)(fontRef * 0.22f);
+			style.normal.textColor =  new Color(0.66f, 0f, 0f, 1f);
+			style.fontStyle = FontStyle.Bold;
+			style.fontSize = (int)(fontRef * 0.18f);
+			GUI.Button(new Rect(titleX, titleY, titleW, titleH), "KILLED BY A VEHICLE!", style);
+			
+			// crossbones
+			GUI.color = new Color(0.9f, 0.9f, 0.9f, 1f * carCollisionOpacity);
+			textureY = pumaDoneDisplayY + pumaDoneDisplayHeight * (0.5f + panelOffsetY) + vertShiftAmount;
+			textureWidth = pumaDoneDisplayHeight * 0.3f;
+			textureHeight = pumaCrossbonesRedTexture.height * (textureWidth / pumaCrossbonesRedTexture.width);
+			textureX = pumaDoneDisplayX + pumaDoneDisplayWidth/2  - textureWidth/2 - pumaDoneDisplayWidth * 0.13f;
+			GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), pumaCrossbonesRedTexture);
+			GUI.color = new Color(1f, 1f, 1f, 1f * carCollisionOpacity);
+			textureX = pumaDoneDisplayX + pumaDoneDisplayWidth/2  - textureWidth/2 + pumaDoneDisplayWidth * 0.13f;
+			GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), pumaCrossbonesRedTexture);
+			GUI.color = new Color(1f, 1f, 1f, 1f * carCollisionOpacity);
+			
+			// left and right label boxes
+			boxY = pumaDoneDisplayY + pumaDoneDisplayHeight * 0.30f;
+			boxW = pumaDoneDisplayWidth * 0.22f;
+			boxH = pumaDoneDisplayHeight * (0.62f * sourcePercent + 0.8f * destPercent);
+			boxX = pumaDoneDisplayX + pumaDoneDisplayWidth/2 - boxW/2 - pumaDoneDisplayWidth * 0.35f;
+			GUI.color = new Color(1f, 1f, 1f, 0.8f * carCollisionOpacity);
+			GUI.Box(new Rect(boxX, boxY, boxW, boxH), "");
+			GUI.color = new Color(1f, 1f, 1f, 1f * carCollisionOpacity);
+			boxX = pumaDoneDisplayX + pumaDoneDisplayWidth/2 - boxW/2 + pumaDoneDisplayWidth * 0.35f;
+			boxY = pumaDoneDisplayY + pumaDoneDisplayHeight * 0.30f;
+			boxH = pumaDoneDisplayHeight * 0.51f;
+			GUI.color = new Color(1f, 1f, 1f, 0.8f * carCollisionOpacity);
+			GUI.Box(new Rect(boxX, boxY, boxW, boxH), "");
+			GUI.color = new Color(1f, 1f, 1f, 1f * carCollisionOpacity);
 				
-		// left label
-		leftLabelX = pumaDoneDisplayX + pumaDoneDisplayWidth * 0.42f + leftShiftAmount;
-		leftLabelY1 = pumaDoneDisplayY + pumaDoneDisplayHeight * (0.59f + panelOffsetY) + vertShiftAmount;
-		leftLabelY2 = pumaDoneDisplayY + pumaDoneDisplayHeight * (0.71f + panelOffsetY) + vertShiftAmount;
-		leftLabelY3 = pumaDoneDisplayY + pumaDoneDisplayHeight * (0.83f + panelOffsetY) + vertShiftAmount;
-		leftLabelW = pumaDoneDisplayWidth * 0.1f;
-		leftLabelH = pumaDoneDisplayHeight * 0.03f;
-		style.normal.textColor = new Color(0.6f, 0.6f, 0.6f, 1f);
-		style.fontSize = (int)(fontRef * 0.17f);
-		GUI.Button(new Rect(leftLabelX, leftLabelY1, leftLabelW, leftLabelH), "Roads can be", style);
-		GUI.Button(new Rect(leftLabelX, leftLabelY2, leftLabelW, leftLabelH), "a very dangerous", style);
-		GUI.Button(new Rect(leftLabelX, leftLabelY3, leftLabelW, leftLabelH), "place for pumas", style);
+			// left label
+			style.alignment = TextAnchor.MiddleLeft;
+			leftLabelX = pumaDoneDisplayX + pumaDoneDisplayWidth * 0.39f + leftShiftAmount;
+			leftLabelY1 = pumaDoneDisplayY + pumaDoneDisplayHeight * (0.50f + panelOffsetY) + vertShiftAmount;
+			leftLabelY2 = pumaDoneDisplayY + pumaDoneDisplayHeight * (0.61f + panelOffsetY) + vertShiftAmount;
+			leftLabelY3 = pumaDoneDisplayY + pumaDoneDisplayHeight * (0.72f + panelOffsetY) + vertShiftAmount;
+			leftLabelY4 = pumaDoneDisplayY + pumaDoneDisplayHeight * (0.83f + panelOffsetY) + vertShiftAmount;
+			leftLabelY5 = pumaDoneDisplayY + pumaDoneDisplayHeight * (0.94f + panelOffsetY) + vertShiftAmount;
+			leftLabelW = pumaDoneDisplayWidth * 0.1f;
+			leftLabelH = pumaDoneDisplayHeight * 0.03f;
+			style.normal.textColor = new Color(0.6f, 0.6f, 0.6f, 1f);
+			style.fontSize = (int)(fontRef * 0.16f);
+			GUI.Button(new Rect(leftLabelX, leftLabelY1, leftLabelW, leftLabelH), "Over 60 pumas", style);
+			GUI.Button(new Rect(leftLabelX, leftLabelY2, leftLabelW, leftLabelH), "die each year", style);
+			GUI.Button(new Rect(leftLabelX, leftLabelY3, leftLabelW, leftLabelH), "in California", style);
+			GUI.Button(new Rect(leftLabelX, leftLabelY4, leftLabelW, leftLabelH), "from collisions", style);
+			GUI.Button(new Rect(leftLabelX, leftLabelY5, leftLabelW, leftLabelH), "with vehicles", style);
 
+			// right label
+			rightLabelX = pumaDoneDisplayX + pumaDoneDisplayWidth * 0.77f;
+			rightLabelY1 = pumaDoneDisplayY + pumaDoneDisplayHeight * (0.48f + panelOffsetY) + vertShiftAmount;
+			rightLabelY2 = pumaDoneDisplayY + pumaDoneDisplayHeight * (0.59f + panelOffsetY) + vertShiftAmount;
+			rightLabelY3 = pumaDoneDisplayY + pumaDoneDisplayHeight * (0.70f + panelOffsetY) + vertShiftAmount;
+			rightLabelW = pumaDoneDisplayWidth * 0.1f;
+			rightLabelH = pumaDoneDisplayHeight * 0.03f;
+			style.normal.textColor = new Color(0.6f, 0.6f, 0.6f, 1f);
+			style.fontSize = (int)(fontRef * 0.16f);
+			GUI.Button(new Rect(rightLabelX, rightLabelY1, rightLabelW, rightLabelH), "Pumas need to", style);
+			GUI.Button(new Rect(rightLabelX, rightLabelY2, rightLabelW, rightLabelH), "move cautiously", style);
+			GUI.Button(new Rect(rightLabelX, rightLabelY3, rightLabelW, rightLabelH), "to avoid cars", style);
+			style.alignment = TextAnchor.MiddleCenter;
 
-		// right label
-		rightLabelX = pumaDoneDisplayX + pumaDoneDisplayWidth * 0.8f;
-		rightLabelY1 = pumaDoneDisplayY + pumaDoneDisplayHeight * (0.58f + panelOffsetY) + vertShiftAmount;
-		rightLabelY2 = pumaDoneDisplayY + pumaDoneDisplayHeight * (0.70f + panelOffsetY) + vertShiftAmount;
-		rightLabelY3 = pumaDoneDisplayY + pumaDoneDisplayHeight * (0.82f + panelOffsetY) + vertShiftAmount;
-		rightLabelW = pumaDoneDisplayWidth * 0.1f;
-		rightLabelH = pumaDoneDisplayHeight * 0.03f;
-		style.normal.textColor = new Color(0.6f, 0.6f, 0.6f, 1f);
-		style.fontSize = (int)(fontRef * 0.17f);
-		GUI.Button(new Rect(rightLabelX, rightLabelY1, rightLabelW, rightLabelH), "60 die each year", style);
-		GUI.Button(new Rect(rightLabelX, rightLabelY2, rightLabelW, rightLabelH), "on roadways", style);
-		GUI.Button(new Rect(rightLabelX, rightLabelY3, rightLabelW, rightLabelH), "in California", style);
-
+			// survival tips button
+			boxY = pumaDoneDisplayY + pumaDoneDisplayHeight * 0.86f;
+			boxW = pumaDoneDisplayWidth * 0.22f;
+			boxH = pumaDoneDisplayHeight * 0.24f;
+			boxX = pumaDoneDisplayX + pumaDoneDisplayWidth/2 - boxW/2 + pumaDoneDisplayWidth * 0.35f;
+			GUI.color = new Color(1f, 1f, 1f, 0.8f * carCollisionOpacity);
+			GUI.Box(new Rect(boxX, boxY, boxW, boxH), "");
+			GUI.color = new Color(1f, 1f, 1f, 1f * carCollisionOpacity);
+			GUI.skin = guiManager.customGUISkin;
+			guiManager.customGUISkin.button.fontSize = (int)(pumaDoneDisplayHeight * 0.070);
+			guiManager.customGUISkin.button.fontStyle = FontStyle.Bold;
+			if (GUI.Button(new Rect(pumaDoneDisplayX + pumaDoneDisplayWidth * 0.77f,  pumaDoneDisplayY + pumaDoneDisplayHeight * 0.9f, pumaDoneDisplayWidth * 0.16f, pumaDoneDisplayHeight * 0.15f), "")) {
+				guiManager.OpenInfoPanel(3);
+			}
+			if (GUI.Button(new Rect(pumaDoneDisplayX + pumaDoneDisplayWidth * 0.77f,  pumaDoneDisplayY + pumaDoneDisplayHeight * 0.9f, pumaDoneDisplayWidth * 0.16f, pumaDoneDisplayHeight * 0.15f), "Survival Tips")) {
+				guiManager.OpenInfoPanel(3);
+			}
+		}		
 
 
 		//********************
@@ -326,98 +347,96 @@ public class PumaDoneDisplay : MonoBehaviour
 
 		GUI.color = new Color(1f, 1f, 1f, 1f * starvedOpacity);
 
-
-		// header title
-		titleX = pumaDoneDisplayX + pumaDoneDisplayWidth * 0.3f;
-		titleY = pumaDoneDisplayY + pumaDoneDisplayHeight * 0.136f;
-		titleW = pumaDoneDisplayWidth * 0.4f;
-		titleH = pumaDoneDisplayHeight * 0.03f;
-		style.fontSize = (int)(fontRef * 0.22f);
-		style.normal.textColor =  new Color(0.70f, 0f, 0f, 1f);
-		style.fontStyle = FontStyle.Bold;
-		style.fontSize = (int)(fontRef * 0.18f);
-		GUI.Button(new Rect(titleX, titleY, titleW, titleH), "STARVED TO DEATH!", style);
-
-
-
-
-		// crossbones
-		GUI.color = new Color(0.9f, 0.9f, 0.9f, 1f * starvedOpacity);
-		textureY = pumaDoneDisplayY + pumaDoneDisplayHeight * (0.5f + panelOffsetY) + vertShiftAmount;
-		textureWidth = pumaDoneDisplayHeight * 0.3f;
-		textureHeight = pumaCrossbonesRedTexture.height * (textureWidth / pumaCrossbonesRedTexture.width);
-		textureX = pumaDoneDisplayX + pumaDoneDisplayWidth/2  - textureWidth/2 - pumaDoneDisplayWidth * 0.13f;
-		GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), pumaCrossbonesRedTexture);
-		GUI.color = new Color(1f, 1f, 1f, 1f * starvedOpacity);
-		textureX = pumaDoneDisplayX + pumaDoneDisplayWidth/2  - textureWidth/2 + pumaDoneDisplayWidth * 0.13f;
-		GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), pumaCrossbonesRedTexture);
-		GUI.color = new Color(1f, 1f, 1f, 1f * starvedOpacity);
+		if (starvedOpacity > 0f) {
 		
-		
+			// header title
+			titleX = pumaDoneDisplayX + pumaDoneDisplayWidth * 0.3f;
+			titleY = pumaDoneDisplayY + pumaDoneDisplayHeight * 0.136f;
+			titleW = pumaDoneDisplayWidth * 0.4f;
+			titleH = pumaDoneDisplayHeight * 0.03f;
+			style.fontSize = (int)(fontRef * 0.22f);
+			style.normal.textColor =  new Color(0.70f, 0f, 0f, 1f);
+			style.fontStyle = FontStyle.Bold;
+			style.fontSize = (int)(fontRef * 0.18f);
+			GUI.Button(new Rect(titleX, titleY, titleW, titleH), "STARVED TO DEATH!", style);
 
-		// left and right label boxes
-		boxY = pumaDoneDisplayY + pumaDoneDisplayHeight * 0.43f;
-		boxW = pumaDoneDisplayWidth * 0.22f;
-		boxH = pumaDoneDisplayHeight * 0.51f;
-		boxX = pumaDoneDisplayX + pumaDoneDisplayWidth/2 - boxW/2 - pumaDoneDisplayWidth * 0.35f;
-		GUI.color = new Color(1f, 1f, 1f, 0.8f * starvedOpacity);
-		GUI.Box(new Rect(boxX, boxY, boxW, boxH), "");
-		GUI.color = new Color(1f, 1f, 1f, 1f * starvedOpacity);
-		boxX = pumaDoneDisplayX + pumaDoneDisplayWidth/2 - boxW/2 + pumaDoneDisplayWidth * 0.35f;
-		boxY = pumaDoneDisplayY + pumaDoneDisplayHeight * 0.30f;
-		GUI.color = new Color(1f, 1f, 1f, 0.8f * starvedOpacity);
-		GUI.Box(new Rect(boxX, boxY, boxW, boxH), "");
-		GUI.color = new Color(1f, 1f, 1f, 1f * starvedOpacity);
-
-				
-		// left label
-		leftLabelX = pumaDoneDisplayX + pumaDoneDisplayWidth * 0.42f + leftShiftAmount;
-		leftLabelY1 = pumaDoneDisplayY + pumaDoneDisplayHeight * (0.59f + panelOffsetY) + vertShiftAmount;
-		leftLabelY2 = pumaDoneDisplayY + pumaDoneDisplayHeight * (0.71f + panelOffsetY) + vertShiftAmount;
-		leftLabelY3 = pumaDoneDisplayY + pumaDoneDisplayHeight * (0.83f + panelOffsetY) + vertShiftAmount;
-		leftLabelW = pumaDoneDisplayWidth * 0.1f;
-		leftLabelH = pumaDoneDisplayHeight * 0.03f;
-		style.normal.textColor = new Color(0.6f, 0.6f, 0.6f, 1f);
-		style.fontSize = (int)(fontRef * 0.17f);
-		GUI.Button(new Rect(leftLabelX, leftLabelY1, leftLabelW, leftLabelH), "The puma", style);
-		GUI.Button(new Rect(leftLabelX, leftLabelY2, leftLabelW, leftLabelH), "is normally an", style);
-		GUI.Button(new Rect(leftLabelX, leftLabelY3, leftLabelW, leftLabelH), "expert predator", style);
-
-
-		// right label
-		rightLabelX = pumaDoneDisplayX + pumaDoneDisplayWidth * 0.8f;
-		rightLabelY1 = pumaDoneDisplayY + pumaDoneDisplayHeight * (0.45f + panelOffsetY) + vertShiftAmount;
-		rightLabelY2 = pumaDoneDisplayY + pumaDoneDisplayHeight * (0.57f + panelOffsetY) + vertShiftAmount;
-		rightLabelY3 = pumaDoneDisplayY + pumaDoneDisplayHeight * (0.69f + panelOffsetY) + vertShiftAmount;
-		rightLabelW = pumaDoneDisplayWidth * 0.1f;
-		rightLabelH = pumaDoneDisplayHeight * 0.03f;
-		style.normal.textColor = new Color(0.6f, 0.6f, 0.6f, 1f);
-		style.fontSize = (int)(fontRef * 0.17f);
-		GUI.Button(new Rect(rightLabelX, rightLabelY1, rightLabelW, rightLabelH), "Maybe you", style);
-		GUI.Button(new Rect(rightLabelX, rightLabelY2, rightLabelW, rightLabelH), "could use a", style);
-		GUI.Button(new Rect(rightLabelX, rightLabelY3, rightLabelW, rightLabelH), "few pointers", style);
-
+			// crossbones
+			GUI.color = new Color(0.9f, 0.9f, 0.9f, 1f * starvedOpacity);
+			textureY = pumaDoneDisplayY + pumaDoneDisplayHeight * (0.5f + panelOffsetY) + vertShiftAmount;
+			textureWidth = pumaDoneDisplayHeight * 0.3f;
+			textureHeight = pumaCrossbonesRedTexture.height * (textureWidth / pumaCrossbonesRedTexture.width);
+			textureX = pumaDoneDisplayX + pumaDoneDisplayWidth/2  - textureWidth/2 - pumaDoneDisplayWidth * 0.13f;
+			GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), pumaCrossbonesRedTexture);
+			GUI.color = new Color(1f, 1f, 1f, 1f * starvedOpacity);
+			textureX = pumaDoneDisplayX + pumaDoneDisplayWidth/2  - textureWidth/2 + pumaDoneDisplayWidth * 0.13f;
+			GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), pumaCrossbonesRedTexture);
+			GUI.color = new Color(1f, 1f, 1f, 1f * starvedOpacity);
+			
+			// left and right label boxes
+			boxY = pumaDoneDisplayY + pumaDoneDisplayHeight * 0.30f;
+			boxW = pumaDoneDisplayWidth * 0.22f;
+			boxH = pumaDoneDisplayHeight * (0.62f * sourcePercent + 0.8f * destPercent);
+			boxX = pumaDoneDisplayX + pumaDoneDisplayWidth/2 - boxW/2 - pumaDoneDisplayWidth * 0.35f;
+			GUI.color = new Color(1f, 1f, 1f, 0.8f * starvedOpacity);
+			GUI.Box(new Rect(boxX, boxY, boxW, boxH), "");
+			GUI.color = new Color(1f, 1f, 1f, 1f * starvedOpacity);
+			boxX = pumaDoneDisplayX + pumaDoneDisplayWidth/2 - boxW/2 + pumaDoneDisplayWidth * 0.35f;
+			boxY = pumaDoneDisplayY + pumaDoneDisplayHeight * 0.30f;
+			boxH = pumaDoneDisplayHeight * 0.51f;
+			GUI.color = new Color(1f, 1f, 1f, 0.8f * starvedOpacity);
+			GUI.Box(new Rect(boxX, boxY, boxW, boxH), "");
+			GUI.color = new Color(1f, 1f, 1f, 1f * starvedOpacity);
 					
-		// hunting tips button
+			// left label
+			style.alignment = TextAnchor.MiddleLeft;
+			leftLabelX = pumaDoneDisplayX + pumaDoneDisplayWidth * 0.38f + leftShiftAmount;
+			leftLabelY1 = pumaDoneDisplayY + pumaDoneDisplayHeight * (0.48f + panelOffsetY) + vertShiftAmount;
+			leftLabelY2 = pumaDoneDisplayY + pumaDoneDisplayHeight * (0.59f + panelOffsetY) + vertShiftAmount;
+			leftLabelY3 = pumaDoneDisplayY + pumaDoneDisplayHeight * (0.70f + panelOffsetY) + vertShiftAmount;
+			leftLabelY4 = pumaDoneDisplayY + pumaDoneDisplayHeight * (0.88f + panelOffsetY) + vertShiftAmount;
+			leftLabelY5 = pumaDoneDisplayY + pumaDoneDisplayHeight * (0.99f + panelOffsetY) + vertShiftAmount;
+			leftLabelW = pumaDoneDisplayWidth * 0.1f;
+			leftLabelH = pumaDoneDisplayHeight * 0.03f;
+			style.normal.textColor = new Color(0.6f, 0.6f, 0.6f, 1f);
+			style.fontSize = (int)(fontRef * 0.16f);
+			GUI.Button(new Rect(leftLabelX, leftLabelY1, leftLabelW, leftLabelH), "Deer = up to 80%", style);
+			GUI.Button(new Rect(leftLabelX, leftLabelY2, leftLabelW, leftLabelH), "of the puma diet", style);
+			GUI.Button(new Rect(leftLabelX, leftLabelY3, leftLabelW, leftLabelH), "in North America", style);
+			GUI.Button(new Rect(leftLabelX, leftLabelY4, leftLabelW, leftLabelH), "Pumas help limit", style);
+			GUI.Button(new Rect(leftLabelX, leftLabelY5, leftLabelW, leftLabelH), "deer populations", style);
 
-		boxY = pumaDoneDisplayY + pumaDoneDisplayHeight * 0.86f;
-		boxW = pumaDoneDisplayWidth * 0.22f;
-		boxH = pumaDoneDisplayHeight * 0.24f;
-		boxX = pumaDoneDisplayX + pumaDoneDisplayWidth/2 - boxW/2 + pumaDoneDisplayWidth * 0.35f;
-		GUI.color = new Color(1f, 1f, 1f, 0.8f * starvedOpacity);
-		GUI.Box(new Rect(boxX, boxY, boxW, boxH), "");
-		GUI.color = new Color(1f, 1f, 1f, 1f * starvedOpacity);
-
-		GUI.skin = guiManager.customGUISkin;
-		guiManager.customGUISkin.button.fontSize = (int)(pumaDoneDisplayHeight * 0.074);
-		guiManager.customGUISkin.button.fontStyle = FontStyle.Bold;
-		if (GUI.Button(new Rect(pumaDoneDisplayX + pumaDoneDisplayWidth * 0.77f,  pumaDoneDisplayY + pumaDoneDisplayHeight * 0.9f, pumaDoneDisplayWidth * 0.16f, pumaDoneDisplayHeight * 0.15f), "")) {
-			guiManager.OpenInfoPanel(3);
-		}
-		if (GUI.Button(new Rect(pumaDoneDisplayX + pumaDoneDisplayWidth * 0.77f,  pumaDoneDisplayY + pumaDoneDisplayHeight * 0.9f, pumaDoneDisplayWidth * 0.16f, pumaDoneDisplayHeight * 0.15f), "Hunting Tips")) {
-			guiManager.OpenInfoPanel(3);
-		}
-				
+			// right label
+			rightLabelX = pumaDoneDisplayX + pumaDoneDisplayWidth * 0.78f;
+			rightLabelY1 = pumaDoneDisplayY + pumaDoneDisplayHeight * (0.48f + panelOffsetY) + vertShiftAmount;
+			rightLabelY2 = pumaDoneDisplayY + pumaDoneDisplayHeight * (0.59f + panelOffsetY) + vertShiftAmount;
+			rightLabelY3 = pumaDoneDisplayY + pumaDoneDisplayHeight * (0.70f + panelOffsetY) + vertShiftAmount;
+			rightLabelW = pumaDoneDisplayWidth * 0.1f;
+			rightLabelH = pumaDoneDisplayHeight * 0.03f;
+			style.normal.textColor = new Color(0.6f, 0.6f, 0.6f, 1f);
+			style.fontSize = (int)(fontRef * 0.16f);
+			GUI.Button(new Rect(rightLabelX, rightLabelY1, rightLabelW, rightLabelH), "Pumas need", style);
+			GUI.Button(new Rect(rightLabelX, rightLabelY2, rightLabelW, rightLabelH), "to hunt smart", style);
+			GUI.Button(new Rect(rightLabelX, rightLabelY3, rightLabelW, rightLabelH), "to catch deer", style);
+			style.alignment = TextAnchor.MiddleCenter;
+					
+			// hunting tips button
+			boxY = pumaDoneDisplayY + pumaDoneDisplayHeight * 0.86f;
+			boxW = pumaDoneDisplayWidth * 0.22f;
+			boxH = pumaDoneDisplayHeight * 0.24f;
+			boxX = pumaDoneDisplayX + pumaDoneDisplayWidth/2 - boxW/2 + pumaDoneDisplayWidth * 0.35f;
+			GUI.color = new Color(1f, 1f, 1f, 0.8f * starvedOpacity);
+			GUI.Box(new Rect(boxX, boxY, boxW, boxH), "");
+			GUI.color = new Color(1f, 1f, 1f, 1f * starvedOpacity);
+			GUI.skin = guiManager.customGUISkin;
+			guiManager.customGUISkin.button.fontSize = (int)(pumaDoneDisplayHeight * 0.070);
+			guiManager.customGUISkin.button.fontStyle = FontStyle.Bold;
+			if (GUI.Button(new Rect(pumaDoneDisplayX + pumaDoneDisplayWidth * 0.77f,  pumaDoneDisplayY + pumaDoneDisplayHeight * 0.9f, pumaDoneDisplayWidth * 0.16f, pumaDoneDisplayHeight * 0.15f), "")) {
+				guiManager.OpenInfoPanel(2);
+			}
+			if (GUI.Button(new Rect(pumaDoneDisplayX + pumaDoneDisplayWidth * 0.77f,  pumaDoneDisplayY + pumaDoneDisplayHeight * 0.9f, pumaDoneDisplayWidth * 0.16f, pumaDoneDisplayHeight * 0.15f), "Hunting Tips")) {
+				guiManager.OpenInfoPanel(2);
+			}
+		}		
 
 
 		
@@ -532,7 +551,6 @@ public class PumaDoneDisplay : MonoBehaviour
 		
 		pumaDoneDisplayX += pumaDoneDisplayWidth * 0.02f;
 		pumaDoneDisplayY -= pumaDoneDisplayHeight * 1.3f;
-		
 	}
 	
 }

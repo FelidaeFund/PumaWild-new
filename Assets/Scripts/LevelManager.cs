@@ -10,7 +10,7 @@ public class LevelManager : MonoBehaviour
 	public bool goStraightToFeeding = false;
 	public float speedOverdrive = 1f;
 	public float guiFlybyOverdrive = 1f;
-	public float travelledDistanceOverdrive = 1f;
+	private float travelledDistanceOverdrive = 1f;
 	
 	private float guiFlybySpeed = 0f;
 	public bool guiFlybyOverdriveRampFlag = false;
@@ -1871,6 +1871,7 @@ public class LevelManager : MonoBehaviour
 			}
 			else if (pumaDeerDistance1 > deerGotAwayDistance && pumaDeerDistance2 > deerGotAwayDistance && pumaDeerDistance3 > deerGotAwayDistance) {
 				// DEER GOT AWAY !!	
+				scoringSystem.PumaBadHunt(selectedPuma);
 				guiManager.SetGuiState("guiStateFeeding1");
 				SetGameState("gameStateFeeding1a");
 			}
@@ -2314,6 +2315,7 @@ public class LevelManager : MonoBehaviour
 				starvationState = "InProgress";
 				pumaPhysicsInProgressTime = Time.time;
 				pumaPhysicsPreviousY = pumaY;
+				scoringSystem.PumaHasDied(selectedPuma, false);
 			}
 		}
 		
@@ -2543,7 +2545,7 @@ public class LevelManager : MonoBehaviour
 		SetGameState("gameStateDied1");
 		guiManager.SetGuiState("guiStatePumaDone1");
 		pumaAnimator.SetBool("CarCollision", true);
-		scoringSystem.PumaHasDied(selectedPuma);
+		scoringSystem.PumaHasDied(selectedPuma, true);
 	}
 
 	public bool CheckCarCollision()
@@ -2584,6 +2586,7 @@ public class LevelManager : MonoBehaviour
 			SetGameState("gameStateTree1");
 		}
 		else if (gameState == "gameStateChasing") {
+			scoringSystem.PumaBadHunt(selectedPuma);
 			SetGameState("gameStateTree1a");
 			guiManager.SetGuiState("guiStateFeeding1");
 		}

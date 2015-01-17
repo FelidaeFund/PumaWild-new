@@ -42,12 +42,7 @@ public class GameplayDisplay : MonoBehaviour
 	private Texture2D closeup4Texture;
 	private Texture2D closeup5Texture;
 	private Texture2D closeup6Texture;
-	private Texture2D closeup1SensesTexture;
-	private Texture2D closeup2SensesTexture;
-	private Texture2D closeup3SensesTexture;
-	private Texture2D closeup4SensesTexture;
-	private Texture2D closeup5SensesTexture;
-	private Texture2D closeup6SensesTexture;
+	private Texture2D closeupSensesTexture;
 
 	// external modules
 	private GuiManager guiManager;
@@ -93,12 +88,7 @@ public class GameplayDisplay : MonoBehaviour
 		closeup4Texture = guiManager.closeup4Texture;
 		closeup5Texture = guiManager.closeup5Texture;
 		closeup6Texture = guiManager.closeup6Texture;
-		closeup1SensesTexture = guiManager.closeup1SensesTexture;
-		closeup2SensesTexture = guiManager.closeup2SensesTexture;
-		closeup3SensesTexture = guiManager.closeup3SensesTexture;
-		closeup4SensesTexture = guiManager.closeup4SensesTexture;
-		closeup5SensesTexture = guiManager.closeup5SensesTexture;
-		closeup6SensesTexture = guiManager.closeup6SensesTexture;
+		closeupSensesTexture = guiManager.closeupSensesTexture;
 	}
 
 	//===================================
@@ -196,32 +186,25 @@ public class GameplayDisplay : MonoBehaviour
 		// puma head with flashing nose and ear
 		
 		Texture2D closeupTexture = null;
-		Texture2D closeupSensesTexture = null;
 		
 		switch (guiManager.selectedPuma) {
 		case 0:
 			closeupTexture = closeup1Texture;
-			closeupSensesTexture = closeup1SensesTexture;
 			break;
 		case 1:
 			closeupTexture = closeup2Texture;
-			closeupSensesTexture = closeup2SensesTexture;
 			break;
 		case 2:
 			closeupTexture = closeup3Texture;
-			closeupSensesTexture = closeup3SensesTexture;
 			break;
 		case 3:
 			closeupTexture = closeup4Texture;
-			closeupSensesTexture = closeup4SensesTexture;
 			break;
 		case 4:
 			closeupTexture = closeup5Texture;
-			closeupSensesTexture = closeup5SensesTexture;
 			break;
 		case 5:
 			closeupTexture = closeup6Texture;
-			closeupSensesTexture = closeup6SensesTexture;
 			break;
 		}
 				
@@ -247,8 +230,9 @@ public class GameplayDisplay : MonoBehaviour
 		}	
 		flashingOpacity = 0.3f + flashingOpacity * 0.5f;
 		flashingOpacity = flashingOpacity * flashingOpacity;
-		GUI.color = new Color(1f, 1f, 1f, 0.6f * flashingOpacity * positionIndicatorBackgroundOpacity * (1f - scaleFactor));
-		GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), closeupSensesTexture);
+		//flashingOpacity = 0f;
+		GUI.color = new Color(1f, 1f, 1f, 0.5f * flashingOpacity * positionIndicatorBackgroundOpacity * (1f - scaleFactor));
+		GUI.DrawTexture(new Rect(indicatorMinX, indicatorMinY, indicatorMaxX - indicatorMinX, indicatorMaxY - indicatorMinY), closeupSensesTexture);
 		GUI.color = new Color(1f, 1f, 1f, 1f * positionIndicatorBackgroundOpacity);
 
 		// indicator borders

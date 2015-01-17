@@ -27,6 +27,7 @@ public class FeedingDisplay : MonoBehaviour
 	private Texture2D greenCheckTexture;	
 	private Texture2D greenOutlineRectTexture;	
 	private Texture2D redXTexture;	
+	private Texture2D statsScreenTexture;	
 
 	// external modules
 	private GuiManager guiManager;
@@ -61,6 +62,7 @@ public class FeedingDisplay : MonoBehaviour
 		greenCheckTexture = guiManager.greenCheckTexture;
 		greenOutlineRectTexture = guiManager.greenOutlineRectTexture;
 		redXTexture = guiManager.redXTexture;
+		statsScreenTexture = guiManager.statsScreenTexture;
 	}
 
 	//===================================
@@ -131,7 +133,7 @@ public class FeedingDisplay : MonoBehaviour
 			bottomColor = new Color(0.8f, 0f, 0f, 1f);
 			topString = "WARNING:";
 			midString = failedHuntFlag == true ? "OH NO: Your prey got away!" : "WARNING: Your hunt was very inefficient";
-			bottomString1 = failedHuntFlag == true ? "TOTAL  LOSS -" : "NET  LOSS -";
+			bottomString1 = failedHuntFlag == true ? "TOTAL  LOSS !" : "NET  LOSS -";
 			bottomString2 = calorieDisplay.ToString("n0"); // + " calories";
 			title1Offset = feedingDisplayWidth * -0.163f;
 			title2Offset = feedingDisplayWidth * 0.075f;
@@ -473,7 +475,7 @@ public class FeedingDisplay : MonoBehaviour
 		GUI.Button(new Rect(levelDisplayX, levelDisplayY + levelDisplayH * 0.03f, levelDisplayW, levelDisplayH * 0.3f), "3 good hunts in a row", style);
 		style.normal.textColor = new Color(0.85f, 0.75f, 0f, 0.8f);
 		style.fontSize = (int)(fontRef * 0.12f);
-		GUI.Button(new Rect(levelDisplayX, levelDisplayY + levelDisplayH * 0.185f, levelDisplayW, levelDisplayH * 0.3f), "opens the next level", style);
+		GUI.Button(new Rect(levelDisplayX, levelDisplayY + levelDisplayH * 0.185f, levelDisplayW, levelDisplayH * 0.3f), (levelManager.currentLevel == 4 ? "wins the game!" : "opens the next level"), style);
 
 		// hunt stat backgrounds
 		float gapSize = innerW * 0.03f;
@@ -552,13 +554,75 @@ public class FeedingDisplay : MonoBehaviour
 			scoringSystem.SetHuntSuccessCount(3);
 		}
 
-		GUI.color = new Color(1f, 1f, 1f, 1f * okButtonOpacity);
+
 
 		
+		//********************
+		// LINK TO STATS PAGE
+		//********************
+
+		GUI.color = new Color(1f, 1f, 1f, 1f * levelCompleteOpacity);
+
+		float statsLinkX = feedingDisplayX;
+		float statsLinkY = feedingDisplayY + feedingDisplayHeight * 1.282f;
+		float statsLinkW = feedingDisplayWidth * 0.24f; 
+		float statsLinkH = feedingDisplayHeight * 0.65f;
+		
+		borderPercent = 0.05f;
+		inset = innerW * 0.04f;		
+		innerX = statsLinkX + statsLinkW * borderPercent;
+		innerY = statsLinkY + statsLinkW * borderPercent;
+		innerW = statsLinkW - statsLinkW * borderPercent * 2f; 
+		innerH = statsLinkH - statsLinkW * borderPercent * 2f;
+		
+		// background boxes
+		GUI.color = new Color(1f, 1f, 1f, 0.8f * levelCompleteOpacity);
+		GUI.Box(new Rect(statsLinkX, statsLinkY, statsLinkW, statsLinkH), "");
+		GUI.color = new Color(1f, 1f, 1f, 0.4f * levelCompleteOpacity);
+		GUI.Box(new Rect(statsLinkX, statsLinkY, statsLinkW, statsLinkH), "");
+		GUI.color = new Color(1f, 1f, 1f, 1f * levelCompleteOpacity);
+
+		// image dimensions
+		float imageWidth = innerW - gapSize * 2f;
+		float imageHeight = statsScreenTexture.height * (imageWidth / statsScreenTexture.width);
+
+		// image background
+		GUI.color = new Color(1f, 1f, 1f, 0.8f * levelCompleteOpacity);
+		GUI.Box(new Rect(innerX, innerY, innerW, imageHeight + inset*2), "");
+		GUI.color = new Color(1f, 1f, 1f, 0.4f * levelCompleteOpacity);
+		GUI.Box(new Rect(innerX, innerY, innerW, imageHeight + inset*2), "");
+		GUI.color = new Color(1f, 1f, 1f, 1f * levelCompleteOpacity);
+		
+		// image
+		GUI.DrawTexture(new Rect(statsLinkX + statsLinkW/2 - imageWidth/2, inset + innerY, imageWidth, imageHeight), statsScreenTexture);
+		
+		// invisible button over image
+		GUI.color = new Color(1f, 1f, 1f, 0f);
+		if (GUI.Button(new Rect(statsLinkX + statsLinkW/2 - imageWidth/2, inset + innerY, imageWidth, imageHeight), "")) {
+			// go to stats screen
+			guiManager.SetGuiState("guiStateLeavingFeeding");
+			levelManager.SetGameState("gameStateLeavingGameplay");
+		}
+		GUI.color = new Color(1f, 1f, 1f, 1f * levelCompleteOpacity);
+
+		// main button
+		GUI.skin = guiManager.customGUISkin;
+		guiManager.customGUISkin.button.fontSize = (int)(feedingDisplayHeight * 0.08);
+		guiManager.customGUISkin.button.fontStyle = FontStyle.Normal;
+		if (GUI.Button(new Rect(innerX,  innerY + innerH*0.7f, innerW, innerH * 0.3f), "View Stats")) {
+			// go to stats screen
+			guiManager.SetGuiState("guiStateLeavingFeeding");
+			levelManager.SetGameState("gameStateLeavingGameplay");
+		}	
+
+		
+
 		//********************
 		// 'OK' BUTTON
 		//********************
 					
+		GUI.color = new Color(1f, 1f, 1f, 1f * okButtonOpacity);
+
 		feedingDisplayX -= feedingDisplayWidth * 0.02f;
 		feedingDisplayY += feedingDisplayHeight * 1.3f;
 

@@ -20,7 +20,6 @@ public class ScoringSystem : MonoBehaviour
 	private int huntSuccessCount = 0;
 	private int[] huntStatsSelectedPuma;
 	private float[] huntStatsPumaHealth;
-	private float[] huntStatsHealthChange;
 	
 	// meat consumption
 	private float meatLimitForLevel;
@@ -72,14 +71,100 @@ public class ScoringSystem : MonoBehaviour
 		InitScoringSystem();
 	}
 
-    private void InitScoringSystem()
+    public void InitScoringSystem()
     {
 		// hunt stats
 		huntCount = 0;
 		huntSuccessCount = 0;
 		huntStatsSelectedPuma = new int[500];
 		huntStatsPumaHealth = new float[500];
-		huntStatsHealthChange = new float[500];
+		
+/*		
+		huntStatsSelectedPuma[huntCount] = 2;
+		huntStatsPumaHealth[huntCount] = 0.6f;
+		huntCount++;
+		huntStatsSelectedPuma[huntCount] = 2;
+		huntStatsPumaHealth[huntCount] = 0.7f;
+		huntCount++;
+		huntStatsSelectedPuma[huntCount] = 2;
+		huntStatsPumaHealth[huntCount] = 0.75f;
+		huntCount++;
+		huntStatsSelectedPuma[huntCount] = 2;
+		huntStatsPumaHealth[huntCount] = 0.8f;
+		huntCount++;
+		huntStatsSelectedPuma[huntCount] = 2;
+		huntStatsPumaHealth[huntCount] = 0.4f;
+		huntCount++;
+		huntStatsSelectedPuma[huntCount] = 2;
+		huntStatsPumaHealth[huntCount] = 0.7f;
+		huntCount++;
+		
+		huntStatsSelectedPuma[huntCount] = 6;
+		huntStatsPumaHealth[huntCount] = 0;
+		huntCount++;
+		
+		
+		huntStatsSelectedPuma[huntCount] = 4;
+		huntStatsPumaHealth[huntCount] = 0.6f;
+		huntCount++;
+		huntStatsSelectedPuma[huntCount] = 4;
+		huntStatsPumaHealth[huntCount] = 0.4f;
+		huntCount++;
+		huntStatsSelectedPuma[huntCount] = 4;
+		huntStatsPumaHealth[huntCount] = 0.3f;
+		huntCount++;
+		huntStatsSelectedPuma[huntCount] = 4;
+		huntStatsPumaHealth[huntCount] = 0.3f;
+		huntCount++;
+
+		huntStatsSelectedPuma[huntCount] = 6;
+		huntStatsPumaHealth[huntCount] = 0f;
+		huntCount++;
+		
+		
+		huntStatsSelectedPuma[huntCount] = 1;
+		huntStatsPumaHealth[huntCount] = 0.3f;
+		huntCount++;
+		huntStatsSelectedPuma[huntCount] = 1;
+		huntStatsPumaHealth[huntCount] = 0.4f;
+		huntCount++;
+		huntStatsSelectedPuma[huntCount] = 1;
+		huntStatsPumaHealth[huntCount] = 0.5f;
+		huntCount++;
+		huntStatsSelectedPuma[huntCount] = 1;
+		huntStatsPumaHealth[huntCount] = 0.8f;
+		huntCount++;
+		huntStatsSelectedPuma[huntCount] = 1;
+		huntStatsPumaHealth[huntCount] = 0.9f;
+		huntCount++;
+		huntStatsSelectedPuma[huntCount] = 1;
+		huntStatsPumaHealth[huntCount] = 1f;
+		huntCount++;
+		
+		
+		huntStatsSelectedPuma[huntCount] = 5;
+		huntStatsPumaHealth[huntCount] = 0.3f;
+		huntCount++;
+		huntStatsSelectedPuma[huntCount] = 5;
+		huntStatsPumaHealth[huntCount] = 0.4f;
+		huntCount++;
+		huntStatsSelectedPuma[huntCount] = 5;
+		huntStatsPumaHealth[huntCount] = 0.5f;
+		huntCount++;
+		huntStatsSelectedPuma[huntCount] = 5;
+		huntStatsPumaHealth[huntCount] = 0.8f;
+		huntCount++;
+		huntStatsSelectedPuma[huntCount] = 5;
+		huntStatsPumaHealth[huntCount] = 0.9f;
+		huntCount++;
+		huntStatsSelectedPuma[huntCount] = 5;
+		huntStatsPumaHealth[huntCount] = 0.7f;
+		huntCount++;
+*/		
+		
+		
+		
+		
 
 		// meat consumption
 		meatLimitForLevel = 1000f;
@@ -87,7 +172,8 @@ public class ScoringSystem : MonoBehaviour
 
 		// health points
 		float defaultMaxHealth = 175000f;
-		healthPoints = new float[] {defaultMaxHealth * 0.5f, defaultMaxHealth * 0.5f, defaultMaxHealth * 0.5f, defaultMaxHealth * 0.5f, defaultMaxHealth * 0.5f, defaultMaxHealth * 0.5f};
+		//healthPoints = new float[] {defaultMaxHealth * 0.5f, defaultMaxHealth * 0.5f, defaultMaxHealth * 0.5f, defaultMaxHealth * 0.5f, defaultMaxHealth * 0.5f, defaultMaxHealth * 0.5f};
+		healthPoints = new float[] {defaultMaxHealth * 0f, defaultMaxHealth * 0f, defaultMaxHealth * 0f, defaultMaxHealth * 0f, defaultMaxHealth * 0f, defaultMaxHealth * 0.02f};
 		maxHealthPoints = new float[] {defaultMaxHealth, defaultMaxHealth, defaultMaxHealth, defaultMaxHealth, defaultMaxHealth, defaultMaxHealth};
 		carKilledFlags = new bool[] {false, false, false, false, false, false};
 
@@ -238,8 +324,7 @@ public class ScoringSystem : MonoBehaviour
 			
 		// remember state in 'hunting stats'	
 		huntStatsSelectedPuma[huntCount] = selectedPuma;
-		huntStatsPumaHealth[huntCount] = healthPoints[selectedPuma];
-		huntStatsHealthChange[huntCount] = caloriesEaten - lastKillExpenses[selectedPuma];
+		huntStatsPumaHealth[huntCount] = GetPumaHealth(selectedPuma);
 		huntCount++;
 		
 		if ((caloriesEaten - lastKillExpenses[selectedPuma]) > 0f)
@@ -247,7 +332,24 @@ public class ScoringSystem : MonoBehaviour
 		else
 			huntSuccessCount = 0;
 	}
+
 	
+	//------------------------------------------
+	// PumaBadHunt()
+	// 
+	// Called when puma exits hunt after prey
+	// gets too far or after hitting tree
+	//------------------------------------------
+
+	public void PumaBadHunt(int selectedPuma)
+	{
+		// remember failure in 'hunting stats'	
+		huntStatsSelectedPuma[huntCount] = selectedPuma;
+		huntStatsPumaHealth[huntCount] = GetPumaHealth(selectedPuma);
+		huntCount++;
+	}
+
+
 	//------------------------------------------
 	// PumaHasDied()
 	// 
@@ -255,14 +357,33 @@ public class ScoringSystem : MonoBehaviour
 	// collision with vehicle
 	//------------------------------------------
 
-	public void PumaHasDied(int selectedPuma)
+	public void PumaHasDied(int selectedPuma, bool carKilledFlag)
 	{
 		lastKillMeatEaten = 0f;
 		lastKillCaloriesEaten = 0f;
 		lastKillDeerType = "None";
 		lastKillExpenses[selectedPuma] = 0f;
 		healthPoints[selectedPuma] = 0f;
-		carKilledFlags[selectedPuma] = true; // we assume this function is only called by car collision code
+		carKilledFlags[selectedPuma] = carKilledFlag;
+		
+		// remember death in 'hunting stats'	
+		huntStatsSelectedPuma[huntCount] = selectedPuma;
+		huntStatsPumaHealth[huntCount] = 0f;
+		huntCount++;
+	}
+
+	//------------------------------------------
+	// LevelHasChanged()
+	// 
+	// Called when level changes
+	//------------------------------------------
+
+	public void LevelHasChanged()
+	{
+		// remember level change in 'hunting stats'	
+		huntStatsSelectedPuma[huntCount] = 6;
+		huntStatsPumaHealth[huntCount] = 0f;
+		huntCount++;
 	}
 
 	//------------------------------------------
@@ -297,14 +418,24 @@ public class ScoringSystem : MonoBehaviour
 	}
 		
 	
-	public bool CheckLevelComplete()
+	public int GetHuntCount()
 	{
-		if (huntCount >= 2 && huntStatsHealthChange[huntCount-1] > 0f && huntStatsHealthChange[huntCount-2] > 0f)
-			return true;
-		else
-			return false;
+		return huntCount;
 	}
-		
+	
+	
+	public int GetHuntStatsSelectedPuma(int huntNum)
+	{
+		return huntStatsSelectedPuma[huntNum];
+	}
+	
+	
+	public float GetHuntStatsPumaHealth(int huntNum)
+	{
+		return huntStatsPumaHealth[huntNum];
+	}
+	
+	
 	public int GetHuntSuccessCount()
 	{
 		return huntSuccessCount;
@@ -334,7 +465,12 @@ public class ScoringSystem : MonoBehaviour
 			effectiveHealthPoints += lastKillExpenses[guiManager.selectedPuma] * scoreReductionFactor;
 		}
 
-		return (effectiveHealthPoints / maxHealthPoints[pumaNum]);
+		float health = effectiveHealthPoints / maxHealthPoints[pumaNum];
+		
+		if (health > 0.995f)
+			health = 1f;
+		
+		return (health);
 	}
 
 	public float GetPopulationHealth()
