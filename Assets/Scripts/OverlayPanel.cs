@@ -2155,12 +2155,12 @@ public class OverlayPanel : MonoBehaviour
 		vertBarXOffset -= verticalBarWidth * 0.3f;
 
 
-
 		int huntCount = scoringSystem.GetHuntCount();
+		int currentHunt = huntCount > 44 ? huntCount - 44 : 0;
 		int huntsThisLevel = 0;
 		
 		
-		for (int i = 0; i < huntCount; i++) {
+		for (int i = currentHunt; i < huntCount; i++) {
 		
 			int huntStatsSelectedPuma = scoringSystem.GetHuntStatsSelectedPuma(i);
 			huntsThisLevel += 1;
@@ -3258,18 +3258,18 @@ public class OverlayPanel : MonoBehaviour
 			// normal case, draw bars
 					
 			// stealth and running icons
-			Texture2D iconTexture = pumaStealthTexture;
+			Texture2D iconTexture = pumaRunTexture;
 			float iconHeight = overlayRect.height * 0.033f;
 			float iconWidth = iconTexture.width * (iconHeight / iconTexture.height);
 			float iconX = refX + refWidth * 0.4f + displayBarsRightShift;
-			float iconY = yOffset + refY + refHeight - overlayRect.height * 0.0075f;
+			float iconY = yOffset + refY + refHeight - overlayRect.height * 0.005f;
 			GUI.color = new Color(1f, 1f, 1f, 0.8f * displayBarsOpacity);
 			GUI.DrawTexture(new Rect(iconX, iconY, iconWidth, iconHeight), iconTexture);
-			iconTexture = pumaRunTexture;
+			iconTexture = pumaStealthTexture;
 			iconHeight = overlayRect.height * 0.031f;
 			iconWidth = iconTexture.width * (iconHeight / iconTexture.height);
 			iconX = refX + refWidth * 0.4f + displayBarsRightShift;
-			iconY = yOffset + refY + refHeight + overlayRect.height * 0.035f;
+			iconY = yOffset + refY + refHeight + overlayRect.height * 0.032f;
 			GUI.DrawTexture(new Rect(iconX, iconY, iconWidth, iconHeight), iconTexture);
 			GUI.color = new Color(1f, 1f, 1f, 1f * displayBarsOpacity);
 
@@ -3306,13 +3306,14 @@ public class OverlayPanel : MonoBehaviour
 			float lowVal = 0.32f * 0.9f;
 			Color grayBarColor = new Color(0.50f * 0.95f, 0.45f * 0.95f, 0.02f * 0.95f, 1f);
 			
-			float stealth = guiManager.GetPumaStealth(pumaNum);
-			Color stealthColor = (stealth > 0.66f) ? new Color(lowVal, highVal, lowVal, 1f) : ((stealth > 0.33f) ? new Color(highVal, highVal, lowVal, 1f) : new Color(highVal, lowVal, lowVal, 1f));
-			guiUtils.DrawRect(new Rect(refX + refWidth * 0.54f + displayBarsRightShift,  yOffset + refY + refHeight + overlayRect.height * 0.018f - overlayRect.height * 0.002f - barHeightSpread, refWidth * 0.34f * stealth, overlayRect.height * 0.0048f), stealthColor);	
-
 			float speed = guiManager.GetPumaSpeed(pumaNum);
 			Color speedColor = (speed > 0.66f) ? new Color(lowVal, highVal, lowVal,  1f) : ((speed > 0.33f) ? new Color(highVal, highVal, lowVal, 1f) : new Color(highVal, lowVal, lowVal, 1f));
-			guiUtils.DrawRect(new Rect(refX + refWidth * 0.54f + displayBarsRightShift,  yOffset + refY + refHeight + overlayRect.height * 0.042f - overlayRect.height * 0.002f + barHeightSpread, refWidth * 0.34f * speed, overlayRect.height * 0.0048f), speedColor);	
+			guiUtils.DrawRect(new Rect(refX + refWidth * 0.54f + displayBarsRightShift,  yOffset + refY + refHeight + overlayRect.height * 0.018f - overlayRect.height * 0.002f - barHeightSpread, refWidth * 0.34f * speed, overlayRect.height * 0.0048f), speedColor);	
+
+			float stealth = guiManager.GetPumaStealth(pumaNum);
+			Color stealthColor = (stealth > 0.66f) ? new Color(lowVal, highVal, lowVal, 1f) : ((stealth > 0.33f) ? new Color(highVal, highVal, lowVal, 1f) : new Color(highVal, lowVal, lowVal, 1f));
+			guiUtils.DrawRect(new Rect(refX + refWidth * 0.54f + displayBarsRightShift,  yOffset + refY + refHeight + overlayRect.height * 0.042f - overlayRect.height * 0.002f + barHeightSpread, refWidth * 0.34f * stealth, overlayRect.height * 0.0048f), stealthColor);	
+
 /*
 			float endurance = guiManager.GetPumaEndurance(pumaNum);
 			Color enduranceColor = (endurance > 0.66f) ? new Color(0f, 1f, 0f,  0.8f) : ((endurance > 0.33f) ? new Color(1f, 1f, 0f, 0.85f) : new Color(1f, 0f, 0f, 1f));

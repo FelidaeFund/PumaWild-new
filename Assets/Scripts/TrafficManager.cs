@@ -694,6 +694,7 @@ public class TrafficManager : MonoBehaviour {
 		Vector3 closestNodePos = referencePosition + new Vector3(2000f, 0, 0);	
 		float closestNodeDistance = Vector3.Distance(referencePosition, closestNodePos);
 		Vector3 terrainPos = levelManager.GetTerrainPosition(referencePosition);
+		int closestRoad = 0;
 	
 		for (int i = 0; i < road1Nodes.Length; i++) {
 			Vector3 currentPos = road1Nodes[i].transform.position + terrainPos + new Vector3(1000f, 0, 0);
@@ -701,6 +702,7 @@ public class TrafficManager : MonoBehaviour {
 			if (currentDistance < closestNodeDistance) {
 				closestNodePos = currentPos;
 				closestNodeDistance = currentDistance;
+				closestRoad = 1;
 			}
 		}
 	
@@ -710,6 +712,7 @@ public class TrafficManager : MonoBehaviour {
 			if (currentDistance < closestNodeDistance) {
 				closestNodePos = currentPos;
 				closestNodeDistance = currentDistance;
+				closestRoad = 2;
 			}
 		}
 
@@ -719,11 +722,59 @@ public class TrafficManager : MonoBehaviour {
 			if (currentDistance < closestNodeDistance) {
 				closestNodePos = currentPos;
 				closestNodeDistance = currentDistance;
+				closestRoad = 3;
 			}
 		}
 
 		return closestNodePos;
 	}
+
+	//===================================
+	//===================================
+	//		FIND CLOSEST ROAD
+	//===================================
+	//===================================
+
+	public int FindClosestRoad(Vector3 referencePosition)
+	{
+		Vector3 closestNodePos = referencePosition + new Vector3(2000f, 0, 0);	
+		float closestNodeDistance = Vector3.Distance(referencePosition, closestNodePos);
+		Vector3 terrainPos = levelManager.GetTerrainPosition(referencePosition);
+		int closestRoad = 0;
+	
+		for (int i = 0; i < road1Nodes.Length; i++) {
+			Vector3 currentPos = road1Nodes[i].transform.position + terrainPos + new Vector3(1000f, 0, 0);
+			float currentDistance = Vector3.Distance(referencePosition, currentPos);
+			if (currentDistance < closestNodeDistance) {
+				closestNodePos = currentPos;
+				closestNodeDistance = currentDistance;
+				closestRoad = 1;
+			}
+		}
+	
+		for (int i = 0; i < road2Nodes.Length; i++) {
+			Vector3 currentPos = road2Nodes[i].transform.position + terrainPos + new Vector3(1000f, 0, 0);
+			float currentDistance = Vector3.Distance(referencePosition, currentPos);
+			if (currentDistance < closestNodeDistance) {
+				closestNodePos = currentPos;
+				closestNodeDistance = currentDistance;
+				closestRoad = 2;
+			}
+		}
+
+		for (int i = 0; i < road3Nodes.Length; i++) {
+			Vector3 currentPos = road3Nodes[i].transform.position + terrainPos + new Vector3(1000f, 0, 0);
+			float currentDistance = Vector3.Distance(referencePosition, currentPos);
+			if (currentDistance < closestNodeDistance) {
+				closestNodePos = currentPos;
+				closestNodeDistance = currentDistance;
+				closestRoad = 3;
+			}
+		}
+
+		return closestRoad;
+	}
+
 
 	//===================================
 	//===================================

@@ -66,6 +66,9 @@ public class GuiManager : MonoBehaviour
 	public Texture2D buckHeadTexture; 
 	public Texture2D doeHeadTexture; 
 	public Texture2D fawnHeadTexture; 
+	public Texture2D buckStandTexture; 
+	public Texture2D doeStandTexture; 
+	public Texture2D fawnStandTexture; 
 	public Texture2D hunterTexture; 
 	public Texture2D vehicleTexture; 
 	public Texture2D highwayTexture; 
@@ -80,6 +83,9 @@ public class GuiManager : MonoBehaviour
 	public Texture2D radioSelectTexture; 
 	public Texture2D sliderBarTexture; 
 	public Texture2D sliderThumbTexture; 
+	public Texture2D blackArrowTexture; 
+	public Texture2D blackArrowShortTexture; 
+	public Texture2D greenArrowTexture; 
 	public Texture2D greenCheckTexture; 
 	public Texture2D greenOutlineRectTexture; 
 	public Texture2D greenOutlineRectVertTexture; 
@@ -89,6 +95,9 @@ public class GuiManager : MonoBehaviour
 	public Texture2D pumaCrossbonesDarkRedTexture; 
 	public Texture2D pumaStealthTexture; 
 	public Texture2D pumaRunTexture; 
+	public Texture2D pumaAttackTexture; 
+	public Texture2D pumaJumpTexture; 
+	public Texture2D pumaPreyTexture; 
 	public Texture2D greenHeartTexture; 
 	public Texture2D headshot1Texture; 
 	public Texture2D headshot2Texture; 
@@ -123,7 +132,15 @@ public class GuiManager : MonoBehaviour
 	public Texture2D arrowUpOnTexture; 
 	public Texture2D arrowDownOnTexture; 
 	public Texture2D arrowTurnLeftTexture; 
-	public Texture2D arrowTurnRightTexture; 
+	public Texture2D arrowTurnRightTexture;
+	public Texture2D controlRightIconsTexture;
+	public Texture2D controlRightIconsLowerTexture;
+	public Texture2D controlLeftJumpTexture;
+	public Texture2D controlLeftExitTexture;
+	public Texture2D controlLeftDiagLeftTexture;
+	public Texture2D controlLeftDiagRightTexture;
+	public Texture2D infoArrowDownTexture;
+	public Texture2D infoArrowUpTexture;
 	public Texture2D indicatorBuck; 
 	public Texture2D indicatorDoe; 
 	public Texture2D indicatorFawn; 
@@ -142,7 +159,13 @@ public class GuiManager : MonoBehaviour
 	public Texture2D levelImage4Texture; 
 	public Texture2D levelImage5Texture; 
 	public Texture2D levelImage6Texture; 
+	public Texture2D levelImage6bTexture; 
 	public Texture2D statsScreenTexture; 
+	public Texture2D predationArrowsTexture; 
+	public Texture2D predationCirclesTexture; 
+	public Texture2D huntLongTexture; 
+	public Texture2D huntShortTexture; 
+	
 
 	// EXTERNAL MODULES
 	private GuiComponents guiComponents;		// TEMP: may not need this when this file has been fully pruned
@@ -175,7 +198,7 @@ public class GuiManager : MonoBehaviour
 		gameplayDisplay = GetComponent<GameplayDisplay>();
 		
 		// additional initialization
-		SetGuiState("guiStateStartApp1");
+		SetGuiState("guiStateEnterApp1");
 		infoPanelVisible = true;
 		infoPanelTransStart = Time.time - 100000;
 		customGUISkin.button.normal.textColor = new Color(0.90f, 0.65f, 0f, 1f);
@@ -203,7 +226,6 @@ public class GuiManager : MonoBehaviour
 
 		// debug option (enabled at top of file)
 		if (skipStraightToLevel == true) {
-			//SetGuiState("guiStateStartApp1");
 			selectedPuma = 0;
 			levelManager.SetSelectedPuma(selectedPuma);			
 			infoPanelVisible = false;
@@ -232,6 +254,21 @@ public class GuiManager : MonoBehaviour
 		//
 		// game launch
 		//---------------------
+
+		case "guiStateEnterApp1":
+			// start with solid black front rect
+			guiStateDuration = 0.75f;
+			if (Time.time > guiStateStartTime + guiStateDuration)
+				SetGuiState("guiStateEnterApp2");
+			break;
+
+		case "guiStateEnterApp2":
+			// fade-out of front rect
+			guiStateDuration = 2.2f;
+			FadeOutOpacityLogarithmic();		
+			if (Time.time > guiStateStartTime + guiStateDuration)
+				SetGuiState("guiStateStartApp1");
+			break;
 
 		case "guiStateStartApp1":
 			// ongoing display of new level panel
@@ -312,7 +349,7 @@ public class GuiManager : MonoBehaviour
 			
 		case "guiStateEnteringGameplay2a":
 			// fade-in of position indicators
-			guiStateDuration = 1.4f;
+			guiStateDuration = 1.4f * 0.7f;
 			FadeInOpacityLogarithmic();
 			CheckForKeyboardEscapeFromGameplay();
 			if (Time.time > guiStateStartTime + guiStateDuration)
@@ -321,7 +358,7 @@ public class GuiManager : MonoBehaviour
 			
 		case "guiStateEnteringGameplay3":
 			// zoom the indicators to screen edges
-			guiStateDuration = 1.75f;
+			guiStateDuration = 1.75f * 0.8f;
 			FadeInOpacityLogarithmic();
 			CheckForKeyboardEscapeFromGameplay();
 			if (Time.time > guiStateStartTime + guiStateDuration)
@@ -330,7 +367,7 @@ public class GuiManager : MonoBehaviour
 			
 		case "guiStateEnteringGameplay4":
 			// fade-in of movement controls
-			guiStateDuration = 1.5f;
+			guiStateDuration = 1.5f * 0.8f;
 			FadeInOpacityLogarithmic();
 			if (Time.time > guiStateStartTime + guiStateDuration)
 				SetGuiState("guiStateEnteringGameplay5");
@@ -338,7 +375,7 @@ public class GuiManager : MonoBehaviour
 			
 		case "guiStateEnteringGameplay5":
 			// fade-in of status displays
-			guiStateDuration = 1.2f;
+			guiStateDuration = 1.2f * 0.8f;
 			FadeInOpacityLinear();
 			CheckForKeyboardEscapeFromGameplay();
 			if (Time.time > guiStateStartTime + guiStateDuration)
@@ -375,7 +412,7 @@ public class GuiManager : MonoBehaviour
 			FadeOutOpacityLinear();
 			CheckForKeyboardSelectionOfPuma();
 			if (Time.time > guiStateStartTime + guiStateDuration) {
-				overlayPanel.SetCurrentScreen(2);
+				overlayPanel.SetCurrentScreen(scoringSystem.GetPumaHealth(selectedPuma) == 1f ? 0 : 2);
 				SetGuiState("guiStateEnteringOverlay");
 			}
 			break;
@@ -477,7 +514,7 @@ public class GuiManager : MonoBehaviour
 
 		case "guiStateFeeding8":
 			//  fade-in of position indicator background
-			guiStateDuration = 1.7f;
+			guiStateDuration = 1.7f * 0.7f;
 			FadeInOpacityLogarithmic();
 			CheckForKeyboardEscapeFromGameplay();
 			if (Time.time > guiStateStartTime + guiStateDuration)
@@ -486,7 +523,7 @@ public class GuiManager : MonoBehaviour
 			
 		case "guiStateFeeding8a":
 			// fade-in of position indicators
-			guiStateDuration = 1.2f;
+			guiStateDuration = 1f * 0.7f;
 			FadeInOpacityLogarithmic();
 			CheckForKeyboardEscapeFromGameplay();
 			if (Time.time > guiStateStartTime + guiStateDuration)
@@ -495,7 +532,7 @@ public class GuiManager : MonoBehaviour
 			
 		case "guiStateFeeding9":
 			// zoom the indicators to screen edges
-			guiStateDuration = 1.5f;
+			guiStateDuration = 1.5f * 0.8f;
 			FadeInOpacityLogarithmic();
 			CheckForKeyboardEscapeFromGameplay();
 			if (Time.time > guiStateStartTime + guiStateDuration)
@@ -504,7 +541,7 @@ public class GuiManager : MonoBehaviour
 			
 		case "guiStateFeeding10":
 			// fade-in of movement controls
-			guiStateDuration = 1.1f;
+			guiStateDuration = 1.1f * 0.8f;
 			FadeInOpacityLogarithmic();
 			CheckForKeyboardEscapeFromGameplay();
 			if (Time.time > guiStateStartTime + guiStateDuration)
@@ -513,7 +550,7 @@ public class GuiManager : MonoBehaviour
 
 		case "guiStateFeeding11":
 			// fade-in of status indicators
-			guiStateDuration = 0.9f;
+			guiStateDuration = 0.9f * 0.8f;
 			FadeInOpacityLinear();
 			CheckForKeyboardEscapeFromGameplay();
 			if (Time.time > guiStateStartTime + guiStateDuration)
@@ -572,9 +609,7 @@ public class GuiManager : MonoBehaviour
 			if (Time.time > guiStateStartTime + guiStateDuration) {
 				int nextLevel = levelManager.GetCurrentLevel() + 1;
 				if (nextLevel > 4 || scoringSystem.GetPopulationHealth() == 0f) {
-					nextLevel = 0;
-					scoringSystem.InitScoringSystem();
-					levelManager.InitLevel(nextLevel);
+					levelManager.InitLevel(0);
 					SetGuiState("guiStateFinalScreen1");
 				}
 				else {
@@ -690,6 +725,7 @@ public class GuiManager : MonoBehaviour
 			FadeOutOpacityLogarithmic();
 			infoPanel.SetBackgroundIsLocked(false);
 			if (Time.time > guiStateStartTime + guiStateDuration) {
+				scoringSystem.InitScoringSystem();
 				infoPanel.SetNewLevelNumber(0);	
 				SetGuiState("guiStateEnteringOverlay");
 			}
@@ -1115,51 +1151,41 @@ public class GuiManager : MonoBehaviour
 			case "guiStatePumaDone3":
 				// fade-in of feeding display main panel
 				if (levelManager.CheckCarCollision() == true)
-					pumaDoneDisplay.Draw(guiOpacity, guiOpacity, 0f, 0f, 0f);
+					pumaDoneDisplay.Draw(guiOpacity, guiOpacity, 0f, 0f);
 				else if (levelManager.CheckStarvation() == true)
-					pumaDoneDisplay.Draw(guiOpacity, 0f, guiOpacity, 0f, 0f);	
-				else if (scoringSystem.GetPumaHealth(selectedPuma) >= 1f)
-					pumaDoneDisplay.Draw(guiOpacity, 0f, 0f, guiOpacity, 0f);	
+					pumaDoneDisplay.Draw(guiOpacity, 0f, guiOpacity, 0f);	
 				break;
 
 			case "guiStatePumaDone4":
 				// brief pause
 				if (levelManager.CheckCarCollision() == true)
-					pumaDoneDisplay.Draw(1f, 1f, 0f, 0f, 0f);
+					pumaDoneDisplay.Draw(1f, 1f, 0f, 0f);
 				else if (levelManager.CheckStarvation() == true)
-					pumaDoneDisplay.Draw(1f, 0f, 1f, 0f, 0f);
-				else if (scoringSystem.GetPumaHealth(selectedPuma) >= 1f)
-					pumaDoneDisplay.Draw(1f, 0f, 0f, 1f, 0f);
+					pumaDoneDisplay.Draw(1f, 0f, 1f, 0f);
 				break;
 
 			case "guiStatePumaDone5":
 				// fade-in of mortality display 'ok' button
 				if (levelManager.CheckCarCollision() == true)
-					pumaDoneDisplay.Draw(1f * infoPanelOpacityComplement, 1f * infoPanelOpacityComplement, 0f, 0f, guiOpacity * infoPanelOpacityComplement);
+					pumaDoneDisplay.Draw(1f * infoPanelOpacityComplement, 1f * infoPanelOpacityComplement, 0f, guiOpacity * infoPanelOpacityComplement);
 				else if (levelManager.CheckStarvation() == true)
-					pumaDoneDisplay.Draw(1f * infoPanelOpacityComplement, 0f, 1f * infoPanelOpacityComplement, 0f, guiOpacity * infoPanelOpacityComplement);
-				else if (scoringSystem.GetPumaHealth(selectedPuma) >= 1f)
-					pumaDoneDisplay.Draw(1f * infoPanelOpacityComplement, 0f, 0f, 1f * infoPanelOpacityComplement, guiOpacity * infoPanelOpacityComplement);
+					pumaDoneDisplay.Draw(1f * infoPanelOpacityComplement, 0f, 1f * infoPanelOpacityComplement, guiOpacity * infoPanelOpacityComplement);
 				break;
 
 			case "guiStatePumaDone6":
 				// ongoing view of mortality display
 				if (levelManager.CheckCarCollision() == true)
-					pumaDoneDisplay.Draw(1f * infoPanelOpacityComplement, 1f * infoPanelOpacityComplement, 0f, 0f, 1f * infoPanelOpacityComplement);
+					pumaDoneDisplay.Draw(1f * infoPanelOpacityComplement, 1f * infoPanelOpacityComplement, 0f, 1f * infoPanelOpacityComplement);
 				else if (levelManager.CheckStarvation() == true)
-					pumaDoneDisplay.Draw(1f * infoPanelOpacityComplement, 0f, 1f * infoPanelOpacityComplement, 0f, 1f * infoPanelOpacityComplement);
-				else if (scoringSystem.GetPumaHealth(selectedPuma) >= 1f)
-					pumaDoneDisplay.Draw(1f * infoPanelOpacityComplement, 0f, 0f, 1f * infoPanelOpacityComplement, 1f * infoPanelOpacityComplement);
+					pumaDoneDisplay.Draw(1f * infoPanelOpacityComplement, 0f, 1f * infoPanelOpacityComplement, 1f * infoPanelOpacityComplement);
 				break;
 
 			case "guiStateLeavingPumaDone":
 				// fade-out of mortality display
 				if (levelManager.CheckCarCollision() == true)
-					pumaDoneDisplay.Draw(guiOpacity, guiOpacity, 0f, 0f, guiOpacity);
+					pumaDoneDisplay.Draw(guiOpacity, guiOpacity, 0f, guiOpacity);
 				else if (levelManager.CheckStarvation() == true)
-					pumaDoneDisplay.Draw(guiOpacity, 0f, guiOpacity, 0f, guiOpacity);
-				else if (scoringSystem.GetPumaHealth(selectedPuma) >= 1f)
-					pumaDoneDisplay.Draw(guiOpacity, 0f, 0f, guiOpacity, guiOpacity);
+					pumaDoneDisplay.Draw(guiOpacity, 0f, guiOpacity, guiOpacity);
 				break;
 			}
 		}
@@ -1205,7 +1231,12 @@ public class GuiManager : MonoBehaviour
 		}
 		else if (infoPanelVisible == true) {
 			// fully visible
-			infoPanel.Draw(1f, backRectOpacity, goButtonOpacity);
+			if (guiState == "guiStateEnterApp1")
+				infoPanel.Draw(1f, backRectOpacity, goButtonOpacity, 1f);
+			else if (guiState == "guiStateEnterApp2")
+				infoPanel.Draw(1f, backRectOpacity, goButtonOpacity, guiOpacity);
+			else
+				infoPanel.Draw(1f, backRectOpacity, goButtonOpacity);
 		}
 		else if (elapsedTime < infoPanelTransTime) {
 			// fading out		

@@ -230,8 +230,8 @@ public class LevelManager : MonoBehaviour
 	private float pumaHeadingOffsetStepSize;
 	private bool pumaSideStalkFlag = false;
 	private float pumaStalkingSpeed = 12f;
-	private float pumaChasingSpeed = 20f;
-	private float basePumaChasingSpeed = 20f;
+	private float pumaChasingSpeed = 20.2f;
+	private float basePumaChasingSpeed = 20.2f;
 	private float chaseTriggerDistance = 10.5f;
 	private float baseChaseTriggerDistance = 10.5f;
 	private float caughtTriggerDistance = 1f;
@@ -1593,7 +1593,7 @@ public class LevelManager : MonoBehaviour
 	{	
 		float fadeTime;
 		float inputPercent = 1f;
-
+		
 		//pumaAnimator.SetLayerWeight(1, 1f);
 	
 		if (pumaObj == null || buck == null || doe == null || fawn == null)
@@ -1888,7 +1888,23 @@ public class LevelManager : MonoBehaviour
 				SetGameState("gameStateGui");
 			}
 			break;	
-	
+
+		case "gameStateLeavingGameplayA":
+			// same as above except called from feeding display
+			fadeTime = 2f;
+			guiFlybySpeed = (Time.time - stateStartTime) / fadeTime;
+			SelectCameraPosition("cameraPosGui", -120f, fadeTime, "mainCurveSBackward", "curveRotXLogarithmicBackwardsSecondHalf"); 
+			if (Time.time >= stateStartTime + fadeTime) {
+				guiFlybySpeed = 1f;
+				PlaceDeerPositions();
+				ResetAnimations();
+				scoringSystem.ClearLastKillInfo(selectedPuma);		
+				caughtDeer = null;
+				inputControls.ResetControls();		
+				SetGameState("gameStateGui");
+			}
+			break;	
+
 		//------------------------------
 		// Feeding States
 		//
@@ -2002,6 +2018,7 @@ public class LevelManager : MonoBehaviour
 				PlaceDeerPositions();
 				ResetAnimations();
 				scoringSystem.ClearLastKillInfo(selectedPuma);		
+				caughtDeer = null;
 				inputControls.ResetControls();		
 				SetGameState("gameStateFeeding6");
 			}
@@ -2021,7 +2038,6 @@ public class LevelManager : MonoBehaviour
 			fadeTime = (caughtDeer != null) ? 1.3f : 1.3f;
 			if (Time.time >= stateStartTime + fadeTime) {
 				inputControls.SetInputVert(0f);
-				caughtDeer = null;
 				SetGameState("gameStateStalking");
 			}
 			break;	
@@ -2208,6 +2224,7 @@ public class LevelManager : MonoBehaviour
 			// main stalking state
 			float rotationSpeed = 100f;
 			if (pumaCollisionFlag == true) {
+				// collision
 				distance = inputControls.GetInputVert() * Time.deltaTime  * pumaStalkingSpeed * deerProximityFactor * speedOverdrive;
 				mainHeading += inputControls.GetInputHorz() * Time.deltaTime * rotationSpeed;
 				if (pumaCollisionHeadingOffset > 0f) {
@@ -2232,6 +2249,7 @@ public class LevelManager : MonoBehaviour
 				}
 			}
 			else {
+				// stalking
 				distance = inputControls.GetInputVert() * Time.deltaTime  * pumaStalkingSpeed * deerProximityFactor * speedOverdrive;
 				float inputHorz = inputControls.GetInputHorz();
 				float pumaHeadingSpread = 50f;
@@ -2271,6 +2289,7 @@ public class LevelManager : MonoBehaviour
 			// main chasing state
 			float rotationSpeed = 150f;
 			if (pumaCollisionFlag == true) {
+				// collision
 				distance = inputControls.GetInputVert() * Time.deltaTime  * pumaChasingSpeed * speedOverdrive * inputPercent;
 				mainHeading += inputControls.GetInputHorz() * Time.deltaTime * rotationSpeed;
 				if (pumaCollisionHeadingOffset > 0f) {
@@ -2295,6 +2314,7 @@ public class LevelManager : MonoBehaviour
 				}
 			}
 			else {
+				// chasing
 				distance = inputControls.GetInputVert() * Time.deltaTime  * pumaChasingSpeed * speedOverdrive * inputPercent;
 				mainHeading += inputControls.GetInputHorz() * Time.deltaTime * rotationSpeed* (treeCollisionState == "None" ? 1f : 0f);
 				pumaHeading = mainHeading + pumaHeadingOffset;
@@ -2668,7 +2688,7 @@ public class LevelManager : MonoBehaviour
 			
 		pumaSideStalkFlag = stalkFlag;
 		
-		float panSpeed = 90f;
+		float panSpeed = inputControls.GetInputVert() > 0f ? 100f : 300f;
 		
 		if (pumaSideStalkFlag == false) {
 			pumaHeadingOffsetStartVal = pumaHeadingOffset;
@@ -2696,6 +2716,21 @@ public class LevelManager : MonoBehaviour
 	public bool GetPumaSideStalk()
 	{
 		return pumaSideStalkFlag;
+	}
+
+	
+	public bool PumaSideStalkDirectionIsLeft()
+	{
+		// code copied from previous function
+		float averageDeerX = (buck.gameObj.transform.position.x + doe.gameObj.transform.position.x + fawn.gameObj.transform.position.x) / 3;
+		float averageDeerZ = (buck.gameObj.transform.position.z + doe.gameObj.transform.position.z + fawn.gameObj.transform.position.z) / 3;
+		float refX = (pumaObj.transform.position.x + Camera.main.transform.position.x) / 2;
+		float refY = (pumaObj.transform.position.z + Camera.main.transform.position.z) / 2;
+		float directionToDeer = guiUtils.GetAngleFromOffset(refX, refY, averageDeerX, averageDeerZ);
+		if (mainHeading > directionToDeer && mainHeading - directionToDeer < 180f)
+			return false;
+		else
+			return true;
 	}
 
 	

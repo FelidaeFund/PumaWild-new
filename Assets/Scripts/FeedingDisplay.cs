@@ -24,10 +24,16 @@ public class FeedingDisplay : MonoBehaviour
 	private Texture2D closeup4Texture;
 	private Texture2D closeup5Texture;
 	private Texture2D closeup6Texture;
+	private Texture2D greenHeartTexture;	
 	private Texture2D greenCheckTexture;	
 	private Texture2D greenOutlineRectTexture;	
 	private Texture2D redXTexture;	
 	private Texture2D statsScreenTexture;	
+	private Texture2D levelImage1Texture; 
+	private Texture2D levelImage2Texture; 
+	private Texture2D levelImage3Texture; 
+	private Texture2D levelImage4Texture; 
+	private Texture2D levelImage5Texture; 
 
 	// external modules
 	private GuiManager guiManager;
@@ -59,10 +65,16 @@ public class FeedingDisplay : MonoBehaviour
 		closeup4Texture = guiManager.closeup4Texture;
 		closeup5Texture = guiManager.closeup5Texture;
 		closeup6Texture = guiManager.closeup6Texture;
+		greenHeartTexture = guiManager.greenHeartTexture;
 		greenCheckTexture = guiManager.greenCheckTexture;
 		greenOutlineRectTexture = guiManager.greenOutlineRectTexture;
 		redXTexture = guiManager.redXTexture;
 		statsScreenTexture = guiManager.statsScreenTexture;
+		levelImage1Texture = guiManager.levelImage1Texture;
+		levelImage2Texture = guiManager.levelImage2Texture;
+		levelImage3Texture = guiManager.levelImage3Texture;
+		levelImage4Texture = guiManager.levelImage4Texture;
+		levelImage5Texture = guiManager.levelImage5Texture;
 	}
 
 	//===================================
@@ -444,6 +456,8 @@ public class FeedingDisplay : MonoBehaviour
 		// LEVEL DISPLAY
 		//********************
 
+		int successCount = scoringSystem.GetHuntSuccessCount();
+
 		float levelDisplayX = feedingDisplayX + feedingDisplayWidth * 0.74f;
 		float levelDisplayY = feedingDisplayY + feedingDisplayHeight * 1.282f;
 		float levelDisplayW = feedingDisplayWidth * 0.24f; 
@@ -472,10 +486,10 @@ public class FeedingDisplay : MonoBehaviour
 		// text labels
 		style.normal.textColor = new Color(0.90f, 0.65f, 0f, 0.8f);
 		style.fontSize = (int)(fontRef * 0.135f);
-		GUI.Button(new Rect(levelDisplayX, levelDisplayY + levelDisplayH * 0.03f, levelDisplayW, levelDisplayH * 0.3f), "3 good hunts in a row", style);
+		GUI.Button(new Rect(levelDisplayX, levelDisplayY + levelDisplayH * 0.03f, levelDisplayW, levelDisplayH * 0.3f), successCount == 3 ? "That was 3 in a row!" : "3 good hunts in a row", style);
 		style.normal.textColor = new Color(0.85f, 0.75f, 0f, 0.8f);
 		style.fontSize = (int)(fontRef * 0.12f);
-		GUI.Button(new Rect(levelDisplayX, levelDisplayY + levelDisplayH * 0.185f, levelDisplayW, levelDisplayH * 0.3f), (levelManager.currentLevel == 4 ? "wins the game!" : "opens the next level"), style);
+		GUI.Button(new Rect(levelDisplayX, levelDisplayY + levelDisplayH * 0.185f, levelDisplayW, levelDisplayH * 0.3f), successCount == 3 ? (levelManager.currentLevel == 4 ? "You've finished the game!" : "You've finished the level!") : (levelManager.currentLevel == 4 ? "completes the game!" : "opens the next level"), style);
 
 		// hunt stat backgrounds
 		float gapSize = innerW * 0.03f;
@@ -498,7 +512,6 @@ public class FeedingDisplay : MonoBehaviour
 		GUI.color = new Color(1f, 1f, 1f, 1f * levelCompleteOpacity);
 
 		// hunt indicators
-		int successCount = scoringSystem.GetHuntSuccessCount();
 		float inset = innerW * 0.04f;
 		switch (successCount) {
 		case 0:
@@ -566,7 +579,7 @@ public class FeedingDisplay : MonoBehaviour
 		float statsLinkX = feedingDisplayX;
 		float statsLinkY = feedingDisplayY + feedingDisplayHeight * 1.282f;
 		float statsLinkW = feedingDisplayWidth * 0.24f; 
-		float statsLinkH = feedingDisplayHeight * 0.65f;
+		float statsLinkH = feedingDisplayHeight * (successCount == 3 ? 0.95f : 0.65f);
 		
 		borderPercent = 0.05f;
 		inset = innerW * 0.04f;		
@@ -582,39 +595,202 @@ public class FeedingDisplay : MonoBehaviour
 		GUI.Box(new Rect(statsLinkX, statsLinkY, statsLinkW, statsLinkH), "");
 		GUI.color = new Color(1f, 1f, 1f, 1f * levelCompleteOpacity);
 
-		// image dimensions
-		float imageWidth = innerW - gapSize * 2f;
-		float imageHeight = statsScreenTexture.height * (imageWidth / statsScreenTexture.width);
+		if (successCount != 3) {
+		
+			// NORMAL CASE:  draw stats link
 
-		// image background
-		GUI.color = new Color(1f, 1f, 1f, 0.8f * levelCompleteOpacity);
-		GUI.Box(new Rect(innerX, innerY, innerW, imageHeight + inset*2), "");
-		GUI.color = new Color(1f, 1f, 1f, 0.4f * levelCompleteOpacity);
-		GUI.Box(new Rect(innerX, innerY, innerW, imageHeight + inset*2), "");
-		GUI.color = new Color(1f, 1f, 1f, 1f * levelCompleteOpacity);
-		
-		// image
-		GUI.DrawTexture(new Rect(statsLinkX + statsLinkW/2 - imageWidth/2, inset + innerY, imageWidth, imageHeight), statsScreenTexture);
-		
-		// invisible button over image
-		GUI.color = new Color(1f, 1f, 1f, 0f);
-		if (GUI.Button(new Rect(statsLinkX + statsLinkW/2 - imageWidth/2, inset + innerY, imageWidth, imageHeight), "")) {
-			// go to stats screen
-			guiManager.SetGuiState("guiStateLeavingFeeding");
-			levelManager.SetGameState("gameStateLeavingGameplay");
+			// image dimensions
+			float imageWidth = innerW - gapSize * 2f;
+			float imageHeight = statsScreenTexture.height * (imageWidth / statsScreenTexture.width);
+
+			// image background
+			GUI.color = new Color(1f, 1f, 1f, 0.8f * levelCompleteOpacity);
+			GUI.Box(new Rect(innerX, innerY, innerW, imageHeight + inset*2), "");
+			GUI.color = new Color(1f, 1f, 1f, 0.4f * levelCompleteOpacity);
+			GUI.Box(new Rect(innerX, innerY, innerW, imageHeight + inset*2), "");
+			GUI.color = new Color(1f, 1f, 1f, 1f * levelCompleteOpacity);
+			
+			if (scoringSystem.GetPumaHealth(guiManager.selectedPuma) == 1f) {
+				// puma at full health
+			
+				// puma head
+				GUI.DrawTexture(new Rect(statsLinkX + statsLinkW/2 - imageWidth/2 + imageWidth*0.06f, inset*0.5f + innerY, imageWidth*0.4f, headshotTexture.height * ((imageWidth*0.4f) / headshotTexture.width)), headshotTexture);
+
+				// puma name
+				style.normal.textColor = new Color(0.99f * 0.8f, 0.63f * 0.7f, 0f, 1f);
+				style.fontSize = (int)(fontRef * 0.13f);
+				GUI.Button(new Rect(statsLinkX + statsLinkW/2 - imageWidth/2 + imageWidth*0.01f, inset + innerY + imageHeight*0.8f, imageWidth*0.5f, imageHeight * 0.2f), pumaName, style);
+
+				// hunt success flashing rect	
+				float flashingPeriod = 0.6f;
+				float flashingOpacity = 0f;
+				if (Time.time > flashStartTime + flashingPeriod) {
+					flashStartTime = Time.time;
+				}
+				if (Time.time < flashStartTime + flashingPeriod * 0.3f) {
+					// first half
+					flashingOpacity = (Time.time - flashStartTime) / (flashingPeriod * 0.3f);
+				}
+				else {
+					// second half
+					flashingOpacity = 1f - ((Time.time - flashStartTime - flashingPeriod * 0.3f) / (flashingPeriod * 0.7f));			
+				}	
+				flashingOpacity = 0.3f + flashingOpacity * 0.7f;
+				flashingOpacity = flashingOpacity * flashingOpacity;
+				GUI.color = new Color(1f, 1f, 1f, flashingOpacity * 0.5f * levelCompleteOpacity);
+				GUI.DrawTexture(new Rect(statsLinkX, statsLinkY, statsLinkW, statsLinkH), greenOutlineRectTexture);
+
+				style.normal.textColor = new Color(0f, 0.8f, 0f, 1f);
+				style.fontSize = (int)(fontRef * 0.11f);
+				style.alignment = TextAnchor.MiddleRight;
+				GUI.color = new Color(1f, 1f, 1f, (flashingOpacity*0.65f + 0.35f) * levelCompleteOpacity);
+				GUI.DrawTexture(new Rect(statsLinkX + statsLinkW/2 - imageWidth/2 + imageWidth*0.6f, innerY + inset*1.6f, imageWidth*0.28f, greenHeartTexture.height * ((imageWidth*0.28f) / greenHeartTexture.width)), greenHeartTexture);
+				GUI.Button(new Rect(innerX + inset*0.2f, statsLinkY + statsLinkW * 0.32f, innerW - inset * 2, statsLinkH * 0.2f), "100% Health !", style);
+				style.alignment = TextAnchor.MiddleCenter;
+
+				GUI.color = new Color(1f, 1f, 1f, 1f * levelCompleteOpacity);
+			}
+			else {
+				// normal case: draw image
+				GUI.DrawTexture(new Rect(statsLinkX + statsLinkW/2 - imageWidth/2, inset + innerY, imageWidth, imageHeight), statsScreenTexture);
+			}
+
+
+			// invisible button over image
+			GUI.color = new Color(1f, 1f, 1f, 0f);
+			if (GUI.Button(new Rect(statsLinkX + statsLinkW/2 - imageWidth/2, inset + innerY, imageWidth, imageHeight), "")) {
+				// go to stats screen
+				guiManager.SetGuiState("guiStateLeavingFeeding");
+				levelManager.SetGameState("gameStateLeavingGameplayA");
+			}
+			GUI.color = new Color(1f, 1f, 1f, 1f * levelCompleteOpacity);
+
+			// main button
+			GUI.skin = guiManager.customGUISkin;
+			guiManager.customGUISkin.button.fontSize = (int)(feedingDisplayHeight * 0.08);
+			guiManager.customGUISkin.button.fontStyle = FontStyle.Normal;
+			if (GUI.Button(new Rect(innerX,  innerY + innerH*0.7f, innerW, innerH * 0.3f), scoringSystem.GetPumaHealth(guiManager.selectedPuma) == 1f ? "Select Another" : "View Stats")) {
+				// go to stats screen
+				guiManager.SetGuiState("guiStateLeavingFeeding");
+				levelManager.SetGameState("gameStateLeavingGameplayA");
+			}	
 		}
-		GUI.color = new Color(1f, 1f, 1f, 1f * levelCompleteOpacity);
+		else {
+		
+			// LEVEL COMPLETE:  draw level info
 
-		// main button
-		GUI.skin = guiManager.customGUISkin;
-		guiManager.customGUISkin.button.fontSize = (int)(feedingDisplayHeight * 0.08);
-		guiManager.customGUISkin.button.fontStyle = FontStyle.Normal;
-		if (GUI.Button(new Rect(innerX,  innerY + innerH*0.7f, innerW, innerH * 0.3f), "View Stats")) {
-			// go to stats screen
-			guiManager.SetGuiState("guiStateLeavingFeeding");
-			levelManager.SetGameState("gameStateLeavingGameplay");
-		}	
 
+
+
+			// determine level image
+			Texture2D imageTexture = levelImage1Texture;
+			float imageOpacity = 1f;
+			
+			switch (levelManager.GetCurrentLevel()) {
+			case 0:
+				imageTexture = levelImage1Texture;
+				imageOpacity = 1f;
+				break;
+			case 1:
+				imageTexture = levelImage2Texture;
+				imageOpacity = 1f;
+				break;
+			case 2:
+				imageTexture = levelImage3Texture;
+				imageOpacity = 0.9f;
+				break;
+			case 3:
+				imageTexture = levelImage4Texture;
+				imageOpacity = 1f;
+				break;
+			case 4:
+				imageTexture = levelImage5Texture;
+				imageOpacity = 0.9f;
+				break;
+			}		
+		
+			// image dimensions
+			float imageWidth = innerW - gapSize * 2f;
+			float imageHeight = imageTexture.height * (imageWidth / imageTexture.width);
+			float imageOffsetY = statsLinkW * 0.13f;
+
+			// image background
+			GUI.color = new Color(1f, 1f, 1f, 0.8f * levelCompleteOpacity);
+			GUI.Box(new Rect(innerX, innerY + imageOffsetY, innerW, imageHeight + inset*2), "");
+			GUI.color = new Color(1f, 1f, 1f, 0.4f * levelCompleteOpacity);
+			GUI.Box(new Rect(innerX, innerY + imageOffsetY, innerW, imageHeight + inset*2), "");
+			GUI.color = new Color(1f, 1f, 1f, 1f * levelCompleteOpacity);
+			
+			// image
+			GUI.color = new Color(1f, 1f, 1f, levelCompleteOpacity * imageOpacity);
+			GUI.DrawTexture(new Rect(statsLinkX + statsLinkW/2 - imageWidth/2, inset + innerY + imageOffsetY, imageWidth, imageHeight), imageTexture);
+			GUI.color = new Color(1f, 1f, 1f, 1f * levelCompleteOpacity);
+		
+
+			// level text	
+			string titleText = "empty text";
+			Color labelColor = new Color(0f, 0f, 0f);
+			
+			switch (levelManager.GetCurrentLevel()) {
+			case 0:
+				titleText = "WILD NATURE";
+				labelColor = new Color(0.2f, 0.7f, 0.14f);
+				break;
+			case 1:
+				titleText = "HUMAN ARRIVAL";
+				labelColor = new Color(0.85f, 0.66f, 0.0f);
+				break;
+			case 2:
+				titleText = "DEVELOPMENT";
+				labelColor = new Color(1f, 0.5f, 0.0f);
+				break;
+			case 3:
+				titleText = "FRAGMENTATION";
+				labelColor = new Color(1f, 0.2f, 0.0f);
+				break;
+			case 4:
+				titleText = "CONNECTIVITY";
+				labelColor = new Color(0.14f, 0.7f, 0.14f);
+				break;
+			}
+
+			style.alignment = TextAnchor.MiddleLeft;
+			style.normal.textColor = new Color(0.90f, 0.65f, 0f, 0.8f);
+			style.fontSize = (int)(fontRef * 0.135f);
+			GUI.Button(new Rect(innerX + inset, statsLinkY + statsLinkW * 0.023f, innerW - inset * 2, statsLinkH * 0.2f), "Level" + (levelManager.GetCurrentLevel() + 1), style);
+			style.alignment = TextAnchor.MiddleRight;
+			style.normal.textColor = labelColor;
+			style.fontSize = (int)(fontRef * 0.12f);
+			GUI.Button(new Rect(innerX + inset, statsLinkY + statsLinkW * 0.023f, innerW - inset * 2, statsLinkH * 0.2f), titleText, style);
+			style.alignment = TextAnchor.MiddleCenter;
+
+
+			// hunt success flashing rect	
+			float flashingPeriod = 0.4f;
+			float flashingOpacity = 0f;
+			if (Time.time > flashStartTime + flashingPeriod) {
+				flashStartTime = Time.time;
+			}
+			if (Time.time < flashStartTime + flashingPeriod * 0.3f) {
+				// first half
+				flashingOpacity = (Time.time - flashStartTime) / (flashingPeriod * 0.3f);
+			}
+			else {
+				// second half
+				flashingOpacity = 1f - ((Time.time - flashStartTime - flashingPeriod * 0.3f) / (flashingPeriod * 0.7f));			
+			}	
+			flashingOpacity = 0.3f + flashingOpacity * 0.7f;
+			flashingOpacity = flashingOpacity * flashingOpacity;
+			GUI.color = new Color(1f, 1f, 1f, flashingOpacity * 0.8f * levelCompleteOpacity);
+			GUI.DrawTexture(new Rect(statsLinkX, statsLinkY, statsLinkW, statsLinkH), greenOutlineRectTexture);
+
+			style.normal.textColor = new Color(0f, 0.8f, 0f, 1f);
+			style.fontSize = (int)(fontRef * 0.14f);
+			GUI.color = new Color(1f, 1f, 1f, (flashingOpacity*0.65f + 0.35f) * levelCompleteOpacity);
+			GUI.Button(new Rect(innerX + inset, statsLinkY + statsLinkW * 0.825f, innerW - inset * 2, statsLinkH * 0.2f), "Complete !", style);
+
+			GUI.color = new Color(1f, 1f, 1f, 1f * levelCompleteOpacity);
+		}
 		
 
 		//********************
@@ -645,7 +821,7 @@ public class FeedingDisplay : MonoBehaviour
 			if (scoringSystem.GetHuntSuccessCount() >= 3) {
 				// use keyboard to go to next level
 				guiManager.SetGuiState("guiStateNextLevel1");
-				levelManager.SetGameState("gameStateLeavingGameplay");
+				levelManager.SetGameState("gameStateLeavingGameplayA");
 			}
 			else {
 				// use keyboard to resume gameplay

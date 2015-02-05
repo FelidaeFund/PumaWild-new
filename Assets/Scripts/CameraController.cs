@@ -12,6 +12,10 @@ public class CameraController : MonoBehaviour
 	//===================================
 	//===================================
 	
+	public Camera cameraMain;
+	public Camera cameraL;
+	public Camera cameraR;
+	
 	// current camera position (controllable params)
 	private float currentCameraY;
 	private float currentCameraRotX;
@@ -36,8 +40,15 @@ public class CameraController : MonoBehaviour
 	private string transMainCurve;
 	private string transRotXCurve;
 	
+	// side camera processing
+	private string sideCameraState;
+	private float sideCameraStateOpenTime;
+	private float sideCameraTransStartTime;
+	private float sideCameraTransFadeTime;
+	
 	// external module
 	private LevelManager levelManager;
+	private TrafficManager trafficManager;
 	private InputControls inputControls;
 	private CameraCollider cameraCollider;
 
@@ -51,13 +62,16 @@ public class CameraController : MonoBehaviour
     {
 		// connect to external modules
 		levelManager = GetComponent<LevelManager>();
+		trafficManager = GetComponent<TrafficManager>();
 		inputControls = GetComponent<InputControls>();
-		cameraCollider = GameObject.Find("Camera").GetComponent<CameraCollider>();
+		cameraCollider = GameObject.Find("CameraMain").GetComponent<CameraCollider>();
 
 		currentCameraY = 0f;
 		currentCameraRotX = 0f;
 		currentCameraDistance = 0f;
 		currentCameraRotOffsetY = 0f;
+		
+		sideCameraState = "sideCameraStateClosed";
 	}
 	
 	//===================================
@@ -337,8 +351,122 @@ public class CameraController : MonoBehaviour
 		// write out values to camera object
 		//-----------------------------------------------
 
-		Camera.main.transform.position = new Vector3(adjustedCameraX, adjustedCameraY, adjustedCameraZ);
-		Camera.main.transform.rotation = Quaternion.Euler(adjustedCameraRotX, cameraRotY, cameraRotZ);
+		cameraMain.transform.position = new Vector3(adjustedCameraX, adjustedCameraY, adjustedCameraZ);
+		cameraMain.transform.rotation = Quaternion.Euler(adjustedCameraRotX, cameraRotY, cameraRotZ);
+		
+
+
+
+
+
+
+		// turn on side view cameras near roads
+
+		Vector3 nearestRoadPos = trafficManager.FindClosestNode(new Vector3(pumaX, 0, pumaZ));
+		float nearestRoadDistance = Vector3.Distance(nearestRoadPos, new Vector3(pumaX, 0, pumaZ));
+		float pumaRoadAngle = levelManager.GetAngleFromOffset(pumaX, pumaZ, nearestRoadPos.x, nearestRoadPos.z);
+
+		bool sideViewVisible = true;
+		if (levelManager.GetCurrentLevel() == 0 || levelManager.GetCurrentLevel() == 3 || levelManager.GetCurrentLevel() == 4)
+			sideViewVisible = false;
+		else if (levelManager.gameState != "gameStateStalking" && levelManager.gameState != "gameStateChasing")
+			sideViewVisible = false;
+		else if (nearestRoadDistance > 30f)
+			sideViewVisible = false;
+		else if (pumaRoadAngle > cameraRotY && pumaRoadAngle - cameraRotY > 90f && pumaRoadAngle - cameraRotY < 270f)
+			sideViewVisible = false;
+		else if (cameraRotY > pumaRoadAngle && cameraRotY - pumaRoadAngle > 90f && cameraRotY - pumaRoadAngle < 270f)
+			sideViewVisible = false;
+		else if (levelManager.GetCurrentLevel() == 2 && trafficManager.FindClosestRoad(new Vector3(pumaX, 0, pumaZ)) == 1)
+			sideViewVisible = false;
+				
+
+		float transTime = (levelManager.gameState == "gameStateChasing") ? 0.25f : 0.5f;
+
+		if (sideCameraState == "sideCameraStateOpen") {
+			if ((Time.time > sideCameraStateOpenTime + 0.5f) && sideViewVisible == false) {
+				sideCameraState = "sideCameraStateClosing";
+				sideCameraTransStartTime = Time.time;
+				sideCameraTransFadeTime = transTime;
+			}
+			cameraL.enabled = true;
+			cameraR.enabled = true;
+			cameraL.transform.position = new Vector3(pumaX, adjustedCameraY, pumaZ);
+			cameraL.transform.rotation = Quaternion.Euler(adjustedCameraRotX, cameraRotY - 70f, cameraRotZ);
+			cameraR.transform.position = new Vector3(pumaX, adjustedCameraY, pumaZ);
+			cameraR.transform.rotation = Quaternion.Euler(adjustedCameraRotX, cameraRotY + 70f, cameraRotZ);
+		}
+		else if (sideCameraState == "sideCameraStateOpening") {
+			cameraL.enabled = true;
+			cameraR.enabled = true;
+			float percentHidden;
+			if (sideViewVisible == false) {
+				sideCameraState = "sideCameraStateClosing";
+				float percentDone = (Time.time - sideCameraTransStartTime) / sideCameraTransFadeTime;
+				sideCameraTransStartTime = Time.time - (transTime * (1f - percentDone));
+				sideCameraTransFadeTime = transTime;
+				percentHidden = (Time.time - sideCameraTransStartTime) / sideCameraTransFadeTime;
+			}
+			else if (Time.time > sideCameraTransStartTime + sideCameraTransFadeTime) {
+				percentHidden = 0f;
+				sideCameraState = "sideCameraStateOpen";
+				sideCameraStateOpenTime = Time.time;
+			}
+			else {
+				percentHidden = 1f - (Time.time - sideCameraTransStartTime) / sideCameraTransFadeTime;
+			}
+			float cameraRectX = 0f;
+			float cameraRectY = 0.65f + 0.35f*percentHidden;
+			float cameraRectW = 0.35f - 0.35f*percentHidden;
+			float cameraRectH = 0.35f - 0.35f*percentHidden;		
+			cameraL.rect = new Rect(cameraRectX, cameraRectY, cameraRectW, cameraRectH);
+			cameraRectX = 0.65f + 0.35f*percentHidden;
+			cameraR.rect = new Rect(cameraRectX, cameraRectY, cameraRectW, cameraRectH);
+			cameraL.transform.position = new Vector3(pumaX, adjustedCameraY, pumaZ);
+			cameraL.transform.rotation = Quaternion.Euler(adjustedCameraRotX, cameraRotY - 70f, cameraRotZ);
+			cameraR.transform.position = new Vector3(pumaX, adjustedCameraY, pumaZ);
+			cameraR.transform.rotation = Quaternion.Euler(adjustedCameraRotX, cameraRotY + 70f, cameraRotZ);
+		}
+		else if (sideCameraState == "sideCameraStateClosing") {
+			cameraL.enabled = true;
+			cameraR.enabled = true;
+			float percentHidden;
+			if (sideViewVisible == true) {
+				sideCameraState = "sideCameraStateOpening";
+				float percentDone = (Time.time - sideCameraTransStartTime) / sideCameraTransFadeTime;
+				sideCameraTransStartTime = Time.time - (transTime * (1f - percentDone));
+				sideCameraTransFadeTime = transTime;
+				percentHidden = 1f - (Time.time - sideCameraTransStartTime) / sideCameraTransFadeTime;
+			}
+			else if (Time.time > sideCameraTransStartTime + sideCameraTransFadeTime) {
+				percentHidden = 1f;
+				sideCameraState = "sideCameraStateClosed";
+			}
+			else {
+				percentHidden = (Time.time - sideCameraTransStartTime) / sideCameraTransFadeTime;
+			}
+			float cameraRectX = 0f;
+			float cameraRectY = 0.65f + 0.35f*percentHidden;
+			float cameraRectW = 0.35f - 0.35f*percentHidden;
+			float cameraRectH = 0.35f - 0.35f*percentHidden;		
+			cameraL.rect = new Rect(cameraRectX, cameraRectY, cameraRectW, cameraRectH);
+			cameraRectX = 0.65f + 0.35f*percentHidden;
+			cameraR.rect = new Rect(cameraRectX, cameraRectY, cameraRectW, cameraRectH);
+			cameraL.transform.position = new Vector3(pumaX, adjustedCameraY, pumaZ);
+			cameraL.transform.rotation = Quaternion.Euler(adjustedCameraRotX, cameraRotY - 70f, cameraRotZ);
+			cameraR.transform.position = new Vector3(pumaX, adjustedCameraY, pumaZ);
+			cameraR.transform.rotation = Quaternion.Euler(adjustedCameraRotX, cameraRotY + 70f, cameraRotZ);
+		}
+		else if (sideCameraState == "sideCameraStateClosed") {
+			// side cameras off
+			if (sideViewVisible == true) {
+				sideCameraState = "sideCameraStateOpening";
+				sideCameraTransStartTime = Time.time;
+				sideCameraTransFadeTime = transTime;
+			}
+			cameraL.enabled = false;
+			cameraR.enabled = false;
+		}
 	}
 	
 	//-----------------------

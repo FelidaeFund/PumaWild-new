@@ -46,6 +46,8 @@ public class InfoPanel : MonoBehaviour
 	private Texture2D radioSelectTexture;
 	private Texture2D arrowTrayTexture;
 	private Texture2D arrowTrayTopTexture;
+	private Texture2D infoArrowDownTexture;
+	private Texture2D infoArrowUpTexture;
 	private Texture2D swapButtonTexture;
 	private Texture2D swapButtonHoverTexture;
 	private Texture2D sliderBarTexture;
@@ -53,6 +55,9 @@ public class InfoPanel : MonoBehaviour
 	private Texture2D buckHeadTexture;
 	private Texture2D doeHeadTexture;
 	private Texture2D fawnHeadTexture;
+	private Texture2D buckStandTexture;
+	private Texture2D doeStandTexture;
+	private Texture2D fawnStandTexture;
 	private Texture2D headshot1Texture;
 	private Texture2D headshot2Texture;
 	private Texture2D headshot3Texture;
@@ -67,7 +72,20 @@ public class InfoPanel : MonoBehaviour
 	private Texture2D closeup6Texture;
 	private Texture2D closeupBackgroundTexture;
 	private Texture2D pumaCrossbonesDarkRedTexture;
+	private Texture2D blackArrowTexture;
+	private Texture2D blackArrowShortTexture;
+	private Texture2D greenArrowTexture;
 	private Texture2D greenHeartTexture;
+	private Texture2D redXTexture;
+	private Texture2D pumaStealthTexture;
+	private Texture2D pumaRunTexture;
+	private Texture2D pumaAttackTexture;
+	private Texture2D pumaJumpTexture;
+	private Texture2D pumaPreyTexture;
+	private Texture2D predationArrowsTexture;
+	private Texture2D predationCirclesTexture;
+	private Texture2D huntLongTexture;
+	private Texture2D huntShortTexture;
 
 	private Texture2D iconFacebookTexture; 
 	private Texture2D iconTwitterTexture; 
@@ -83,6 +101,7 @@ public class InfoPanel : MonoBehaviour
 	private Texture2D levelImage4Texture; 
 	private Texture2D levelImage5Texture; 
 	private Texture2D levelImage6Texture; 
+	private Texture2D levelImage6bTexture; 
 	
 	// external modules
 	private GuiManager guiManager;
@@ -119,6 +138,8 @@ public class InfoPanel : MonoBehaviour
 		radioSelectTexture = guiManager.radioSelectTexture;
 		arrowTrayTexture = guiManager.arrowTrayTexture;
 		arrowTrayTopTexture = guiManager.arrowTrayTopTexture;
+		infoArrowDownTexture = guiManager.infoArrowDownTexture;
+		infoArrowUpTexture = guiManager.infoArrowUpTexture;
 		swapButtonTexture = guiManager.swapButtonTexture;
 		swapButtonHoverTexture = guiManager.swapButtonHoverTexture;
 		sliderBarTexture = guiManager.sliderBarTexture;
@@ -126,6 +147,9 @@ public class InfoPanel : MonoBehaviour
 		buckHeadTexture = guiManager.buckHeadTexture;
 		doeHeadTexture = guiManager.doeHeadTexture;
 		fawnHeadTexture = guiManager.fawnHeadTexture;
+		buckStandTexture = guiManager.buckStandTexture;
+		doeStandTexture = guiManager.doeStandTexture;
+		fawnStandTexture = guiManager.fawnStandTexture;
 		headshot1Texture = guiManager.headshot1Texture;
 		headshot2Texture = guiManager.headshot2Texture;
 		headshot3Texture = guiManager.headshot3Texture;
@@ -140,7 +164,20 @@ public class InfoPanel : MonoBehaviour
 		closeup6Texture = guiManager.closeup6Texture;
 		closeupBackgroundTexture = guiManager.closeupBackgroundTexture;
 		pumaCrossbonesDarkRedTexture = guiManager.pumaCrossbonesDarkRedTexture;		
+		blackArrowTexture = guiManager.blackArrowTexture;		
+		blackArrowShortTexture = guiManager.blackArrowShortTexture;		
+		greenArrowTexture = guiManager.greenArrowTexture;		
 		greenHeartTexture = guiManager.greenHeartTexture;		
+		redXTexture = guiManager.redXTexture;		
+		pumaStealthTexture = guiManager.pumaStealthTexture;		
+		pumaRunTexture = guiManager.pumaRunTexture;		
+		pumaAttackTexture = guiManager.pumaAttackTexture;		
+		pumaJumpTexture = guiManager.pumaJumpTexture;		
+		pumaPreyTexture = guiManager.pumaPreyTexture;		
+		predationArrowsTexture = guiManager.predationArrowsTexture;		
+		predationCirclesTexture = guiManager.predationCirclesTexture;		
+		huntLongTexture = guiManager.huntLongTexture;		
+		huntShortTexture = guiManager.huntShortTexture;		
 
 		iconFacebookTexture = guiManager.iconFacebookTexture;
 		iconTwitterTexture = guiManager.iconTwitterTexture;
@@ -157,6 +194,7 @@ public class InfoPanel : MonoBehaviour
 		levelImage4Texture = guiManager.levelImage4Texture;
 		levelImage5Texture = guiManager.levelImage5Texture;
 		levelImage6Texture = guiManager.levelImage6Texture;
+		levelImage6bTexture = guiManager.levelImage6bTexture;
 		
 		// custom button styling
 		buttonStyle = new GUIStyle();
@@ -248,7 +286,7 @@ public class InfoPanel : MonoBehaviour
 	//===================================
 	//===================================
 	
-	public void Draw(float incomingInfoPanelOpacity, float backRectOpacity, float goButtonOpacity) 
+	public void Draw(float incomingInfoPanelOpacity, float backRectOpacity, float goButtonOpacity, float frontRectOpacity = 0f) 
 	{ 
 		float infoPanelOpacity = (backgroundIsLocked == true) ? 1f : incomingInfoPanelOpacity;
 
@@ -351,12 +389,21 @@ public class InfoPanel : MonoBehaviour
 			float buttonheight = overlayRect.height * 0.075f;
 			float predationExtraMargin = overlayRect.width * 0.003f;
 			
-			float backgroundRectWidthAdjust = (currentScreen == 4) ? buttonWidth * 0.32f : ((currentScreen == 3) ? buttonWidth * 0.03f : ((currentScreen == 2) ? buttonWidth * 0.12f : 0f));
+			float backgroundRectWidthAdjust = (currentScreen == 4) ? buttonWidth * 0.32f : ((currentScreen == 3) ? buttonWidth * 0.03f : ((currentScreen == 1) ? buttonWidth * 0.12f : 0f));
 			float shiftRight = (currentScreen == 4) ? buttonGap * 0.8f : 0f;
-			if (currentScreen == 2)
-				shiftRight += predationExtraMargin;
-			if (currentScreen == 3 || currentScreen == 4)
-				shiftRight += predationExtraMargin*2;
+			if (currentScreen == 1)
+				shiftRight += predationExtraMargin*0.5f;
+			if (currentScreen == 2 || currentScreen == 4)
+				shiftRight += predationExtraMargin*1.5f;
+			if (currentScreen == 3)
+				shiftRight += predationExtraMargin*3;
+			if (currentScreen == 4)
+				shiftRight += predationExtraMargin*1f;
+				
+				
+				
+				
+				
 		
 			guiUtils.DrawRect(new Rect(buttonMargin + buttonWidth*currentScreen + buttonGap*currentScreen + buttonWidth*0.05f - backgroundRectWidthAdjust*0.5f + shiftRight, buttonY + buttonheight * 0.15f, buttonWidth - buttonWidth*0.1f + backgroundRectWidthAdjust, buttonheight - buttonheight * 0.29f), new Color(0f, 0f, 0f, 0.5f));	
 
@@ -369,10 +416,10 @@ public class InfoPanel : MonoBehaviour
 			if (GUI.Button(new Rect(buttonMargin, buttonY, buttonWidth, buttonheight), "Biology", (currentScreen == 0) ? buttonDownStyle : buttonStyle))
 				currentScreen = 0;
 			// 'Ecology'
-			if (GUI.Button(new Rect(buttonMargin + buttonWidth + buttonGap, buttonY, buttonWidth, buttonheight), "Ecology", (currentScreen == 1) ? buttonDownStyle : buttonStyle))
+			if (GUI.Button(new Rect(buttonMargin + buttonWidth + buttonGap, buttonY, buttonWidth, buttonheight), "Predation", (currentScreen == 1) ? buttonDownStyle : buttonStyle))
 				currentScreen = 1;
 			// 'Predation'
-			if (GUI.Button(new Rect(buttonMargin + buttonWidth*2f + buttonGap*2f + predationExtraMargin, buttonY, buttonWidth, buttonheight), "Predation", (currentScreen == 2) ? buttonDownStyle : buttonStyle))
+			if (GUI.Button(new Rect(buttonMargin + buttonWidth*2f + buttonGap*2f + predationExtraMargin, buttonY, buttonWidth, buttonheight), "Ecology", (currentScreen == 2) ? buttonDownStyle : buttonStyle))
 				currentScreen = 2;
 			// 'Survival'
 			if (GUI.Button(new Rect(buttonMargin + buttonWidth*3f + buttonGap*3f + predationExtraMargin*2, buttonY, buttonWidth, buttonheight), "Survival", (currentScreen == 3) ? buttonDownStyle : buttonStyle))
@@ -577,19 +624,25 @@ public class InfoPanel : MonoBehaviour
 				DrawBiologyScreen(infoPanelOpacity);
 				break;		
 			case 1:
-				DrawBiologyScreen(infoPanelOpacity);
+				DrawPredationScreen(infoPanelOpacity);
 				break;
 			case 2:
-				DrawBiologyScreen(infoPanelOpacity);
+				DrawEcologyScreen(infoPanelOpacity);
 				break;
 			case 3:
-				DrawBiologyScreen(infoPanelOpacity);
+				DrawSurvivalScreen(infoPanelOpacity);
 				break;
 			case 4:
 				DrawDonateScreen(infoPanelOpacity);
 				break;
 			}
-		}	
+		}
+
+
+		// front rect happens last
+		GUI.color = new Color(1f, 1f, 1f, 1f * frontRectOpacity);
+		guiUtils.DrawRect(new Rect(0f, 0f, Screen.width, Screen.height), new Color(0f, 0f, 0f, 1f));	
+		GUI.color = new Color(1f, 1f, 1f, 1f * infoPanelOpacity);
 	}
 
 
@@ -610,6 +663,7 @@ public class InfoPanel : MonoBehaviour
 		float panelWidth = overlayRect.width * 0.88f;
 		float panelHeight = overlayRect.height * 0.63f;
 		float fontScale = 0.8f;
+		bool populationDoneFlag = scoringSystem.GetPopulationHealth() == 0f ? true : false;
 
 		GUIStyle style = new GUIStyle();
 		style.alignment = TextAnchor.MiddleCenter;
@@ -648,11 +702,11 @@ public class InfoPanel : MonoBehaviour
 			imageOpacity = 0.9f;
 			break;
 		case 5:
-			imageTexture = levelImage6Texture;
-			imageOpacity = 0.9f;
+			imageTexture = populationDoneFlag == true ? levelImage6bTexture : levelImage6Texture;
+			imageOpacity = populationDoneFlag == true ? 0.55f : 0.9f;
 			break;
 		}		
-		
+
 		float textureX = panelX + panelWidth * 0.03f;
 		float textureY = panelY + panelHeight * 0.1f;
 		float textureHeight = panelHeight * 0.8f;
@@ -661,9 +715,102 @@ public class InfoPanel : MonoBehaviour
 		GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), imageTexture);
 		GUI.color = new Color(1f, 1f, 1f, 1f * panelOpacity);
 		
+		if (populationDoneFlag) {
 		
-		// level text
+			float redXOpacity = 0.7f;
+			float imageLuminosity = 0.2f;
 		
+			imageTexture = closeup1Texture;
+			imageOpacity = 1f;
+			textureX = panelX + panelWidth * 0.05f;
+			textureY = panelY + panelHeight * 0.2f;
+			textureHeight = panelHeight * 0.27f;
+			textureWidth = imageTexture.width * (textureHeight / imageTexture.height);
+			GUI.color = new Color(imageLuminosity, imageLuminosity, imageLuminosity, imageOpacity * panelOpacity);
+			GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), imageTexture);
+			GUI.color = new Color(1f, 1f, 1f, 1f * panelOpacity);
+		
+			imageTexture = pumaCrossbonesDarkRedTexture;
+			GUI.color = new Color(0.93f, 0.93f, 0.93f, redXOpacity * panelOpacity);
+			GUI.DrawTexture(new Rect(textureX + textureWidth * 0.1f, textureY + textureHeight * 0.25f, textureWidth * 0.8f, textureHeight * 0.8f), imageTexture);
+			GUI.color = new Color(1f, 1f, 1f, 1f * panelOpacity);
+		
+		
+			imageTexture = closeup2Texture;
+			imageOpacity = 1f;
+			textureX = panelX + panelWidth * 0.21f;
+			textureWidth = imageTexture.width * (textureHeight / imageTexture.height);
+			GUI.color = new Color(imageLuminosity, imageLuminosity, imageLuminosity, imageOpacity * panelOpacity);
+			GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), imageTexture);
+			GUI.color = new Color(1f, 1f, 1f, 1f * panelOpacity);
+		
+			imageTexture = pumaCrossbonesDarkRedTexture;
+			GUI.color = new Color(0.93f, 0.93f, 0.93f, redXOpacity * panelOpacity);
+			GUI.DrawTexture(new Rect(textureX + textureWidth * 0.1f, textureY + textureHeight * 0.25f, textureWidth * 0.8f, textureHeight * 0.8f), imageTexture);
+			GUI.color = new Color(1f, 1f, 1f, 1f * panelOpacity);
+		
+		
+			imageTexture = closeup3Texture;
+			imageOpacity = 0.9f;
+			textureX = panelX + panelWidth * 0.37f;
+			textureWidth = imageTexture.width * (textureHeight / imageTexture.height);
+			GUI.color = new Color(imageLuminosity, imageLuminosity, imageLuminosity, imageOpacity * panelOpacity);
+			GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), imageTexture);
+			GUI.color = new Color(1f, 1f, 1f, 1f * panelOpacity);
+		
+			imageTexture = pumaCrossbonesDarkRedTexture;
+			GUI.color = new Color(0.93f, 0.93f, 0.93f, redXOpacity * panelOpacity);
+			GUI.DrawTexture(new Rect(textureX + textureWidth * 0.1f, textureY + textureHeight * 0.25f, textureWidth * 0.8f, textureHeight * 0.8f), imageTexture);
+			GUI.color = new Color(1f, 1f, 1f, 1f * panelOpacity);
+		
+		
+		
+			imageTexture = closeup4Texture;
+			imageOpacity = 0.9f;
+			textureX = panelX + panelWidth * 0.05f;
+			textureY = panelY + panelHeight * 0.52f;
+			textureWidth = imageTexture.width * (textureHeight / imageTexture.height);
+			GUI.color = new Color(imageLuminosity, imageLuminosity, imageLuminosity, imageOpacity * panelOpacity);
+			GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), imageTexture);
+			GUI.color = new Color(1f, 1f, 1f, 1f * panelOpacity);
+		
+			imageTexture = pumaCrossbonesDarkRedTexture;
+			GUI.color = new Color(0.93f, 0.93f, 0.93f, redXOpacity * panelOpacity);
+			GUI.DrawTexture(new Rect(textureX + textureWidth * 0.1f, textureY + textureHeight * 0.25f, textureWidth * 0.8f, textureHeight * 0.8f), imageTexture);
+			GUI.color = new Color(1f, 1f, 1f, 1f * panelOpacity);
+
+		
+			imageTexture = closeup5Texture;
+			imageOpacity = 1f;
+			textureX = panelX + panelWidth * 0.21f;
+			textureWidth = imageTexture.width * (textureHeight / imageTexture.height);
+			GUI.color = new Color(imageLuminosity, imageLuminosity, imageLuminosity, imageOpacity * panelOpacity);
+			GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), imageTexture);
+			GUI.color = new Color(1f, 1f, 1f, 1f * panelOpacity);
+		
+			imageTexture = pumaCrossbonesDarkRedTexture;
+			GUI.color = new Color(0.93f, 0.93f, 0.93f, redXOpacity * panelOpacity);
+			GUI.DrawTexture(new Rect(textureX + textureWidth * 0.1f, textureY + textureHeight * 0.25f, textureWidth * 0.8f, textureHeight * 0.8f), imageTexture);
+			GUI.color = new Color(1f, 1f, 1f, 1f * panelOpacity);
+
+		
+			imageTexture = closeup6Texture;
+			imageOpacity = 1f;
+			textureX = panelX + panelWidth * 0.37f;
+			textureWidth = imageTexture.width * (textureHeight / imageTexture.height);
+			GUI.color = new Color(imageLuminosity, imageLuminosity, imageLuminosity, imageOpacity * panelOpacity);
+			GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), imageTexture);
+			GUI.color = new Color(1f, 1f, 1f, 1f * panelOpacity);
+		
+			imageTexture = pumaCrossbonesDarkRedTexture;
+			GUI.color = new Color(0.93f, 0.93f, 0.93f, redXOpacity * panelOpacity);
+			GUI.DrawTexture(new Rect(textureX + textureWidth * 0.1f, textureY + textureHeight * 0.25f, textureWidth * 0.8f, textureHeight * 0.8f), imageTexture);
+			GUI.color = new Color(1f, 1f, 1f, 1f * panelOpacity);
+		
+		}
+
+		
+		// level text	
 		string titleText1 = "empty text";
 		string titleText2 = "empty text";
 		string landscapeText1 = "empty text";
@@ -671,10 +818,12 @@ public class InfoPanel : MonoBehaviour
 		string survivalText1 = "empty text";
 		string survivalText2 = "empty text";
 		Color labelColor = new Color(0f, 0f, 0f);
+		Color subTextColor1 = new Color(0f, 0f, 0f);
+		Color subTextColor2 = new Color(0f, 0f, 0f);
 		
 		switch (currentLevel) {
 		case 0:
-			titleText1 = "Welcome to Level 1:";
+			titleText1 = "Level 1:";
 			titleText2 = "WILD NATURE";
 			labelColor = new Color(0.2f, 0.7f, 0.14f);
 			landscapeText1 = "Natural pristine wilderness";
@@ -683,16 +832,16 @@ public class InfoPanel : MonoBehaviour
 			survivalText2 = "Hunt poorly and you die";
 			break;
 		case 1:
-			titleText1 = "Welcome to Level 2:";
+			titleText1 = "Level 2:";
 			titleText2 = "HUMAN ARRIVAL";
 			labelColor = new Color(0.85f, 0.66f, 0.0f);
-			landscapeText1 = "First encroachment by humans";
+			landscapeText1 = "First presence of humans";
 			landscapeText2 = "Roads with light traffic";
 			survivalText1 = "Cross roads carefully to chase prey";
 			survivalText2 = "If a vehicle hits you - instant death";
 			break;
 		case 2:
-			titleText1 = "Welcome to Level 3:";
+			titleText1 = "Level 3:";
 			titleText2 = "DEVELOPMENT";
 			labelColor = new Color(1f, 0.5f, 0.0f);
 			landscapeText1 = "Humans have altered the landscape";
@@ -701,7 +850,7 @@ public class InfoPanel : MonoBehaviour
 			survivalText2 = "Be extra careful crossing roads";
 			break;
 		case 3:
-			titleText1 = "Welcome to Level 4:";
+			titleText1 = "Level 4:";
 			titleText2 = "FRAGMENTATION";
 			labelColor = new Color(1f, 0.2f, 0.0f);
 			landscapeText1 = "Human activity and roads everywhere";
@@ -710,27 +859,66 @@ public class InfoPanel : MonoBehaviour
 			survivalText2 = "Stay off the roads - or instant death";
 			break;
 		case 4:
-			titleText1 = "Welcome to Level 5:";
-			titleText2 = "CONGRATULATIONS!";
+			titleText1 = "Level 5:";
+			titleText2 = "CONNECTIVITY!";
 			labelColor = new Color(0.14f, 0.7f, 0.14f);
 			landscapeText1 = "Humans have become good neighbors";
-			landscapeText2 = "CONNECTIVITY is possible again";
+			landscapeText2 = "Free movement is possible again";
 			survivalText1 = "Travel easily over and under roads";
 			survivalText2 = "You still need to stay clear of cars";
 			break;
 		case 5:
-			titleText1 = "You've Made It...";
-			titleText2 = "The Population Has Survived!";
-			labelColor = new Color(0.19f, 0.65f, 0.19f);
-			landscapeText1 = "Local pumas are in good health,";
-			landscapeText2 = "And living in sustainable habitat";
-			survivalText1 = "For Real Pumas, the threats remain";
-			survivalText2 = "There's still time...but not much...";
+			if (populationDoneFlag == true) {
+				// local extinction
+				titleText1 = "You didn't make it...";
+				titleText2 = "The Population Is Extinct!";
+				labelColor = new Color(0.90f * 0.78f, 0.15f * 0.78f, 0f);
+				landscapeText1 = "Local pumas have not survived";
+				landscapeText2 = "The ecosystem's health will decline";
+			}
+			else {
+				// successful completion
+				titleText1 = "You've Made It...";
+				titleText2 = "Local Pumas Have Survived!";
+				labelColor = new Color(0.88f, 0.65f, 0.20f);
+				if (scoringSystem.GetPopulationHealth() < 0.2f) {
+					subTextColor1 = new Color(0.9f, 0.05f, 0f, 1f);
+					subTextColor2 = new Color(0.86f, 0.07f, 0f, 1f);
+					landscapeText1 = "CRITICAL";
+					landscapeText2 = "But it will improve in this good habitat";
+				}
+				else if (scoringSystem.GetPopulationHealth() < 0.4f) {
+					subTextColor1 = new Color(0.975f, 0.40f, 0f, 1f);
+					subTextColor2 = new Color(0.99f, 0.40f, 0f, 1f);
+					landscapeText1 = "ENDANGERED";
+					landscapeText2 = "But it will improve in this good habitat";
+				}
+				else if (scoringSystem.GetPopulationHealth() < 0.6f) {
+					subTextColor1 = new Color(0.85f * 1.13f, 0.80f * 1.13f, 0f, 0.9f);
+					subTextColor2 = new Color(0.85f * 0.90f, 0.80f * 0.90f, 0f, 0.85f);
+					landscapeText1 = "SUSTAINING";
+					landscapeText2 = "It will get stronger in this good habitat";
+				}
+				else if (scoringSystem.GetPopulationHealth() < 0.8f) {
+					subTextColor1 = new Color(0.5f * 1.4f, 0.7f * 1.4f, 0f, 1f);
+					subTextColor2 = new Color(0.5f * 1.04f, 0.7f * 1.04f, 0f, 1f);
+					landscapeText1 = "ESTABLISHED";
+					landscapeText2 = "It will stay strong in this good habitat";
+				}
+				else {
+					subTextColor1 = new Color(0f, 0.85f, 0f, 1f);
+					subTextColor2 = new Color(0f, 0.75f, 0f, 1f);
+					landscapeText1 = "THRIVING";
+					landscapeText2 = "It will stay strong in this good habitat";
+				}
+			}
+			survivalText1 = "Puma Populations face great risks";
+			survivalText2 = "You can make a difference...";
 			break;
 		}
 
 		style.alignment = TextAnchor.MiddleLeft;
-		float colorScale = 0.74f;
+		float colorScale = 0.78f;
 		float xOffset = panelWidth * -0.017f;
 		float yOffset = panelHeight * 0.042f;
 		
@@ -750,25 +938,48 @@ public class InfoPanel : MonoBehaviour
 		style.fontSize = (int)(overlayRect.width * 0.024f);
 		style.fontStyle = FontStyle.BoldAndItalic;
 		style.normal.textColor = new Color(0.846f, 0.537f, 0.12f, 1f);
-		GUI.Button(new Rect(xOffset + panelX + panelWidth * 0.58f, yOffset + panelY + panelHeight * 0.29f, panelWidth * 0.4f, panelHeight * 0.1f), (currentLevel == 5 ? "In Game" : "Landscape"), style);
+		GUI.Button(new Rect(xOffset + panelX + panelWidth * 0.58f, yOffset + panelY + panelHeight * 0.29f, panelWidth * 0.4f, panelHeight * 0.1f), (currentLevel == 5 ? "Result" : "Landscape"), style);
 		
 		style.fontSize = (int)(overlayRect.width * 0.020f);
 		style.fontStyle = FontStyle.Normal;
 		style.normal.textColor = new Color(0.99f * colorScale, 0.88f * colorScale, 0.66f * colorScale, 1f);
-		GUI.Button(new Rect(xOffset + panelX + panelWidth * 0.6f, yOffset + panelY + panelHeight * 0.37f, panelWidth * 0.4f, panelHeight * 0.1f), landscapeText1, style);
-		GUI.Button(new Rect(xOffset + panelX + panelWidth * 0.6f, yOffset + panelY + panelHeight * 0.45f, panelWidth * 0.4f, panelHeight * 0.1f), landscapeText2, style);
-
+		if (currentLevel == 5 && populationDoneFlag == false) {
+			// final screen after successful game completion
+			GUI.Button(new Rect(xOffset + panelX + panelWidth * 0.6f, yOffset + panelY + panelHeight * 0.37f, panelWidth * 0.4f, panelHeight * 0.1f), "Population:", style);
+			GUI.Button(new Rect(xOffset + panelX + panelWidth * 0.6f, yOffset + panelY + panelHeight * 0.45f, panelWidth * 0.4f, panelHeight * 0.1f), landscapeText2, style);
+			style.normal.textColor = subTextColor2;
+			GUI.Button(new Rect(xOffset + panelX + panelWidth * 0.81f, yOffset + panelY + panelHeight * 0.37f, panelWidth * 0.4f, panelHeight * 0.1f), landscapeText1, style);
+			int healthInt = (int)(scoringSystem.GetPopulationHealth() * 100);
+			float yOffset2 = panelHeight * -0.005f;
+			float leftShift = panelWidth * 0.195f;
+			GUI.color = new Color(0f, 0f, 0f, 1f * panelOpacity);
+			GUI.Box(new Rect(xOffset + panelX + panelWidth * 0.92f - leftShift, yOffset + yOffset2 + panelY + panelHeight * 0.33f, panelWidth * 0.069f, panelHeight * 0.13f), "");
+			GUI.color = new Color(1f, 1f, 1f, 1f * panelOpacity);
+			style.fontStyle = FontStyle.Bold;
+			style.fontSize = (int)(overlayRect.width * 0.020f);
+			GUI.Button(new Rect(xOffset + panelX + panelWidth * 0.93f - leftShift, yOffset + yOffset2 + panelY + panelHeight * 0.325f, panelWidth * 0.4f, panelHeight * 0.1f), healthInt + "%", style);
+			//style.fontStyle = FontStyle.Normal;
+			style.fontSize = (int)(overlayRect.width * 0.014f);
+			GUI.Button(new Rect(xOffset + panelX + panelWidth * 0.93f - leftShift, yOffset + yOffset2 + panelY + panelHeight * 0.376f, panelWidth * 0.4f, panelHeight * 0.1f), "Health", style);
+		}
+		else {
+			// normal handling
+			GUI.Button(new Rect(xOffset + panelX + panelWidth * 0.6f, yOffset + panelY + panelHeight * 0.37f, panelWidth * 0.4f, panelHeight * 0.1f), landscapeText1, style);
+			GUI.Button(new Rect(xOffset + panelX + panelWidth * 0.6f, yOffset + panelY + panelHeight * 0.45f, panelWidth * 0.4f, panelHeight * 0.1f), landscapeText2, style);
+		}
+			
 		//
 
 		style.fontSize = (int)(overlayRect.width * 0.024f);
 		style.fontStyle = FontStyle.BoldAndItalic;
-		style.normal.textColor = (currentLevel == 5 ? (new Color(0.95f * colorScale, 0.305f * colorScale, 0.0f * colorScale, 1f)) : (new Color(0.846f, 0.537f, 0.12f, 1f)));
+		style.normal.textColor = (new Color(0.846f, 0.537f, 0.12f, 1f));
 		GUI.Button(new Rect(xOffset + panelX + panelWidth * 0.58f, yOffset + panelY + panelHeight * 0.59f, panelWidth * 0.4f, panelHeight * 0.1f), (currentLevel == 5 ? "Real World" : "Survival"), style);
 
 		style.fontSize = (int)(overlayRect.width * 0.020f);
 		style.fontStyle = FontStyle.Normal;
-		style.normal.textColor = (currentLevel != 5) ? (new Color(0.99f * colorScale, 0.88f * colorScale, 0.66f * colorScale, 1f)) : (new Color(1f * colorScale, 0.32f * colorScale, 0.0f * colorScale, 1f));
+		style.normal.textColor = (currentLevel != 5) ? (new Color(0.99f * colorScale, 0.88f * colorScale, 0.66f * colorScale, 1f)) : (new Color(1f * colorScale, 0.14f * colorScale, 0.0f * colorScale, 1f));
 		GUI.Button(new Rect(xOffset + panelX + panelWidth * 0.6f, yOffset + panelY + panelHeight * 0.67f, panelWidth * 0.4f, panelHeight * 0.1f), survivalText1, style);
+		style.normal.textColor = new Color(0.99f * colorScale, 0.88f * colorScale, 0.66f * colorScale, 1f);
 		GUI.Button(new Rect(xOffset + panelX + panelWidth * 0.6f, yOffset + panelY + panelHeight * 0.75f, panelWidth * 0.4f, panelHeight * 0.1f), survivalText2, style);
 
 		//
@@ -783,12 +994,12 @@ public class InfoPanel : MonoBehaviour
 	//======================================================================
 	//======================================================================
 	//======================================================================
-	//								BIOLOGY
+	//								GENERAL (TEMP)
 	//======================================================================
 	//======================================================================
 	//======================================================================
 	
-	void DrawBiologyScreen(float panelOpacity) 
+	void DrawGeneralScreen(float panelOpacity) 
 	{ 
 		float panelX = overlayRect.x + overlayRect.width * 0.06f;
 		float panelY = overlayRect.y + overlayRect.height * 0.205f;
@@ -833,8 +1044,7 @@ public class InfoPanel : MonoBehaviour
 		GUI.color = new Color(0f, 0f, 0f, 0.5f * panelOpacity);
 		GUI.Box(new Rect(panelX + panelWidth/2 + overlayRect.width * 0.02f + gapSize/2, panelY, panelWidth/2 - overlayRect.width * 0.02f - gapSize/2, panelHeight), "");
 		GUI.color = new Color(1f, 1f, 1f, 1f * panelOpacity);
-		
-		
+				
 		
 		// HEADER TEXT 
 		
@@ -847,12 +1057,12 @@ public class InfoPanel : MonoBehaviour
 			headerTextR = "Physical Characteristics";
 			break;
 		case 1:
-			headerTextL = "Scoring System";
-			headerTextR = "Ecological Role";
-			break;
-		case 2:
 			headerTextL = "Catching Deer";
 			headerTextR = "Pumas and Prey";
+			break;
+		case 2:
+			headerTextL = "Scoring System";
+			headerTextR = "Ecological Role";
 			break;
 		case 3:
 			headerTextL = "Car Avoidance";
@@ -860,7 +1070,91 @@ public class InfoPanel : MonoBehaviour
 			break;
 		}
 		
-		yOffset = overlayRect.height * 0.12f;
+		yOffset = overlayRect.height * 0.115f;
+		float colorScale = 0.74f;
+		
+		GUI.color = new Color(1f, 1f, 1f, 1f * panelOpacity);
+		style.fontSize = (int)(overlayRect.width * 0.022f);
+		style.fontStyle = FontStyle.Normal;
+		style.normal.textColor = new Color(0.99f * colorScale, 0.88f * colorScale, 0.66f * colorScale, 1f);
+		GUI.Button(new Rect(panelX, yOffset + overlayRect.y + overlayRect.height * 0.077f, panelWidth/2 - overlayRect.width * 0.02f - gapSize/2, overlayRect.height * 0.1f), headerTextL, style);
+
+		GUI.color = new Color(1f, 1f, 1f, 1f * panelOpacity);
+		style.fontSize = (int)(overlayRect.width * 0.022f);
+		style.fontStyle = FontStyle.Normal;
+		style.normal.textColor = new Color(0.99f * colorScale, 0.88f * colorScale, 0.66f * colorScale, 1f);
+		GUI.Button(new Rect(panelX + panelWidth/2 + overlayRect.width * 0.02f + gapSize/2, yOffset + overlayRect.y + overlayRect.height * 0.077f, panelWidth/2 - overlayRect.width * 0.02f - gapSize/2, overlayRect.height * 0.1f), headerTextR, style);
+	}	
+
+
+	
+	//======================================================================
+	//======================================================================
+	//======================================================================
+	//								BIOLOGY
+	//======================================================================
+	//======================================================================
+	//======================================================================
+	
+	void DrawBiologyScreen(float panelOpacity) 
+	{ 
+		float panelX = overlayRect.x + overlayRect.width * 0.06f;
+		float panelY = overlayRect.y + overlayRect.height * 0.205f;
+		float panelWidth = overlayRect.width * 0.88f;
+		float panelHeight = overlayRect.height * 0.6575f;
+		float fontScale = 0.8f;
+
+		GUIStyle style = new GUIStyle();
+		style.alignment = TextAnchor.MiddleCenter;
+
+		float yOffset = overlayRect.height * 0.022f;
+
+		// two labels at top of panel	
+		GUI.color = new Color(0f, 0f, 0f, 1f * panelOpacity);
+		GUI.Box(new Rect(panelX - overlayRect.width * 0.02f, yOffset + overlayRect.y + overlayRect.height * 0.095f, overlayRect.width * 0.14f, overlayRect.height * 0.064f), "");
+		GUI.color = new Color(1f, 1f, 1f, 1f * panelOpacity);
+		style.fontSize = (int)(overlayRect.width * 0.021f);
+		style.fontStyle = FontStyle.BoldAndItalic;
+		style.normal.textColor = new Color(0.816f, 0.537f, 0.18f, 1f);
+		GUI.Button(new Rect(panelX - overlayRect.width * 0.02f, yOffset + overlayRect.y + overlayRect.height * 0.077f, overlayRect.width * 0.14f, overlayRect.height * 0.1f), "In Game", style);
+
+		GUI.color = new Color(0f, 0f, 0f, 1f * panelOpacity);
+		GUI.Box(new Rect(overlayRect.x + overlayRect.width - overlayRect.width * 0.2f, yOffset + overlayRect.y + overlayRect.height * 0.095f, overlayRect.width * 0.16f, overlayRect.height * 0.064f), "");
+		GUI.color = new Color(1f, 1f, 1f, 1f * panelOpacity);
+		style.fontSize = (int)(overlayRect.width * 0.021f);
+		style.fontStyle = FontStyle.BoldAndItalic;
+		style.normal.textColor = new Color(0.816f, 0.537f, 0.18f, 1f);
+		GUI.Button(new Rect(overlayRect.x + overlayRect.width - overlayRect.width * 0.2f, yOffset + overlayRect.y + overlayRect.height * 0.077f, overlayRect.width * 0.16f, overlayRect.height * 0.1f), "Real World", style);
+
+
+		// background rectangles
+		float gapSize = overlayRect.width * 0.02f;
+		
+		//left side
+		GUI.color = new Color(0f, 0f, 0f, 1f * panelOpacity);
+		GUI.Box(new Rect(panelX - overlayRect.width * 0.02f, panelY - overlayRect.height * 0.025f, panelWidth/2 + overlayRect.width * 0.02f - gapSize/2, panelHeight + overlayRect.height * 0.05f), "");
+		GUI.color = new Color(0f, 0f, 0f, 0.5f * panelOpacity);
+		GUI.Box(new Rect(panelX, panelY, panelWidth/2 - overlayRect.width * 0.02f - gapSize/2, panelHeight), "");
+		GUI.color = new Color(1f, 1f, 1f, 1f * panelOpacity);
+		GUI.Box(new Rect(panelX + gapSize*0.75f, panelY  + panelHeight * 0.23f, panelWidth/2 + overlayRect.width*0.02f - gapSize*4.0f, panelHeight * 0.22f), "");
+		GUI.Box(new Rect(panelX + gapSize*0.75f, panelY  + panelHeight * 0.57f, (panelWidth/2 + overlayRect.width*0.02f - gapSize*4.0f) * 0.5f - gapSize*0.5f, panelHeight * 0.43f - gapSize*0.75f), "");
+		GUI.Box(new Rect(panelX + gapSize*0.75f + ((panelWidth/2 + overlayRect.width*0.02f - gapSize*4.0f) * 0.5f - gapSize*0.5f) + gapSize, panelY  + panelHeight * 0.57f, (panelWidth/2 + overlayRect.width*0.02f - gapSize*4.0f) * 0.5f - gapSize*0.5f, panelHeight * 0.43f - gapSize*0.75f), "");
+
+		// right side
+		GUI.color = new Color(0f, 0f, 0f, 1f * panelOpacity);
+		GUI.Box(new Rect(panelX + panelWidth/2 + gapSize/2, panelY - overlayRect.height * 0.025f, panelWidth/2 + overlayRect.width * 0.02f - gapSize/2, panelHeight + overlayRect.height * 0.05f), "");
+		GUI.color = new Color(0f, 0f, 0f, 0.5f * panelOpacity);
+		GUI.Box(new Rect(panelX + panelWidth/2 + overlayRect.width * 0.02f + gapSize/2, panelY, panelWidth/2 - overlayRect.width * 0.02f - gapSize/2, panelHeight), "");
+		GUI.color = new Color(1f, 1f, 1f, 1f * panelOpacity);
+		
+		
+		
+		// HEADER TEXT 
+		
+		string headerTextL = "Speed and Stealth";
+		string headerTextR = "Physical Characteristics";
+		
+		yOffset = overlayRect.height * 0.115f;
 		float colorScale = 0.74f;
 		
 		GUI.color = new Color(1f, 1f, 1f, 1f * panelOpacity);
@@ -875,10 +1169,722 @@ public class InfoPanel : MonoBehaviour
 		style.normal.textColor = new Color(0.99f * colorScale, 0.88f * colorScale, 0.66f * colorScale, 1f);
 		GUI.Button(new Rect(panelX + panelWidth/2 + overlayRect.width * 0.02f + gapSize/2, yOffset + overlayRect.y + overlayRect.height * 0.077f, panelWidth/2 - overlayRect.width * 0.02f - gapSize/2, overlayRect.height * 0.1f), headerTextR, style);
 
+
+		float topRowOffsetY = panelHeight * 0.09f;
 		
 		
+
+		// BLACK ARROW
+
+		float textureX;
+		float textureY;
+		float textureHeight;
+		float textureWidth;
+			
+		GUI.color = new Color(0.5f, 0.5f, 0.5f, 1f * panelOpacity);
+		textureX = panelX + panelWidth * 0.135f;
+		textureY = panelY + panelHeight * 0.481f;
+		textureHeight = panelHeight * 0.06f;
+		textureWidth = panelWidth * 0.19f;
+		GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), blackArrowTexture);
+
+
+		
+		// SPEED AND STEALTH
+		
+		GUI.color = new Color(1f, 1f, 1f, panelOpacity);
+
+		// icons
+		textureX = panelX + panelWidth * 0.118f;
+		textureY = panelY + panelHeight * 0.602f;
+		textureHeight = panelHeight * 0.095f;
+		textureWidth = pumaRunTexture.width * (textureHeight / pumaRunTexture.height);
+		GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), pumaRunTexture);
+		textureX = panelX + panelWidth * 0.25f;
+		textureY = panelY + panelHeight * 0.60f;
+		textureWidth = pumaStealthTexture.width * (textureHeight / pumaStealthTexture.height);
+		GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), pumaStealthTexture);
+		
+		// labels
+		
+		colorScale = 0.74f;
+		style.normal.textColor = new Color(0.99f * colorScale, 0.88f * colorScale, 0.66f * colorScale, 1f);
+		style.fontSize = (int)(overlayRect.width * 0.014f);
+		style.fontStyle = FontStyle.BoldAndItalic;
+		style.alignment = TextAnchor.MiddleCenter;
+		textureX = panelX + panelWidth * 0.02f;
+		textureY = panelY + panelHeight * 0.565f;
+		textureWidth = panelWidth * 0.1f;
+		textureHeight = panelHeight * 0.1f;
+		GUI.Box(new Rect(textureX + panelWidth*0.01f, textureY + panelHeight*0.02f, textureWidth - panelWidth*0.015f, textureHeight + panelHeight*0.02f), "");
+		GUI.Button(new Rect(textureX, textureY, textureWidth, textureHeight), "Excels at", style);	
+		textureX = panelX + panelWidth * 0.34f;
+		GUI.Box(new Rect(textureX + panelWidth*0.007f, textureY + panelHeight*0.02f, textureWidth - panelWidth*0.012f, textureHeight + panelHeight*0.02f), "");
+		GUI.Button(new Rect(textureX, textureY, textureWidth, textureHeight), "Excels at", style);
+
+		style.fontSize = (int)(overlayRect.width * 0.021f);
+		style.fontStyle = FontStyle.BoldAndItalic;
+		style.normal.textColor = new Color(0.816f, 0.537f, 0.18f, 1f);
+		textureX = panelX + panelWidth * 0.02f;
+		textureY = panelY + panelHeight * 0.610f;
+		textureWidth = panelWidth * 0.1f;
+		textureHeight = panelHeight * 0.1f;
+		GUI.Button(new Rect(textureX, textureY, textureWidth, textureHeight), "Speed", style);	
+		textureX = panelX + panelWidth * 0.34f;
+		GUI.Button(new Rect(textureX, textureY, textureWidth, textureHeight), "Stealth", style);
+
+		// explanatory text
+		
+		float textOffsetY = panelHeight * 0.035f;
+		float textGap = panelWidth * 0.032f;
+		style.alignment = TextAnchor.MiddleLeft;
+		style.fontSize = (int)(overlayRect.width * 0.015f);
+		style.fontStyle = FontStyle.BoldAndItalic;
+		
+		style.normal.textColor = new Color(0.84f, 0.61f, 0f, 0.9f);
+		textureY = panelY + panelHeight * 0.11f;
+		GUI.Box(new Rect(textGap + panelX + gapSize*0.75f + panelWidth*0.08f, textureY + panelHeight*0.01f, (panelWidth/2 + overlayRect.width*0.02f - gapSize*4.0f) * 0.5f - gapSize*0.5f, textureHeight - panelHeight*0.02f), "");
+		GUI.Button(new Rect(textGap + panelX + gapSize*0.75f + panelWidth*0.10f, textureY, (panelWidth/2 + overlayRect.width*0.02f - gapSize*4.0f) * 0.5f - gapSize*0.5f, textureHeight), "When hunting deer...", style);
+		style.fontSize = (int)(overlayRect.width * 0.016f);
+		style.fontStyle = FontStyle.Bold;
+		style.normal.textColor = new Color(0.99f * colorScale, 0.88f * colorScale, 0.66f * colorScale, 1f);
+		textureY = panelY + panelHeight * 0.665f + textOffsetY;
+		GUI.Button(new Rect(textGap + panelX + gapSize*0.75f, textureY, (panelWidth/2 + overlayRect.width*0.02f - gapSize*4.0f) * 0.5f - gapSize*0.5f, textureHeight), "Young cats can", style);
+		textureY = panelY + panelHeight * 0.715f + textOffsetY;
+		GUI.Button(new Rect(textGap + panelX + gapSize*0.75f, textureY, (panelWidth/2 + overlayRect.width*0.02f - gapSize*4.0f) * 0.5f - gapSize*0.5f, textureHeight), "run very fast", style);
+		style.fontSize = (int)(overlayRect.width * 0.015f);
+		style.fontStyle = FontStyle.Normal;
+		textureY = panelY + panelHeight * 0.78f + textOffsetY;
+		GUI.Button(new Rect(textGap + panelX + gapSize*0.75f, textureY, (panelWidth/2 + overlayRect.width*0.02f - gapSize*4.0f) * 0.5f - gapSize*0.5f, textureHeight), "...but they can't", style);
+		textureY = panelY + panelHeight * 0.828f + textOffsetY;
+		GUI.Button(new Rect(textGap + panelX + gapSize*0.75f, textureY, (panelWidth/2 + overlayRect.width*0.02f - gapSize*4.0f) * 0.5f - gapSize*0.5f, textureHeight), "sneak up close", style);
+		
+		style.fontSize = (int)(overlayRect.width * 0.016f);
+		style.fontStyle = FontStyle.Bold;
+		textureY = panelY + panelHeight * 0.665f + textOffsetY;
+		GUI.Button(new Rect(textGap + panelX + gapSize*0.75f + ((panelWidth/2 + overlayRect.width*0.02f - gapSize*4.0f) * 0.5f - gapSize*0.5f) + gapSize, textureY, (panelWidth/2 + overlayRect.width*0.02f - gapSize*4.0f) * 0.5f - gapSize*0.5f, textureHeight), "Older cats can", style);
+		textureY = panelY + panelHeight * 0.715f + textOffsetY;
+		GUI.Button(new Rect(textGap + panelX + gapSize*0.75f + ((panelWidth/2 + overlayRect.width*0.02f - gapSize*4.0f) * 0.5f - gapSize*0.5f) + gapSize, textureY, (panelWidth/2 + overlayRect.width*0.02f - gapSize*4.0f) * 0.5f - gapSize*0.5f, textureHeight), "sneak up close", style);
+		style.fontSize = (int)(overlayRect.width * 0.015f);
+		style.fontStyle = FontStyle.Normal;
+		textureY = panelY + panelHeight * 0.78f + textOffsetY;
+		GUI.Button(new Rect(textGap + panelX + gapSize*0.75f + ((panelWidth/2 + overlayRect.width*0.02f - gapSize*4.0f) * 0.5f - gapSize*0.5f) + gapSize, textureY, (panelWidth/2 + overlayRect.width*0.02f - gapSize*4.0f) * 0.5f - gapSize*0.5f, textureHeight), "...but they can't", style);
+		textureY = panelY + panelHeight * 0.828f + textOffsetY;
+		GUI.Button(new Rect(textGap + panelX + gapSize*0.75f + ((panelWidth/2 + overlayRect.width*0.02f - gapSize*4.0f) * 0.5f - gapSize*0.5f) + gapSize, textureY, (panelWidth/2 + overlayRect.width*0.02f - gapSize*4.0f) * 0.5f - gapSize*0.5f, textureHeight), "run very fast", style);
+		style.alignment = TextAnchor.MiddleCenter;
+
+
+
+
+		
+		
+		// PUMA HEADS and NAMES
+		
+		Texture2D headshotTexture;
+		float rightShift = panelWidth * 0.001f;
+				
+		GUI.color = new Color(1f, 1f, 1f, panelOpacity);
+		textureY = panelY + panelHeight*0.2f + topRowOffsetY;
+		textureHeight = panelHeight * 0.095f;
+		float textHeight = panelHeight * 0.05f;
+
+		style.normal.textColor = new Color(0.88f, 0.64f, 0f, 0.85f);
+		style.fontSize = (int)(overlayRect.width * 0.016f);
+		style.fontStyle = FontStyle.Italic;
+		style.alignment = TextAnchor.MiddleCenter;
+
+		// textures 1-6
+		headshotTexture = closeup1Texture;
+		textureX = panelX + panelWidth * 0.02f + rightShift;
+		textureWidth = headshotTexture.width * (textureHeight / headshotTexture.height);
+		GUI.color = new Color(1f, 1f, 1f, 0.90f * panelOpacity);
+		GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), headshotTexture);
+		GUI.Button(new Rect(textureX, textureY - textureHeight * 0.5f, textureWidth, textHeight), "Eric", style);
+
+		headshotTexture = closeup2Texture;
+		textureX = panelX + panelWidth * 0.087f + rightShift;
+		textureWidth = headshotTexture.width * (textureHeight / headshotTexture.height);
+		GUI.color = new Color(1f, 1f, 1f, 0.90f * panelOpacity);
+		GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), headshotTexture);
+		GUI.Button(new Rect(textureX, textureY - textureHeight * 0.5f, textureWidth, textHeight), "Palo", style);
+		
+		headshotTexture = closeup3Texture;
+		textureX = panelX + panelWidth * 0.1675f + rightShift;
+		textureWidth = headshotTexture.width * (textureHeight / headshotTexture.height);
+		GUI.color = new Color(1f, 1f, 1f, 0.80f * panelOpacity);
+		GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), headshotTexture);
+		GUI.Button(new Rect(textureX, textureY - textureHeight * 0.5f, textureWidth, textHeight), "Mitch", style);
+		
+		headshotTexture = closeup4Texture;
+		textureX = panelX + panelWidth * 0.2375f + rightShift;
+		textureWidth = headshotTexture.width * (textureHeight / headshotTexture.height);
+		GUI.color = new Color(1f, 1f, 1f, 0.80f * panelOpacity);
+		GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), headshotTexture);
+		GUI.Button(new Rect(textureX, textureY - textureHeight * 0.5f, textureWidth, textHeight), "Trish", style);
+		
+		headshotTexture = closeup5Texture;
+		textureX = panelX + panelWidth * 0.315f + rightShift;
+		textureWidth = headshotTexture.width * (textureHeight / headshotTexture.height);
+		GUI.color = new Color(1f, 1f, 1f, 0.85f * panelOpacity);
+		GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), headshotTexture);
+		GUI.Button(new Rect(textureX, textureY - textureHeight * 0.5f, textureWidth, textHeight), "Liam", style);
+		
+		headshotTexture = closeup6Texture;
+		textureX = panelX + panelWidth * 0.385f + rightShift;
+		textureWidth = headshotTexture.width * (textureHeight / headshotTexture.height);
+		GUI.color = new Color(1f, 1f, 1f, 0.90f * panelOpacity);
+		GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), headshotTexture);
+		GUI.Button(new Rect(textureX, textureY - textureHeight * 0.5f, textureWidth, textHeight), "Barb", style);
+
+
+		
+		// PUMA AGES
+
+		textureWidth = panelWidth * 0.105f;
+		textureY = panelY + panelHeight*0.35f + topRowOffsetY;
+		
+		colorScale = 0.74f;
+		style.normal.textColor = new Color(0.99f * colorScale, 0.88f * colorScale, 0.66f * colorScale, 1f);
+		style.fontSize = (int)(overlayRect.width * 0.014f);
+		style.fontStyle = FontStyle.BoldAndItalic;
+		style.alignment = TextAnchor.MiddleCenter;
+
+
+		textureX = panelX + panelWidth * 0.025f + rightShift;
+		GUI.Button(new Rect(textureX, textureY - textureHeight * 0.5f, textureWidth, textHeight), "2 Years Old", style);
+		
+		textureX = panelX + panelWidth * 0.1725f + rightShift;
+		GUI.Button(new Rect(textureX, textureY - textureHeight * 0.5f, textureWidth, textHeight), "5 Years Old", style);
+
+		textureX = panelX + panelWidth * 0.325f + rightShift;
+		GUI.Button(new Rect(textureX, textureY - textureHeight * 0.5f, textureWidth, textHeight), "8 Years Old", style);
 	}	
 	
+
+	//======================================================================
+	//======================================================================
+	//======================================================================
+	//								PREDATION
+	//======================================================================
+	//======================================================================
+	//======================================================================
+	
+	void DrawPredationScreen(float panelOpacity) 
+	{ 
+		float panelX = overlayRect.x + overlayRect.width * 0.06f;
+		float panelY = overlayRect.y + overlayRect.height * 0.205f;
+		float panelWidth = overlayRect.width * 0.88f;
+		float panelHeight = overlayRect.height * 0.6575f;
+		float fontScale = 0.8f;
+
+		GUIStyle style = new GUIStyle();
+		style.alignment = TextAnchor.MiddleCenter;
+
+		float yOffset = overlayRect.height * 0.022f;
+
+		// two labels at top of panel	
+		GUI.color = new Color(0f, 0f, 0f, 1f * panelOpacity);
+		GUI.Box(new Rect(panelX - overlayRect.width * 0.02f, yOffset + overlayRect.y + overlayRect.height * 0.095f, overlayRect.width * 0.14f, overlayRect.height * 0.064f), "");
+		GUI.color = new Color(1f, 1f, 1f, 1f * panelOpacity);
+		style.fontSize = (int)(overlayRect.width * 0.021f);
+		style.fontStyle = FontStyle.BoldAndItalic;
+		style.normal.textColor = new Color(0.816f, 0.537f, 0.18f, 1f);
+		GUI.Button(new Rect(panelX - overlayRect.width * 0.02f, yOffset + overlayRect.y + overlayRect.height * 0.077f, overlayRect.width * 0.14f, overlayRect.height * 0.1f), "In Game", style);
+
+		GUI.color = new Color(0f, 0f, 0f, 1f * panelOpacity);
+		GUI.Box(new Rect(overlayRect.x + overlayRect.width - overlayRect.width * 0.2f, yOffset + overlayRect.y + overlayRect.height * 0.095f, overlayRect.width * 0.16f, overlayRect.height * 0.064f), "");
+		GUI.color = new Color(1f, 1f, 1f, 1f * panelOpacity);
+		style.fontSize = (int)(overlayRect.width * 0.021f);
+		style.fontStyle = FontStyle.BoldAndItalic;
+		style.normal.textColor = new Color(0.816f, 0.537f, 0.18f, 1f);
+		GUI.Button(new Rect(overlayRect.x + overlayRect.width - overlayRect.width * 0.2f, yOffset + overlayRect.y + overlayRect.height * 0.077f, overlayRect.width * 0.16f, overlayRect.height * 0.1f), "Real World", style);
+
+
+		// background rectangles
+		float gapSize = overlayRect.width * 0.02f;
+		
+		//left side
+		GUI.color = new Color(0f, 0f, 0f, 1f * panelOpacity);
+		GUI.Box(new Rect(panelX - overlayRect.width * 0.02f, panelY - overlayRect.height * 0.025f, panelWidth/2 + overlayRect.width * 0.02f - gapSize/2, panelHeight + overlayRect.height * 0.05f), "");
+		GUI.color = new Color(0f, 0f, 0f, 0.5f * panelOpacity);
+		GUI.Box(new Rect(panelX, panelY, panelWidth/2 - overlayRect.width * 0.02f - gapSize/2, panelHeight), "");
+		GUI.color = new Color(1f, 1f, 1f, 1f * panelOpacity);
+		float upperY = panelY  + panelHeight * 0.13f;
+		float middleY = panelY  + panelHeight * 0.44f;
+		float lowerY = panelY  + panelHeight * 0.75f;
+				
+		GUI.Box(new Rect(panelX + gapSize*0.75f, upperY, panelWidth * 0.145f, panelHeight * 0.25f - gapSize*0.75f), "");
+		GUI.Box(new Rect(panelX + gapSize*0.75f, middleY, panelWidth * 0.145f, panelHeight * 0.25f - gapSize*0.75f), "");
+		GUI.Box(new Rect(panelX + gapSize*0.75f, lowerY, panelWidth * 0.145f, panelHeight * 0.25f - gapSize*0.75f), "");
+		GUI.Box(new Rect(panelX + panelWidth * 0.21f, lowerY, panelWidth * 0.24f, panelHeight * 0.25f - gapSize*0.75f), "");
+		GUI.Box(new Rect(panelX + panelWidth * 0.21f, lowerY, panelWidth * 0.24f, panelHeight * 0.25f - gapSize*0.75f), "");
+
+		// right side
+		GUI.color = new Color(0f, 0f, 0f, 1f * panelOpacity);
+		GUI.Box(new Rect(panelX + panelWidth/2 + gapSize/2, panelY - overlayRect.height * 0.025f, panelWidth/2 + overlayRect.width * 0.02f - gapSize/2, panelHeight + overlayRect.height * 0.05f), "");
+		GUI.color = new Color(0f, 0f, 0f, 0.5f * panelOpacity);
+		GUI.Box(new Rect(panelX + panelWidth/2 + overlayRect.width * 0.02f + gapSize/2, panelY, panelWidth/2 - overlayRect.width * 0.02f - gapSize/2, panelHeight), "");
+		GUI.color = new Color(1f, 1f, 1f, 1f * panelOpacity);
+		
+		
+		
+		// HEADER TEXT 
+		
+		float textureX;
+		float textureY;
+		float textureHeight;
+		float textureWidth;
+
+		string headerTextL = "Catching Deer";
+		string headerTextR = "Pumas and Prey";
+		
+		yOffset = overlayRect.height * 0.115f;
+		float colorScale = 0.74f;
+		
+		GUI.color = new Color(1f, 1f, 1f, 1f * panelOpacity);
+		style.fontSize = (int)(overlayRect.width * 0.022f);
+		style.fontStyle = FontStyle.Normal;
+		style.normal.textColor = new Color(0.99f * colorScale, 0.88f * colorScale, 0.66f * colorScale, 1f);
+		GUI.Button(new Rect(panelX, yOffset + overlayRect.y + overlayRect.height * 0.077f, panelWidth/2 - overlayRect.width * 0.02f - gapSize/2, overlayRect.height * 0.1f), headerTextL, style);
+
+		GUI.color = new Color(1f, 1f, 1f, 1f * panelOpacity);
+		style.fontSize = (int)(overlayRect.width * 0.022f);
+		style.fontStyle = FontStyle.Normal;
+		style.normal.textColor = new Color(0.99f * colorScale, 0.88f * colorScale, 0.66f * colorScale, 1f);
+		GUI.Button(new Rect(panelX + panelWidth/2 + overlayRect.width * 0.02f + gapSize/2, yOffset + overlayRect.y + overlayRect.height * 0.077f, panelWidth/2 - overlayRect.width * 0.02f - gapSize/2, overlayRect.height * 0.1f), headerTextR, style);
+
+
+		float topRowOffsetY = panelHeight * -0.01f;
+		
+		
+
+		// labels
+		
+		GUI.color = new Color(1f, 1f, 1f, panelOpacity);
+		float textGap = panelWidth * 0.012f;
+
+		colorScale = 0.74f;
+		style.normal.textColor = new Color(0.99f * colorScale, 0.88f * colorScale, 0.66f * colorScale, 1f);
+		style.fontSize = (int)(overlayRect.width * 0.014f);
+		style.fontStyle = FontStyle.BoldAndItalic;
+		style.alignment = TextAnchor.MiddleLeft;
+
+		style.fontSize = (int)(overlayRect.width * 0.021f);
+		style.fontStyle = FontStyle.BoldAndItalic;
+		style.normal.textColor = new Color(0.816f * 1.1f, 0.537f * 1.1f, 0.18f * 1.1f, 1f);
+		textureX = panelX + panelWidth * 0.02f;
+		textureY = panelY + panelHeight * 0.110f;
+		textureWidth = panelWidth * 0.1f;
+		textureHeight = panelHeight * 0.1f;
+		GUI.Button(new Rect(textGap + panelX + gapSize*0.75f, upperY + panelHeight * 0.0f, panelWidth * 0.3f, panelHeight * 0.08f), "Sneak", style);	
+		textureY = panelY + panelHeight * 0.510f;
+		GUI.Button(new Rect(textGap + panelX + gapSize*0.75f, middleY + panelHeight * 0.0f, panelWidth * 0.3f, panelHeight * 0.08f), "Attack", style);
+		textureY = panelY + panelHeight * 0.510f;
+		GUI.Button(new Rect(textGap + panelX + gapSize*0.75f, lowerY + panelHeight * 0.0f, panelWidth * 0.3f, panelHeight * 0.08f), "Jump", style);
+
+		// explanatory text
+		
+		float textOffsetY = panelHeight * 0.035f;
+		style.fontSize = (int)(overlayRect.width * 0.016f);
+		style.fontStyle = FontStyle.BoldAndItalic;
+		style.normal.textColor = new Color(0.88f, 0.64f, 0f, 0.9f);
+		textureY = panelY + panelHeight * 0.17f + textOffsetY;
+		GUI.Button(new Rect(textGap + panelX + gapSize*0.75f, upperY + panelHeight * 0.045f, panelWidth * 0.3f, panelHeight * 0.08f), "around herd...", style);
+		textureY = panelY + panelHeight * 0.52f + textOffsetY;
+		GUI.Button(new Rect(textGap + panelX + gapSize*0.75f, middleY + panelHeight * 0.045f, panelWidth * 0.3f, panelHeight * 0.08f), "from behind...", style);
+		textureY = panelY + panelHeight * 0.52f + textOffsetY;
+		GUI.Button(new Rect(textGap + panelX + gapSize*0.75f, lowerY + panelHeight * 0.045f, panelWidth * 0.3f, panelHeight * 0.08f), "to take prey!", style);
+		style.fontSize = (int)(overlayRect.width * 0.012f);
+		style.fontStyle = FontStyle.Bold;
+		colorScale = 0.65f;
+		style.normal.textColor = new Color(0.99f * colorScale, 0.88f * colorScale, 0.66f * colorScale, 1f);
+		textureY = panelY + panelHeight * 0.226f + textOffsetY;
+		GUI.Button(new Rect(textGap + panelX + gapSize*0.75f, upperY + panelHeight * 0.09f, panelWidth * 0.3f, textureHeight), "Hold LEFT BUTTON", style);
+		textureY = panelY + panelHeight * 0.274f + textOffsetY;
+		GUI.Button(new Rect(textGap + panelX + gapSize*0.75f, upperY + panelHeight * 0.125f, panelWidth * 0.3f, textureHeight), "for diagonal walk", style);
+		textureY = panelY + panelHeight * 0.78f + textOffsetY;
+		GUI.Button(new Rect(textGap + panelX + gapSize*0.75f, middleY + panelHeight * 0.09f, panelWidth * 0.3f, textureHeight), "Go straight in", style);
+		textureY = panelY + panelHeight * 0.828f + textOffsetY;
+		GUI.Button(new Rect(textGap + panelX + gapSize*0.75f, middleY + panelHeight * 0.125f, panelWidth * 0.3f, textureHeight), "toward the rear", style);
+		textureY = panelY + panelHeight * 0.78f + textOffsetY;
+		GUI.Button(new Rect(textGap + panelX + gapSize*0.75f, lowerY + panelHeight * 0.09f, panelWidth * 0.3f, textureHeight), "Tap LEFT BUTTON", style);
+		textureY = panelY + panelHeight * 0.828f + textOffsetY;
+		GUI.Button(new Rect(textGap + panelX + gapSize*0.75f, lowerY + panelHeight * 0.125f, panelWidth * 0.3f, textureHeight), "to take down prey", style);
+		
+		
+		
+		// BLACK ARROWS
+
+		GUI.color = new Color(0.5f, 0.5f, 0.5f, 1f * panelOpacity);
+		textureX = panelX + panelWidth * 0.160f;
+		textureHeight = panelHeight * 0.06f;
+		textureWidth = panelWidth * 0.05f;
+		GUI.DrawTexture(new Rect(textureX, upperY + panelHeight * 0.135f, textureWidth, textureHeight), blackArrowShortTexture);
+		GUI.DrawTexture(new Rect(textureX, middleY + panelHeight * 0.135f, textureWidth, textureHeight), blackArrowShortTexture);
+		GUI.DrawTexture(new Rect(textureX, lowerY + panelHeight * 0.135f, textureWidth, textureHeight), blackArrowShortTexture);
+
+		// PREDATION CIRCLES and DEER
+
+		GUI.color = new Color(1f, 1f, 1f, 0.75f * panelOpacity);
+
+		textureX = panelX + panelWidth * 0.245f;
+		textureY = panelY + panelHeight * 0.22f;
+		textureHeight = panelHeight * 0.40f;
+		textureWidth = panelWidth * 0.225f;
+		GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), predationCirclesTexture);
+		
+		textureX = panelX + panelWidth * 0.115f;
+		textureY = panelY + panelHeight * 0.04f;
+		textureWidth = panelWidth * 0.33f;
+		textureHeight = predationArrowsTexture.height * (textureWidth / predationArrowsTexture.width);
+		GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), predationArrowsTexture);
+		
+		textureX = panelX + panelWidth * 0.32f;
+		textureY = panelY + panelHeight * 0.25f;
+		textureWidth = panelWidth * 0.046f;
+		textureHeight = buckStandTexture.height * (textureWidth / buckStandTexture.width);
+		GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), buckStandTexture);
+
+		textureX = panelX + panelWidth * 0.29f;
+		textureY = panelY + panelHeight * 0.4f;
+		textureWidth = panelWidth * 0.03f;
+		textureHeight = doeStandTexture.height * (textureWidth / doeStandTexture.width);
+		GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), doeStandTexture);
+
+
+		textureX = panelX + panelWidth * 0.39f;
+		textureY = panelY + panelHeight * 0.41f;
+		textureWidth = panelWidth * 0.03f;
+		textureHeight = fawnStandTexture.height * (textureWidth / fawnStandTexture.width);
+		GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), fawnStandTexture);
+
+		// PUMA ATTACKS DEER
+		textureX = panelX + panelWidth * 0.23f;
+		textureY = panelY + panelHeight * 0.77f;
+		textureWidth = panelWidth * 0.19f;
+		textureHeight = pumaAttackTexture.height * (textureWidth / pumaAttackTexture.width);
+		GUI.color = new Color(1f, 1f, 1f, 0.7f * panelOpacity);
+		GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), pumaAttackTexture);
+		GUI.color = new Color(1f, 1f, 1f, 0.75f * panelOpacity);
+	}	
+
+
+
+	//======================================================================
+	//======================================================================
+	//======================================================================
+	//								ECOLOGY
+	//======================================================================
+	//======================================================================
+	//======================================================================
+	
+	void DrawEcologyScreen(float panelOpacity) 
+	{ 
+		float panelX = overlayRect.x + overlayRect.width * 0.06f;
+		float panelY = overlayRect.y + overlayRect.height * 0.205f;
+		float panelWidth = overlayRect.width * 0.88f;
+		float panelHeight = overlayRect.height * 0.6575f;
+		float fontScale = 0.8f;
+
+		GUIStyle style = new GUIStyle();
+		style.alignment = TextAnchor.MiddleCenter;
+
+		float yOffset = overlayRect.height * 0.022f;
+
+		// two labels at top of panel	
+		GUI.color = new Color(0f, 0f, 0f, 1f * panelOpacity);
+		GUI.Box(new Rect(panelX - overlayRect.width * 0.02f, yOffset + overlayRect.y + overlayRect.height * 0.095f, overlayRect.width * 0.14f, overlayRect.height * 0.064f), "");
+		GUI.color = new Color(1f, 1f, 1f, 1f * panelOpacity);
+		style.fontSize = (int)(overlayRect.width * 0.021f);
+		style.fontStyle = FontStyle.BoldAndItalic;
+		style.normal.textColor = new Color(0.816f, 0.537f, 0.18f, 1f);
+		GUI.Button(new Rect(panelX - overlayRect.width * 0.02f, yOffset + overlayRect.y + overlayRect.height * 0.077f, overlayRect.width * 0.14f, overlayRect.height * 0.1f), "In Game", style);
+
+		GUI.color = new Color(0f, 0f, 0f, 1f * panelOpacity);
+		GUI.Box(new Rect(overlayRect.x + overlayRect.width - overlayRect.width * 0.2f, yOffset + overlayRect.y + overlayRect.height * 0.095f, overlayRect.width * 0.16f, overlayRect.height * 0.064f), "");
+		GUI.color = new Color(1f, 1f, 1f, 1f * panelOpacity);
+		style.fontSize = (int)(overlayRect.width * 0.021f);
+		style.fontStyle = FontStyle.BoldAndItalic;
+		style.normal.textColor = new Color(0.816f, 0.537f, 0.18f, 1f);
+		GUI.Button(new Rect(overlayRect.x + overlayRect.width - overlayRect.width * 0.2f, yOffset + overlayRect.y + overlayRect.height * 0.077f, overlayRect.width * 0.16f, overlayRect.height * 0.1f), "Real World", style);
+
+
+		// background rectangles
+		float gapSize = overlayRect.width * 0.02f;
+		
+		//left side
+		GUI.color = new Color(0f, 0f, 0f, 1f * panelOpacity);
+		GUI.Box(new Rect(panelX - overlayRect.width * 0.02f, panelY - overlayRect.height * 0.025f, panelWidth/2 + overlayRect.width * 0.02f - gapSize/2, panelHeight + overlayRect.height * 0.05f), "");
+		GUI.color = new Color(0f, 0f, 0f, 0.5f * panelOpacity);
+		GUI.Box(new Rect(panelX, panelY, panelWidth/2 - overlayRect.width * 0.02f - gapSize/2, panelHeight), "");
+		GUI.color = new Color(1f, 1f, 1f, 1f * panelOpacity);
+
+
+
+		float upperY = panelY  + panelHeight * 0.13f;
+		float middleY = panelY  + panelHeight * 0.44f;
+		float lowerY = panelY  + panelHeight * 0.75f;
+				
+		float huntPanelX = panelX + gapSize*0.75f;
+		float huntPanelY1 = panelY  + panelHeight * 0.13f;
+		float huntPanelY2 = panelY  + panelHeight * 0.58f;
+		float huntPanelWidth = panelWidth * 0.45f - gapSize*0.75f;
+		float huntPanelHeight = panelHeight * 0.42f - gapSize*0.75f;
+
+				
+		GUI.Box(new Rect(huntPanelX, huntPanelY1, huntPanelWidth, huntPanelHeight), "");
+		GUI.Box(new Rect(huntPanelX, huntPanelY2, huntPanelWidth, huntPanelHeight), "");
+
+		// right side
+		GUI.color = new Color(0f, 0f, 0f, 1f * panelOpacity);
+		GUI.Box(new Rect(panelX + panelWidth/2 + gapSize/2, panelY - overlayRect.height * 0.025f, panelWidth/2 + overlayRect.width * 0.02f - gapSize/2, panelHeight + overlayRect.height * 0.05f), "");
+		GUI.color = new Color(0f, 0f, 0f, 0.5f * panelOpacity);
+		GUI.Box(new Rect(panelX + panelWidth/2 + overlayRect.width * 0.02f + gapSize/2, panelY, panelWidth/2 - overlayRect.width * 0.02f - gapSize/2, panelHeight), "");
+		GUI.color = new Color(1f, 1f, 1f, 1f * panelOpacity);
+		
+		
+		
+		// HEADER TEXT 
+		
+		float textureX;
+		float textureY;
+		float textureHeight;
+		float textureWidth;
+
+		string headerTextL = "Population Health";
+		string headerTextR = "Ecological Role";
+		
+		yOffset = overlayRect.height * 0.115f;
+		float colorScale = 0.74f;
+		
+		GUI.color = new Color(1f, 1f, 1f, 1f * panelOpacity);
+		style.fontSize = (int)(overlayRect.width * 0.022f);
+		style.fontStyle = FontStyle.Normal;
+		style.normal.textColor = new Color(0.99f * colorScale, 0.88f * colorScale, 0.66f * colorScale, 1f);
+		GUI.Button(new Rect(panelX, yOffset + overlayRect.y + overlayRect.height * 0.077f, panelWidth/2 - overlayRect.width * 0.02f - gapSize/2, overlayRect.height * 0.1f), headerTextL, style);
+
+		GUI.color = new Color(1f, 1f, 1f, 1f * panelOpacity);
+		style.fontSize = (int)(overlayRect.width * 0.022f);
+		style.fontStyle = FontStyle.Normal;
+		style.normal.textColor = new Color(0.99f * colorScale, 0.88f * colorScale, 0.66f * colorScale, 1f);
+		GUI.Button(new Rect(panelX + panelWidth/2 + overlayRect.width * 0.02f + gapSize/2, yOffset + overlayRect.y + overlayRect.height * 0.077f, panelWidth/2 - overlayRect.width * 0.02f - gapSize/2, overlayRect.height * 0.1f), headerTextR, style);
+
+
+		float topRowOffsetY = panelHeight * -0.01f;
+		
+		
+
+		// labels
+		
+		GUI.color = new Color(1f, 1f, 1f, panelOpacity);
+		float textGap = panelWidth * 0.012f;
+
+		colorScale = 0.74f;
+		style.normal.textColor = new Color(0.99f * colorScale, 0.88f * colorScale, 0.66f * colorScale, 1f);
+		style.fontSize = (int)(overlayRect.width * 0.014f);
+		style.fontStyle = FontStyle.BoldAndItalic;
+		style.alignment = TextAnchor.MiddleLeft;
+
+		style.fontSize = (int)(overlayRect.width * 0.019f);
+		style.fontStyle = FontStyle.BoldAndItalic;
+		style.normal.textColor = new Color(0.816f * 1.1f, 0.537f * 1.1f, 0.18f * 1.1f, 1f);
+		textureX = panelX + panelWidth * 0.02f;
+		textureY = panelY + panelHeight * 0.110f;
+		textureWidth = panelWidth * 0.1f;
+		textureHeight = panelHeight * 0.1f;
+		GUI.Button(new Rect(huntPanelX + textGap, huntPanelY1 + huntPanelHeight * 0.0f, huntPanelWidth - textGap*2, huntPanelHeight * 0.2f), "Long Chases", style);	
+		textureY = panelY + panelHeight * 0.510f;
+		GUI.Button(new Rect(huntPanelX + textGap, huntPanelY2 + huntPanelHeight * 0.0f, huntPanelWidth - textGap*2, huntPanelHeight * 0.2f), "Short Chases", style);
+
+		// explanatory text
+		
+		float textOffsetY = panelHeight * 0.02f;
+		style.fontSize = (int)(overlayRect.width * 0.015f);
+		style.fontStyle = FontStyle.BoldAndItalic;
+		style.normal.textColor = new Color(0.88f, 0.64f, 0f, 0.9f);
+		textureY = panelY + panelHeight * 0.17f + textOffsetY;
+		GUI.Button(new Rect(huntPanelX + textGap, huntPanelY1 + huntPanelHeight * 0.12f, huntPanelWidth - textGap*2, huntPanelHeight * 0.2f), "bad for health", style);
+		textureY = panelY + panelHeight * 0.52f + textOffsetY;
+		GUI.Button(new Rect(huntPanelX + textGap, huntPanelY2 + huntPanelHeight * 0.12f, huntPanelWidth - textGap*2, huntPanelHeight * 0.2f), "good for health +++", style);
+
+
+		// HUNT REPRESENTATION
+		textureWidth = huntPanelWidth * 0.13f;
+		textureHeight = pumaJumpTexture.height * (textureWidth / pumaJumpTexture.width);
+		GUI.DrawTexture(new Rect(huntPanelX + huntPanelWidth * 0.04f, huntPanelY1 + huntPanelHeight * 0.35f, textureWidth, textureHeight), pumaJumpTexture);
+		GUI.DrawTexture(new Rect(huntPanelX + huntPanelWidth * 0.06f, huntPanelY2 + huntPanelHeight * 0.40f, textureWidth, textureHeight), pumaJumpTexture);
+
+		textureWidth = huntPanelWidth * 0.1f;
+		textureHeight = pumaPreyTexture.height * (textureWidth / pumaPreyTexture.width);
+		GUI.DrawTexture(new Rect(huntPanelX + huntPanelWidth * 0.52f, huntPanelY1 + huntPanelHeight * 0.65f, textureWidth, textureHeight), pumaPreyTexture);
+		GUI.DrawTexture(new Rect(huntPanelX + huntPanelWidth * 0.39f, huntPanelY2 + huntPanelHeight * 0.62f, textureWidth, textureHeight), pumaPreyTexture);
+
+		textureHeight = huntPanelHeight;
+		textureWidth = huntLongTexture.width * (textureHeight / huntLongTexture.height);
+		GUI.DrawTexture(new Rect(huntPanelX + huntPanelWidth * 0.02f, huntPanelY1, textureWidth, textureHeight), huntLongTexture);
+		textureWidth = huntShortTexture.width * (textureHeight / huntShortTexture.height);
+		GUI.DrawTexture(new Rect(huntPanelX + huntPanelWidth * 0.02f + huntPanelWidth*0.008f, huntPanelY2, textureWidth, textureHeight), huntShortTexture);
+
+		
+		
+		// RIGHT SIDE MATH SECTION
+		
+		float mathBoxX1 = huntPanelX + huntPanelWidth * 0.65f;
+		float mathBoxX2 = huntPanelX + huntPanelWidth * 0.825f;
+		float mathBoxY = huntPanelY1 + huntPanelHeight * 0.05f;
+		float mathBoxWidth = huntPanelWidth * 0.15f;
+		float mathBoxHeight = huntPanelHeight * 0.9f;
+		
+
+		// UPPER
+
+		GUI.color = new Color(0f, 0f, 0f, 1f * panelOpacity);
+		GUI.Box(new Rect(mathBoxX1, mathBoxY, mathBoxWidth, mathBoxHeight), "");
+		GUI.Box(new Rect(mathBoxX2, mathBoxY + mathBoxHeight*0.3f, mathBoxWidth, mathBoxHeight - mathBoxHeight*0.3f), "");
+		GUI.color = new Color(1f, 1f, 1f, 1f * panelOpacity);
+
+		style.fontSize = (int)(overlayRect.width * 0.012f);
+		style.fontStyle = FontStyle.Bold;
+		colorScale = 0.65f;
+		style.alignment = TextAnchor.MiddleCenter;
+		style.normal.textColor = new Color(0.99f * colorScale, 0.88f * colorScale, 0.66f * colorScale, 1f);
+		GUI.Button(new Rect(mathBoxX1, mathBoxY + mathBoxHeight * 0.72f, mathBoxWidth, mathBoxHeight * 0.2f), "Energy", style);
+		GUI.Button(new Rect(mathBoxX1, mathBoxY + mathBoxHeight * 0.82f, mathBoxWidth, mathBoxHeight * 0.2f), "Spent", style);
+		GUI.Button(new Rect(mathBoxX2, mathBoxY + mathBoxHeight * 0.72f, mathBoxWidth, mathBoxHeight * 0.2f), "Nutrition", style);
+		GUI.Button(new Rect(mathBoxX2, mathBoxY + mathBoxHeight * 0.82f, mathBoxWidth, mathBoxHeight * 0.2f), "Taken", style);
+		guiUtils.DrawRect(new Rect(mathBoxX1 + mathBoxWidth * 0.25f, mathBoxY + mathBoxHeight * 0.05f, mathBoxWidth * 0.5f, mathBoxHeight * 0.70f), new Color(0.3f, 0.06f, 0.05f, 0.8f));	
+		guiUtils.DrawRect(new Rect(mathBoxX2 + mathBoxWidth * 0.25f, mathBoxY + mathBoxHeight * 0.35f, mathBoxWidth * 0.5f, mathBoxHeight * 0.4f), new Color(0.75f, 0.5f, 0f, 0.4f));	
+		textureWidth = mathBoxWidth * 0.2f;
+		textureHeight = infoArrowDownTexture.height * (textureWidth / infoArrowDownTexture.width);
+		GUI.DrawTexture(new Rect(mathBoxX2 - mathBoxWidth * 0.12f, mathBoxY + mathBoxHeight * 0.02f, textureWidth, textureHeight), infoArrowDownTexture);
+		style.fontStyle = FontStyle.BoldAndItalic;
+		style.fontSize = (int)(overlayRect.width * 0.013f);
+		style.normal.textColor = new Color(0.88f, 0, 0, 0.85f);
+		GUI.Button(new Rect(mathBoxX2, mathBoxY + mathBoxHeight * 0.00f, mathBoxWidth, mathBoxHeight * 0.2f), "Health", style);
+		style.fontSize = (int)(overlayRect.width * 0.014f);
+		GUI.Button(new Rect(mathBoxX2, mathBoxY + mathBoxHeight * 0.10f, mathBoxWidth, mathBoxHeight * 0.2f), "Loss", style);
+
+		// LOWER
+
+
+		mathBoxY = huntPanelY2 + huntPanelHeight * 0.05f;
+
+		GUI.color = new Color(0f, 0f, 0f, 1f * panelOpacity);
+		GUI.Box(new Rect(mathBoxX1, mathBoxY + mathBoxHeight*0.6f, mathBoxWidth, mathBoxHeight - mathBoxHeight*0.6f), "");
+		GUI.Box(new Rect(mathBoxX2, mathBoxY + mathBoxHeight*0.3f, mathBoxWidth, mathBoxHeight - mathBoxHeight*0.3f), "");
+		GUI.color = new Color(1f, 1f, 1f, 1f * panelOpacity);
+
+		style.fontSize = (int)(overlayRect.width * 0.012f);
+		style.fontStyle = FontStyle.Bold;
+		colorScale = 0.65f;
+		style.alignment = TextAnchor.MiddleCenter;
+		style.normal.textColor = new Color(0.99f * colorScale, 0.88f * colorScale, 0.66f * colorScale, 1f);
+		GUI.Button(new Rect(mathBoxX1, mathBoxY + mathBoxHeight * 0.72f, mathBoxWidth, mathBoxHeight * 0.2f), "Energy", style);
+		GUI.Button(new Rect(mathBoxX1, mathBoxY + mathBoxHeight * 0.82f, mathBoxWidth, mathBoxHeight * 0.2f), "Spent", style);
+		GUI.Button(new Rect(mathBoxX2, mathBoxY + mathBoxHeight * 0.72f, mathBoxWidth, mathBoxHeight * 0.2f), "Nutrition", style);
+		GUI.Button(new Rect(mathBoxX2, mathBoxY + mathBoxHeight * 0.82f, mathBoxWidth, mathBoxHeight * 0.2f), "Taken", style);
+		guiUtils.DrawRect(new Rect(mathBoxX1 + mathBoxWidth * 0.25f, mathBoxY + mathBoxHeight * 0.65f, mathBoxWidth * 0.5f, mathBoxHeight * 0.10f), new Color(0.06f, 0.3f, 0.05f, 0.9f));	
+		guiUtils.DrawRect(new Rect(mathBoxX2 + mathBoxWidth * 0.25f, mathBoxY + mathBoxHeight * 0.35f, mathBoxWidth * 0.5f, mathBoxHeight * 0.4f), new Color(0.75f, 0.5f, 0f, 0.4f));	
+		textureWidth = mathBoxWidth * 0.2f;
+		textureHeight = infoArrowUpTexture.height * (textureWidth / infoArrowUpTexture.width);
+		GUI.DrawTexture(new Rect(mathBoxX2 - mathBoxWidth * 0.27f, mathBoxY + mathBoxHeight * 0.315f, textureWidth, textureHeight), infoArrowUpTexture);
+		style.fontStyle = FontStyle.BoldAndItalic;
+		style.fontSize = (int)(overlayRect.width * 0.013f);
+		style.normal.textColor = new Color(0f, 0.74f, 0, 0.80f);
+		GUI.Button(new Rect(mathBoxX1, mathBoxY + mathBoxHeight * 0.30f, mathBoxWidth, mathBoxHeight * 0.2f), "Health", style);
+		style.fontSize = (int)(overlayRect.width * 0.014f);
+		GUI.Button(new Rect(mathBoxX1, mathBoxY + mathBoxHeight * 0.405f, mathBoxWidth, mathBoxHeight * 0.2f), "Gain", style);
+	}	
+
+
+	//======================================================================
+	//======================================================================
+	//======================================================================
+	//								SURVIVAL
+	//======================================================================
+	//======================================================================
+	//======================================================================
+	
+	void DrawSurvivalScreen(float panelOpacity) 
+	{ 
+		float panelX = overlayRect.x + overlayRect.width * 0.06f;
+		float panelY = overlayRect.y + overlayRect.height * 0.205f;
+		float panelWidth = overlayRect.width * 0.88f;
+		float panelHeight = overlayRect.height * 0.6575f;
+		float fontScale = 0.8f;
+
+		GUIStyle style = new GUIStyle();
+		style.alignment = TextAnchor.MiddleCenter;
+
+		float yOffset = overlayRect.height * 0.022f;
+
+		// two labels at top of panel	
+		GUI.color = new Color(0f, 0f, 0f, 1f * panelOpacity);
+		GUI.Box(new Rect(panelX - overlayRect.width * 0.02f, yOffset + overlayRect.y + overlayRect.height * 0.095f, overlayRect.width * 0.14f, overlayRect.height * 0.064f), "");
+		GUI.color = new Color(1f, 1f, 1f, 1f * panelOpacity);
+		style.fontSize = (int)(overlayRect.width * 0.021f);
+		style.fontStyle = FontStyle.BoldAndItalic;
+		style.normal.textColor = new Color(0.816f, 0.537f, 0.18f, 1f);
+		GUI.Button(new Rect(panelX - overlayRect.width * 0.02f, yOffset + overlayRect.y + overlayRect.height * 0.077f, overlayRect.width * 0.14f, overlayRect.height * 0.1f), "In Game", style);
+
+		GUI.color = new Color(0f, 0f, 0f, 1f * panelOpacity);
+		GUI.Box(new Rect(overlayRect.x + overlayRect.width - overlayRect.width * 0.2f, yOffset + overlayRect.y + overlayRect.height * 0.095f, overlayRect.width * 0.16f, overlayRect.height * 0.064f), "");
+		GUI.color = new Color(1f, 1f, 1f, 1f * panelOpacity);
+		style.fontSize = (int)(overlayRect.width * 0.021f);
+		style.fontStyle = FontStyle.BoldAndItalic;
+		style.normal.textColor = new Color(0.816f, 0.537f, 0.18f, 1f);
+		GUI.Button(new Rect(overlayRect.x + overlayRect.width - overlayRect.width * 0.2f, yOffset + overlayRect.y + overlayRect.height * 0.077f, overlayRect.width * 0.16f, overlayRect.height * 0.1f), "Real World", style);
+
+
+		// background rectangles
+		float gapSize = overlayRect.width * 0.02f;
+		
+		//left side
+		GUI.color = new Color(0f, 0f, 0f, 1f * panelOpacity);
+		GUI.Box(new Rect(panelX - overlayRect.width * 0.02f, panelY - overlayRect.height * 0.025f, panelWidth/2 + overlayRect.width * 0.02f - gapSize/2, panelHeight + overlayRect.height * 0.05f), "");
+		GUI.color = new Color(0f, 0f, 0f, 0.5f * panelOpacity);
+		GUI.Box(new Rect(panelX, panelY, panelWidth/2 - overlayRect.width * 0.02f - gapSize/2, panelHeight), "");
+		GUI.color = new Color(1f, 1f, 1f, 1f * panelOpacity);
+
+
+		// right side
+		GUI.color = new Color(0f, 0f, 0f, 1f * panelOpacity);
+		GUI.Box(new Rect(panelX + panelWidth/2 + gapSize/2, panelY - overlayRect.height * 0.025f, panelWidth/2 + overlayRect.width * 0.02f - gapSize/2, panelHeight + overlayRect.height * 0.05f), "");
+		GUI.color = new Color(0f, 0f, 0f, 0.5f * panelOpacity);
+		GUI.Box(new Rect(panelX + panelWidth/2 + overlayRect.width * 0.02f + gapSize/2, panelY, panelWidth/2 - overlayRect.width * 0.02f - gapSize/2, panelHeight), "");
+		GUI.color = new Color(1f, 1f, 1f, 1f * panelOpacity);
+		
+		
+		
+		// HEADER TEXT 
+		
+		float textureX;
+		float textureY;
+		float textureHeight;
+		float textureWidth;
+
+		string headerTextL = "Avoiding Cars";
+		string headerTextR = "Survival Threats";
+		
+		yOffset = overlayRect.height * 0.115f;
+		float colorScale = 0.74f;
+		
+		GUI.color = new Color(1f, 1f, 1f, 1f * panelOpacity);
+		style.fontSize = (int)(overlayRect.width * 0.022f);
+		style.fontStyle = FontStyle.Normal;
+		style.normal.textColor = new Color(0.99f * colorScale, 0.88f * colorScale, 0.66f * colorScale, 1f);
+		GUI.Button(new Rect(panelX, yOffset + overlayRect.y + overlayRect.height * 0.077f, panelWidth/2 - overlayRect.width * 0.02f - gapSize/2, overlayRect.height * 0.1f), headerTextL, style);
+
+		GUI.color = new Color(1f, 1f, 1f, 1f * panelOpacity);
+		style.fontSize = (int)(overlayRect.width * 0.022f);
+		style.fontStyle = FontStyle.Normal;
+		style.normal.textColor = new Color(0.99f * colorScale, 0.88f * colorScale, 0.66f * colorScale, 1f);
+		GUI.Button(new Rect(panelX + panelWidth/2 + overlayRect.width * 0.02f + gapSize/2, yOffset + overlayRect.y + overlayRect.height * 0.077f, panelWidth/2 - overlayRect.width * 0.02f - gapSize/2, overlayRect.height * 0.1f), headerTextR, style);
+
+
+
+	}	
+
 
 	//======================================================================
 	//======================================================================
@@ -955,8 +1961,8 @@ public class InfoPanel : MonoBehaviour
 		style.fontStyle = FontStyle.BoldAndItalic;
 		style.alignment = TextAnchor.MiddleCenter;
 		style.fontSize = (int)(panelWidth * 0.018f);
-		style.normal.textColor = new Color(0.6f, 0.6f, 0.6f, 1f);
-		GUI.Button(new Rect(panelX + panelWidth * 0.4f, panelY + panelHeight * 0.620f , panelWidth * 0.2f, panelHeight * 0.06f), "Get involved...", style);
+		style.normal.textColor = new Color(0.5f, 0.5f, 0.5f, 1f);
+		GUI.Button(new Rect(panelX + panelWidth * 0.4f, panelY + panelHeight * 0.618f , panelWidth * 0.2f, panelHeight * 0.06f), "or learn more...", style);
 
 		GUI.color = new Color(1f, 1f, 1f, 0.9f * panelOpacity);
 
@@ -995,10 +2001,10 @@ public class InfoPanel : MonoBehaviour
 
 		GUI.color = new Color(1f, 1f, 1f, 0.7f * panelOpacity);
 		// facebook
-		textureHeight = panelHeight * 0.055f;
+		textureHeight = panelHeight * 0.07f;
 		textureWidth = iconFacebookTexture.width * (textureHeight / iconFacebookTexture.height);
 		textureX = panelX + panelWidth * 0.333f;
-		textureY = panelY + panelHeight * 0.825f;
+		textureY = panelY + panelHeight * 0.83f;
 		if (GUI.Button(new Rect(textureX, textureY, textureWidth, textureHeight), "")) {
 			Application.OpenURL("http://www.facebook.com/felidaefund");
 		}	

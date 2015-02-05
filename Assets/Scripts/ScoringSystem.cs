@@ -79,7 +79,7 @@ public class ScoringSystem : MonoBehaviour
 		huntStatsSelectedPuma = new int[500];
 		huntStatsPumaHealth = new float[500];
 		
-/*		
+/*	
 		huntStatsSelectedPuma[huntCount] = 2;
 		huntStatsPumaHealth[huntCount] = 0.6f;
 		huntCount++;
@@ -96,11 +96,7 @@ public class ScoringSystem : MonoBehaviour
 		huntStatsPumaHealth[huntCount] = 0.4f;
 		huntCount++;
 		huntStatsSelectedPuma[huntCount] = 2;
-		huntStatsPumaHealth[huntCount] = 0.7f;
-		huntCount++;
-		
-		huntStatsSelectedPuma[huntCount] = 6;
-		huntStatsPumaHealth[huntCount] = 0;
+		huntStatsPumaHealth[huntCount] = 0f;
 		huntCount++;
 		
 		
@@ -142,6 +138,11 @@ public class ScoringSystem : MonoBehaviour
 		huntCount++;
 		
 		
+		huntStatsSelectedPuma[huntCount] = 6;
+		huntStatsPumaHealth[huntCount] = 0f;
+		huntCount++;
+		
+		
 		huntStatsSelectedPuma[huntCount] = 5;
 		huntStatsPumaHealth[huntCount] = 0.3f;
 		huntCount++;
@@ -160,23 +161,108 @@ public class ScoringSystem : MonoBehaviour
 		huntStatsSelectedPuma[huntCount] = 5;
 		huntStatsPumaHealth[huntCount] = 0.7f;
 		huntCount++;
-*/		
+	
 		
 		
+		huntStatsSelectedPuma[huntCount] = 6;
+		huntStatsPumaHealth[huntCount] = 0f;
+		huntCount++;
 		
+		
+		huntStatsSelectedPuma[huntCount] = 0;
+		huntStatsPumaHealth[huntCount] = 0.3f;
+		huntCount++;
+		huntStatsSelectedPuma[huntCount] = 0;
+		huntStatsPumaHealth[huntCount] = 0.4f;
+		huntCount++;
+		huntStatsSelectedPuma[huntCount] = 0;
+		huntStatsPumaHealth[huntCount] = 0.5f;
+		huntCount++;
+		huntStatsSelectedPuma[huntCount] = 0;
+		huntStatsPumaHealth[huntCount] = 0.8f;
+		huntCount++;
+		huntStatsSelectedPuma[huntCount] = 0;
+		huntStatsPumaHealth[huntCount] = 0.9f;
+		huntCount++;
+		huntStatsSelectedPuma[huntCount] = 0;
+		huntStatsPumaHealth[huntCount] = 0.7f;
+		huntCount++;
+
+
+		huntStatsSelectedPuma[huntCount] = 6;
+		huntStatsPumaHealth[huntCount] = 0;
+		huntCount++;
+
+		
+		huntStatsSelectedPuma[huntCount] = 0;
+		huntStatsPumaHealth[huntCount] = 0.3f;
+		huntCount++;
+		huntStatsSelectedPuma[huntCount] = 0;
+		huntStatsPumaHealth[huntCount] = 0.4f;
+		huntCount++;
+		huntStatsSelectedPuma[huntCount] = 0;
+		huntStatsPumaHealth[huntCount] = 0.5f;
+		huntCount++;
+		huntStatsSelectedPuma[huntCount] = 0;
+		huntStatsPumaHealth[huntCount] = 0.8f;
+		huntCount++;
+		huntStatsSelectedPuma[huntCount] = 0;
+		huntStatsPumaHealth[huntCount] = 0.9f;
+		huntCount++;
+		huntStatsSelectedPuma[huntCount] = 0;
+		huntStatsPumaHealth[huntCount] = 0.7f;
+		huntCount++;
+		huntStatsSelectedPuma[huntCount] = 0;
+		huntStatsPumaHealth[huntCount] = 0.3f;
+		huntCount++;
+		huntStatsSelectedPuma[huntCount] = 0;
+		huntStatsPumaHealth[huntCount] = 0.4f;
+		huntCount++;
+		huntStatsSelectedPuma[huntCount] = 0;
+		huntStatsPumaHealth[huntCount] = 0.5f;
+		huntCount++;
+		huntStatsSelectedPuma[huntCount] = 0;
+		huntStatsPumaHealth[huntCount] = 0.8f;
+		huntCount++;
+		huntStatsSelectedPuma[huntCount] = 0;
+		huntStatsPumaHealth[huntCount] = 0.9f;
+		huntCount++;
+		huntStatsSelectedPuma[huntCount] = 0;
+		huntStatsPumaHealth[huntCount] = 0.7f;
+		huntCount++;
+		huntStatsSelectedPuma[huntCount] = 0;
+		huntStatsPumaHealth[huntCount] = 0.5f;
+		huntCount++;
+		huntStatsSelectedPuma[huntCount] = 0;
+		huntStatsPumaHealth[huntCount] = 0.7f;
+		huntCount++;
+*/	
+	
 		
 
 		// meat consumption
 		meatLimitForLevel = 1000f;
 		meatTotalEaten = 0f;
 
+
+
 		// health points
 		float defaultMaxHealth = 175000f;
-		//healthPoints = new float[] {defaultMaxHealth * 0.5f, defaultMaxHealth * 0.5f, defaultMaxHealth * 0.5f, defaultMaxHealth * 0.5f, defaultMaxHealth * 0.5f, defaultMaxHealth * 0.5f};
-		healthPoints = new float[] {defaultMaxHealth * 0f, defaultMaxHealth * 0f, defaultMaxHealth * 0f, defaultMaxHealth * 0f, defaultMaxHealth * 0f, defaultMaxHealth * 0.02f};
+
+		//healthPoints = new float[] {defaultMaxHealth * 0.9f, defaultMaxHealth * 0.9f, defaultMaxHealth * 0.9f, defaultMaxHealth * 0.9f, defaultMaxHealth * 0.9f, defaultMaxHealth * 0.9f};
+		//healthPoints = new float[] {defaultMaxHealth * 0.7f, defaultMaxHealth * 0.7f, defaultMaxHealth * 0.7f, defaultMaxHealth * 0.7f, defaultMaxHealth * 0.7f, defaultMaxHealth * 0.7f};
+		healthPoints = new float[] {defaultMaxHealth * 0.5f, defaultMaxHealth * 0.5f, defaultMaxHealth * 0.5f, defaultMaxHealth * 0.5f, defaultMaxHealth * 0.5f, defaultMaxHealth * 0.5f};
+		//healthPoints = new float[] {defaultMaxHealth * 0.3f, defaultMaxHealth * 0.3f, defaultMaxHealth * 0.3f, defaultMaxHealth * 0.3f, defaultMaxHealth * 0.3f, defaultMaxHealth * 0.3f};
+		//healthPoints = new float[] {defaultMaxHealth * 0.1f, defaultMaxHealth * 0.1f, defaultMaxHealth * 0.1f, defaultMaxHealth * 0.1f, defaultMaxHealth * 0.1f, defaultMaxHealth * 0.1f};
+		//healthPoints = new float[] {defaultMaxHealth * 0.01f, defaultMaxHealth * 0f, defaultMaxHealth * 0f, defaultMaxHealth * 0f, defaultMaxHealth * 0f, defaultMaxHealth * 0f};
+
+
 		maxHealthPoints = new float[] {defaultMaxHealth, defaultMaxHealth, defaultMaxHealth, defaultMaxHealth, defaultMaxHealth, defaultMaxHealth};
 		carKilledFlags = new bool[] {false, false, false, false, false, false};
 
+		
+		
+		
 		// energy usage
 		expensePerMeterChasing = 120f;
 		expensePerMeterStalking = 40f;

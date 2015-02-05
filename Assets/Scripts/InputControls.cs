@@ -25,6 +25,8 @@ public class InputControls : MonoBehaviour
 	private bool navInProgress = false;
 	private bool navBasedOnZero;
 	private bool chasingBeganWithSideStalk = false;
+	
+	private bool previousKeyStateLeftButton = false;
 
 	// possible states for each direction of movement
 	enum NavState {Off, Inc, Full, Dec};
@@ -63,6 +65,7 @@ public class InputControls : MonoBehaviour
 	
 	// onscreen locations for control boxes
 	private Rect rectLeftButton;
+	private Rect rectMiddleButton;
 	private Rect rectRightButton;
 	private Rect rectForward;
 	private Rect rectBack;
@@ -88,6 +91,7 @@ public class InputControls : MonoBehaviour
 		guiManager = GetComponent<GuiManager>();
 		
 		rectLeftButton = new Rect (0f, 0f, 0f, 0f);
+		rectMiddleButton = new Rect (0f, 0f, 0f, 0f);
 		rectRightButton = new Rect (0f, 0f, 0f, 0f);
 		rectForward = new Rect (0f, 0f, 0f, 0f);
 		rectBack = new Rect (0f, 0f, 0f, 0f);
@@ -144,6 +148,7 @@ public class InputControls : MonoBehaviour
 	{
 		// initialize key states to 'off'
 		bool keyStateLeftButton = false;
+		bool keyStateMiddleButton = false;
 		bool keyStateRightButton = false;
 		bool keyStateForward = false;
 		bool keyStateBack = false;
@@ -152,26 +157,37 @@ public class InputControls : MonoBehaviour
 		bool keyStateTurnLeft = false;
 		bool keyStateTurnRight = false;
 
-		// check for pressed mouse within any of the onscreen rects
-
-			
 		float oldInputVert = inputVert;
 		float oldInputHorz = inputHorz;
-
 		
 		if (inputVertExternalSetFlag == true) {
+			// external setting of inputVert -- allows level mgr to make puma walk after feeding
 			inputVert = inputVertExternal;
 			inputHorz = 0f;
 			if (inputVertExternal == 0f) {
 				inputVertExternalSetFlag = false;
 			}
 		}
-		else if (Input.GetMouseButton(0)) {
+
+        else if (Input.touchCount > 0) {
+			foreach (Touch touch in Input.touches) {
+				if (touch.phase != TouchPhase.Ended && touch.phase != TouchPhase.Canceled) {
+					// do something
+				}				
+			}
+		}
+
+		else if (Input.GetMouseButton(0)) {		
+			// handle mouse input	
 			float mouseX = Input.mousePosition.x;
 			float mouseY = Screen.height - Input.mousePosition.y;	
 			
+			// check for pressed mouse within any of the onscreen rects		
 			if (mouseX >= rectLeftButton.xMin && mouseX <= rectLeftButton.xMax && mouseY >= rectLeftButton.yMin && mouseY <= rectLeftButton.yMax) {
 				keyStateLeftButton = true;
+			}
+			if (mouseX >= rectMiddleButton.xMin && mouseX <= rectMiddleButton.xMax && mouseY >= rectMiddleButton.yMin && mouseY <= rectMiddleButton.yMax) {
+				keyStateMiddleButton = true;
 			}
 			if (mouseX >= rectRightButton.xMin && mouseX <= rectRightButton.xMax && mouseY >= rectRightButton.yMin && mouseY <= rectRightButton.yMax) {
 				keyStateRightButton = true;
@@ -194,34 +210,37 @@ public class InputControls : MonoBehaviour
 			if (mouseX >= rectTurnRight.x && mouseX <= rectTurnRight.x+rectTurnRight.width && mouseY >= rectTurnRight.y && mouseY <= rectTurnRight.y+rectTurnRight.height) {
 				keyStateTurnRight = true;
 			}
-			
-			
-			if (mouseX > Screen.width/2  && rectRightButton.xMin != rectRightButton.xMax) {
+						
+			if ((navInProgress == true) || (mouseX >= rectRightButton.xMin && mouseX <= rectRightButton.xMax && mouseY >= rectRightButton.yMin && mouseY <= (rectRightButton.yMax + (rectRightButton.yMax-rectRightButton.yMin)*0.2f))) {
+
+				// MOTION CONTROLS 
 			
 				if (navInProgress == false) {
 					navInProgress = true;
+					levelManager.pumaAnimator.SetBool("Movement Engaged", true);
 					navBasedOnZero = (mouseY > rectRightButton.yMax) ? true : false;
 				}
+				else if (navBasedOnZero == false && mouseY > rectRightButton.yMax) {
+					navBasedOnZero = true;
+				}
 			
-				if (mouseY > rectRightButton.yMax)
+				if (mouseY > rectRightButton.yMax) {
 					inputVert = 0f;
-				//else if (mouseY < rectRightButton.yMin)
-					//inputVert = 1f;
-				else
-					inputVert = 1f - (mouseY - rectRightButton.yMin) / (rectRightButton.yMax - rectRightButton.yMin);
-					
-					
+				}
+				else {
+					// use bottom 20% as slow setting
+					float rightButtonHeight = rectRightButton.yMax - rectRightButton.yMin;
+					if (mouseY > rectRightButton.yMin + rightButtonHeight*0.80f)
+						inputVert = 0.001f;
+					else
+						inputVert = 1f - ((mouseY - rectRightButton.yMin) / (rightButtonHeight*0.80f));
+				}
+				
 				if (inputVert > 0f)
 					navBasedOnZero = false;
 					
-				//if (mouseX < ((rectRightButton.xMin + rectRightButton.xMax) / 2))
-					//inputHorz = -1f;
-				//else if (mouseX > ((rectRightButton.xMin + rectRightButton.xMax) / 2))
-					//inputHorz = 1f;
-				//else
-					inputHorz = (((mouseX - rectRightButton.xMin) / (rectRightButton.xMax - rectRightButton.xMin)) * 2f) - 1f;
+				inputHorz = (((mouseX - rectRightButton.xMin) / (rectRightButton.xMax - rectRightButton.xMin)) * 2f) - 1f;
 					
-
 				if (inputVert > 1.0f)
 					inputVert = 1.0f;
 				if (inputHorz < -1.0f)
@@ -232,14 +251,15 @@ public class InputControls : MonoBehaviour
 				if (levelManager.gameState == "gameStateStalking" || levelManager.gameState == "gameStateFeeding7")
 					inputVert = 1f - (1f - inputVert) * (1f - inputVert);
 				else if (levelManager.gameState == "gameStateChasing" || levelManager.gameState == "gameStateFeeding1a")
-					//inputVert = inputVert * inputVert;
-					inputVert = inputVert;
+					inputVert = inputVert * inputVert;
+					//inputVert = inputVert;
+					//inputVert = 1f - (1f - inputVert) * (1f - inputVert);
 				
 				if (navBasedOnZero == false) {
 					if (levelManager.gameState == "gameStateStalking")
 						inputVert = 0.20f + inputVert * 0.80f;
 					else if (levelManager.gameState == "gameStateChasing")
-						inputVert = 0.35f + inputVert * 0.65f;
+						inputVert = 0.67f + inputVert * 0.33f;
 				}
 				
 				bool horzFlippedFlag = false;
@@ -256,13 +276,17 @@ public class InputControls : MonoBehaviour
 
 				if (levelManager.gameState == "gameStateTree1" || levelManager.gameState == "gameStateTree2") {
 					navInProgress = false;
+					levelManager.pumaAnimator.SetBool("Movement Engaged", false);
 					inputVert = 0f;
 					inputHorz = 0f;
 				}
 			}
 		}
+
 		else {
+			// no movement
 			navInProgress = false;
+			levelManager.pumaAnimator.SetBool("Movement Engaged", false);
 			inputVert = 0f;
 			inputHorz = 0f;
 		}
@@ -319,8 +343,10 @@ public class InputControls : MonoBehaviour
 				
 				
 		// check for relevant keys pressed on the physical keyboard
-		if ((Input.GetKey(KeyCode.Space) || Input.GetKey(KeyCode.RightShift)) && rectLeftButton.xMin != rectLeftButton.xMax && guiManager.guiState != "guiStateFeeding1" && guiManager.guiState != "guiStatePumaDone1")
+		if (Input.GetKey(KeyCode.Space) && rectLeftButton.xMin != rectLeftButton.xMax && guiManager.guiState != "guiStateFeeding1" && guiManager.guiState != "guiStatePumaDone1")
 			keyStateLeftButton = true;
+		if (Input.GetKey(KeyCode.RightShift) && rectMiddleButton.xMin != rectMiddleButton.xMax && guiManager.guiState != "guiStateFeeding1" && guiManager.guiState != "guiStatePumaDone1")
+			keyStateMiddleButton = true;
 		if (Input.GetKey(KeyCode.I) || Input.GetKey(KeyCode.UpArrow))
 			keyStateForward = true;
 		if (Input.GetKey(KeyCode.K) || Input.GetKey(KeyCode.DownArrow))
@@ -373,32 +399,35 @@ public class InputControls : MonoBehaviour
 				// do nothing until button has been released
 			}
 			else if (levelManager.gameState == "gameStateStalking") {
-				if (inputVert > 0) {
+				//if (navInProgress == true) {
 					// side-stalk				
 					levelManager.SetPumaSideStalk(true);		
-				}
-				else {
-					// exit gameplay
-					guiManager.SetGuiState("guiStateLeavingGameplay");
-					levelManager.SetGameState("gameStateLeavingGameplay");
-				}
+				//}
 			}
 			else if (levelManager.gameState == "gameStateChasing") {
-				if (inputVert > 0) {
-					// jump
-					levelManager.PumaJump();
-				}
-				else {
-					// exit chase
-					guiManager.SetGuiState("guiStateFeeding1");
-					levelManager.SetGameState("gameStateFeeding1a");
-				}
+				// jump
+				levelManager.PumaJump();
 			}
 		}
 		else {
 			levelManager.SetPumaSideStalk(false);
 			chasingBeganWithSideStalk = false;
 		}
+		
+		// handle middle button during gameplay
+		if (keyStateMiddleButton == true) {
+			if (levelManager.gameState == "gameStateStalking") {
+				// exit gameplay
+				guiManager.SetGuiState("guiStateLeavingGameplay");
+				levelManager.SetGameState("gameStateLeavingGameplay");
+			}
+			else if (levelManager.gameState == "gameStateChasing") {
+				// exit chase
+				guiManager.SetGuiState("guiStateFeeding1");
+				levelManager.SetGameState("gameStateFeeding1a");
+			}
+		}
+		
 
 		// deal with interactions between forward and back keys
 	
@@ -442,7 +471,8 @@ public class InputControls : MonoBehaviour
 		//inputVert = navValForward;				 // disable backward motion
 		//inputVert = navValForward + navValBack;		 // enable backward motion
 		//inputHorz = navValRight + navValLeft;
-		
+			
+		previousKeyStateLeftButton = keyStateLeftButton;
 	}
 
 	private void UpdateNavChannel(NavState previousNavState, float previousNavVal, bool keyPressed, float incStep, float decStep)
@@ -541,6 +571,12 @@ public class InputControls : MonoBehaviour
 		inputVertExternalSetFlag = true;
 	}
 	
+	public bool CheckNavInProgress()
+	{	
+		return navInProgress;
+	}
+	
+	
 	
 	//===================================
 	//===================================
@@ -551,6 +587,11 @@ public class InputControls : MonoBehaviour
 	public void SetRectLeftButton(Rect rect)
 	{
 		rectLeftButton = rect;	
+	}
+	
+	public void SetRectMiddleButton(Rect rect)
+	{
+		rectMiddleButton = rect;	
 	}
 	
 	public void SetRectRightButton(Rect rect)
