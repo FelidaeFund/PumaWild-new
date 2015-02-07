@@ -31,6 +31,9 @@ public class GameplayDisplay : MonoBehaviour
 	private Texture2D arrowRightTexture;
 	private Texture2D arrowTurnLeftTexture;
 	private Texture2D arrowTurnRightTexture;
+	private Texture2D pawDiagLeftTexture;
+	private Texture2D pawDiagRightTexture;
+	private Texture2D pawStraightTexture;
 	private Texture2D controlRightIconsTexture;
 	private Texture2D controlRightIconsLowerTexture;
 	private Texture2D controlLeftJumpTexture;
@@ -49,6 +52,8 @@ public class GameplayDisplay : MonoBehaviour
 	private Texture2D closeup5Texture;
 	private Texture2D closeup6Texture;
 	private Texture2D closeupSensesTexture;
+	private Texture2D pumaStealthDarkTexture;
+	private Texture2D pumaRunDarkTexture;
 
 	// external modules
 	private GuiManager guiManager;
@@ -83,6 +88,9 @@ public class GameplayDisplay : MonoBehaviour
 		arrowRightTexture = guiManager.arrowRightTexture;
 		arrowTurnLeftTexture = guiManager.arrowTurnLeftTexture;
 		arrowTurnRightTexture = guiManager.arrowTurnRightTexture;
+		pawDiagLeftTexture = guiManager.pawDiagLeftTexture;
+		pawDiagRightTexture = guiManager.pawDiagRightTexture;
+		pawStraightTexture = guiManager.pawStraightTexture;
 		controlRightIconsTexture = guiManager.controlRightIconsTexture;
 		controlRightIconsLowerTexture = guiManager.controlRightIconsLowerTexture;
 		controlLeftJumpTexture = guiManager.controlLeftJumpTexture;
@@ -101,6 +109,8 @@ public class GameplayDisplay : MonoBehaviour
 		closeup5Texture = guiManager.closeup5Texture;
 		closeup6Texture = guiManager.closeup6Texture;
 		closeupSensesTexture = guiManager.closeupSensesTexture;
+		pumaStealthDarkTexture = guiManager.pumaStealthDarkTexture;
+		pumaRunDarkTexture = guiManager.pumaRunDarkTexture;
 	}
 
 	//===================================
@@ -114,14 +124,14 @@ public class GameplayDisplay : MonoBehaviour
 		GUIStyle style = new GUIStyle();
 		style.alignment = TextAnchor.MiddleCenter;
 
-		float leftAreaX = Screen.height * 0.10f;
-		float leftAreaY = Screen.height * 0.77f;
-		float leftAreaWidth = Screen.height * 0.43f;
-		float leftAreaHeight = Screen.height * 0.15f;
+		float leftAreaX = Screen.height * 0.08f;
+		float leftAreaY = Screen.height * 0.80f;
+		float leftAreaWidth = Screen.height * 0.37f;
+		float leftAreaHeight = Screen.height * 0.12f;
 
-		float rightAreaY = Screen.height * 0.62f;
-		float rightAreaWidth = Screen.height * 0.30f;
-		float rightAreaHeight = Screen.height * 0.25f;
+		float rightAreaY = Screen.height * 0.67f;
+		float rightAreaWidth = Screen.height * 0.24f;
+		float rightAreaHeight = Screen.height * 0.20f;
 		float rightAreaExtraHeight = Screen.height * 0.05f;
 		float rightAreaX = Screen.width - rightAreaWidth - leftAreaX;
 
@@ -143,33 +153,43 @@ public class GameplayDisplay : MonoBehaviour
 		float textureY = leftAreaY - leftAreaHeight * 0.16f;			
 		float textureWidth = leftAreaWidth * 0.47f;
 		float textureHeight = leftAreaHeight * 1.25f;
+		bool chasingFlag = levelManager.gameState == "gameStateChasing" || levelManager.gameState == "gameStateFeeding1" || levelManager.gameState == "gameStateFeeding1a";
 
-		GUI.color = new Color(1f, 1f, 1f, 0.65f * movementControlsOpacity);
-		GUI.DrawTexture(new Rect(textureX, textureY + textureHeight * 0.03f, textureWidth, textureHeight * 0.94f), arrowTrayTopFlippedTexture);
-		GUI.DrawTexture(new Rect(textureX + textureWidth * 0.1f, textureY + textureHeight * 0.05f, textureWidth * 0.8f, textureHeight * 0.9f), arrowTrayFlippedTexture);
 		GUI.color = new Color(1f, 1f, 1f, 1f * movementControlsOpacity);
 		if (movementControlsOpacity > 0f)
 			inputControls.SetRectLeftButton(new Rect(leftAreaX, leftAreaY, leftAreaWidth * 0.41f, leftAreaHeight));
 
-		if (levelManager.gameState == "gameStateStalking") {
-			GUI.color = new Color(1f, 1f, 1f, 0.6f * movementControlsOpacity);
-			GUI.DrawTexture(new Rect(leftAreaX, leftAreaY, leftAreaWidth * 0.41f, leftAreaHeight), levelManager.PumaSideStalkDirectionIsLeft() == true ? controlLeftDiagLeftTexture : controlLeftDiagRightTexture);		
+		Texture2D iconTexture = null;
+
+		if (chasingFlag) {
+			//GUI.color = new Color(1f, 1f, 1f, 0.65f * movementControlsOpacity);
+			//GUI.DrawTexture(new Rect(textureX, textureY + textureHeight * 0.03f, textureWidth, textureHeight * 0.94f), arrowTrayTopFlippedTexture);
+			//GUI.DrawTexture(new Rect(textureX + textureWidth * 0.1f, textureY + textureHeight * 0.05f, textureWidth * 0.8f, textureHeight * 0.9f), arrowTrayFlippedTexture);
+			GUI.color = new Color(1f, 1f, 1f, 0.8f * movementControlsOpacity);
+			textureWidth = pawStraightTexture.width * (textureHeight / pawStraightTexture.height);
+			GUI.DrawTexture(new Rect(leftAreaX + leftAreaWidth * 0.0f, leftAreaY + leftAreaHeight * 0.07f, leftAreaWidth * 0.41f * 1.04f, leftAreaHeight * 1.04f), controlLeftJumpTexture);		
 		}
-		else if (levelManager.gameState == "gameStateChasing" || levelManager.gameState == "gameStateFeeding1") {
-			GUI.color = new Color(1f, 1f, 1f, 0.75f * movementControlsOpacity);
-			GUI.DrawTexture(new Rect(leftAreaX + leftAreaWidth*0.1f, leftAreaY + leftAreaHeight * 0.55f, leftAreaWidth * 0.41f * 0.4f, leftAreaHeight * 0.4f), controlLeftJumpTexture);		
+		else  {
+			GUI.color = new Color(1f, 1f, 1f, 0.8f * movementControlsOpacity);
+			iconTexture = levelManager.PumaSideStalkDirectionIsLeft() == true ? pawDiagLeftTexture : pawDiagRightTexture;
+			textureWidth = (iconTexture.width * (textureHeight / iconTexture.height)) * 1.1f;
+			GUI.DrawTexture(new Rect(textureX + textureWidth * 0.10f, textureY + textureHeight * 0.2f, textureWidth * 0.8f, textureHeight * 0.94f * 0.8f), iconTexture);
+			//GUI.color = new Color(1f, 1f, 1f, 0.6f * movementControlsOpacity);
+			//GUI.DrawTexture(new Rect(leftAreaX, leftAreaY, leftAreaWidth * 0.41f, leftAreaHeight), levelManager.PumaSideStalkDirectionIsLeft() == true ? controlLeftDiagLeftTexture : controlLeftDiagRightTexture);		
 		}
 
 
 		// exit button
-		GUI.color = new Color(1f, 1f, 1f, 0.65f * movementControlsOpacity);
-		GUI.DrawTexture(new Rect(textureX + leftAreaWidth * 0.87f, textureY + textureHeight * 0.03f + leftAreaHeight * 0.2f, textureWidth * 0.8f, textureHeight * 0.94f * 0.8f), arrowTrayTopFlippedTexture);
-		GUI.DrawTexture(new Rect(textureX + leftAreaWidth * 0.87f + textureWidth * 0.1f, textureY + textureHeight * 0.05f + leftAreaHeight * 0.2f, textureWidth * 0.8f * 0.8f, textureHeight * 0.9f * 0.8f), arrowTrayFlippedTexture);
-		GUI.color = new Color(1f, 1f, 1f, 0.6f * movementControlsOpacity);
-		GUI.DrawTexture(new Rect(leftAreaX + leftAreaWidth * 0.87f, leftAreaY + leftAreaHeight * 0.17f, leftAreaWidth * 0.41f * 0.8f, leftAreaHeight * 0.8f), controlLeftExitTexture);		
+		GUI.color = new Color(1f, 1f, 1f, 0.8f * movementControlsOpacity);
+		textureWidth = pawStraightTexture.width * (textureHeight / pawStraightTexture.height);
+		GUI.DrawTexture(new Rect(leftAreaX + leftAreaWidth * 0.82f, leftAreaY + leftAreaHeight * 0.17f, leftAreaWidth * 0.41f * 0.8f, leftAreaHeight * 0.8f), pawStraightTexture);		
 		if (movementControlsOpacity > 0f)
-			inputControls.SetRectMiddleButton(new Rect(leftAreaX + leftAreaWidth * 0.87f, leftAreaY + leftAreaHeight * 0.2f, leftAreaWidth * 0.41f * 0.8f, leftAreaHeight * 0.8f));
-
+			inputControls.SetRectMiddleButton(new Rect(leftAreaX + leftAreaWidth * 0.82f, leftAreaY + leftAreaHeight * 0.2f, leftAreaWidth * 0.41f * 0.8f, leftAreaHeight * 0.8f));
+		GUI.color = new Color(1f, 1f, 1f, 1f * movementControlsOpacity);
+		style.fontSize = (int)(leftAreaWidth * 0.06f);
+		style.fontStyle = FontStyle.Bold;
+		style.normal.textColor = new Color(0f, 0f, 0f, 0.8f);
+		GUI.Button(new Rect(leftAreaX + leftAreaWidth * 0.82f, leftAreaY + leftAreaHeight * 0.5f, leftAreaWidth * 0.41f * 0.8f, leftAreaHeight * 0.5f), "Menu", style);
 		
 		// right paw
 	
@@ -187,27 +207,35 @@ public class GameplayDisplay : MonoBehaviour
 		GUI.color = new Color(1f, 1f, 1f, 1f * movementControlsOpacity);
 		
 		GUI.color = new Color(1f, 1f, 1f, 0.65f * movementControlsOpacity);
-		GUI.DrawTexture(new Rect(textureX, textureY + textureHeight * 0.03f, textureWidth, textureHeight * 0.94f), arrowTrayTopTexture);
-		GUI.DrawTexture(new Rect(textureX + textureWidth * 0.1f, textureY + textureHeight * 0.05f, textureWidth * 0.8f, textureHeight * 0.9f), arrowTrayTexture);
+		//GUI.DrawTexture(new Rect(textureX, textureY + textureHeight * 0.03f, textureWidth, textureHeight * 0.94f), arrowTrayTopTexture);
+		//GUI.DrawTexture(new Rect(textureX + textureWidth * 0.1f, textureY + textureHeight * 0.05f, textureWidth * 0.8f, textureHeight * 0.9f), arrowTrayTexture);
 		GUI.color = new Color(1f, 1f, 1f, 1f * movementControlsOpacity);
 		//GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), arrowLeftTexture);
 		//GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), arrowRightTexture);
 		//GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), arrowUpTexture);
 		//GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), arrowDownTexture);
 		if (movementControlsOpacity > 0f)
-			inputControls.SetRectRightButton(new Rect(rightAreaX, rightAreaY, rightAreaWidth, rightAreaHeight));
+			inputControls.SetRectRightButton(new Rect(rightAreaX, rightAreaY, rightAreaWidth, rightAreaHeight + rightAreaExtraHeight));
 			
-		GUI.color = new Color(1f, 1f, 1f, 0.5f * movementControlsOpacity);
-		GUI.DrawTexture(new Rect(rightAreaX, rightAreaY, rightAreaWidth, rightAreaHeight + rightAreaExtraHeight), controlRightIconsTexture);
-		GUI.color = new Color(1f, 1f, 1f, 0.65f * movementControlsOpacity);
-		GUI.DrawTexture(new Rect(rightAreaX, rightAreaY, rightAreaWidth, rightAreaHeight + rightAreaExtraHeight), controlRightIconsLowerTexture);
+		GUI.color = new Color(1f, 1f, 1f, 0.7f * movementControlsOpacity);
+		GUI.DrawTexture(new Rect(rightAreaX, rightAreaY - rightAreaExtraHeight*0.1f, rightAreaWidth, rightAreaHeight + rightAreaExtraHeight), controlRightIconsTexture);
+		GUI.color = new Color(1f, 1f, 1f, 0.75f * movementControlsOpacity);
+		GUI.DrawTexture(new Rect(rightAreaX, rightAreaY - rightAreaExtraHeight*0.1f, rightAreaWidth, rightAreaHeight + rightAreaExtraHeight), controlRightIconsLowerTexture);
 					
+		GUI.color = new Color(1f, 1f, 1f, 0.9f * movementControlsOpacity);
+		iconTexture = chasingFlag ? pumaRunDarkTexture : pumaStealthDarkTexture;
+		textureHeight = rightAreaExtraHeight * 1.5f;
+		textureWidth = iconTexture.width * (textureHeight / iconTexture.height);
+		GUI.DrawTexture(new Rect(rightAreaX + rightAreaWidth/2 - textureWidth*0.52f, rightAreaY + rightAreaHeight*0.0f, textureWidth, textureHeight), iconTexture);
+		textureHeight = rightAreaExtraHeight * 0.9f;
+		textureWidth = iconTexture.width * (textureHeight / iconTexture.height);
+		GUI.DrawTexture(new Rect(rightAreaX + rightAreaWidth/2 - textureWidth*0.52f, rightAreaY + rightAreaHeight*0.75f, textureWidth, textureHeight), iconTexture);
 			
 						
 		//----------------------
 		// POSITION INDICATORS
 		//----------------------
-						
+					
 		// outer edge display
 		GUI.color = new Color(1f, 1f, 1f, 0.9f * positionIndicatorBackgroundOpacity);
 		int borderThickness = (int)(Screen.height * 0.06f);
@@ -294,17 +322,20 @@ public class GameplayDisplay : MonoBehaviour
 			DrawIndicator(levelManager.mainHeading, levelManager.pumaObj, levelManager.doe.gameObj, levelManager.doe.type, borderThickness, positionIndicatorOpacity);
 			DrawIndicator(levelManager.mainHeading, levelManager.pumaObj, levelManager.fawn.gameObj, levelManager.fawn.type, borderThickness, positionIndicatorOpacity);
 		}
-		
+	
 		//----------------------
 		// STATUS DISPLAYS
 		//----------------------
 		
-		GUI.color = new Color(1f, 1f, 1f, 1f * statusDisplayOpacity);
-		float statusPanelWidth = Screen.height * 0.13f;
+		float statusPanelWidth = Screen.height * 0.11f;
 		float statusPanelHeight = leftAreaHeight * 0.88f;
-		float statusPanelX = leftAreaX + leftAreaWidth * 0.495f;
-		float statusPanelY = leftAreaY + leftAreaHeight - statusPanelHeight - leftAreaHeight * 0.05f;
+		float statusPanelX = leftAreaX + leftAreaWidth * 0.45f;
+		float statusPanelY = leftAreaY + leftAreaHeight - statusPanelHeight - leftAreaHeight * 0.03f;
+		GUI.color = new Color(1f, 1f, 1f, 0.4f * movementControlsOpacity);
+		GUI.Box(new Rect(statusPanelX, statusPanelY, statusPanelWidth, statusPanelHeight), "");
+		GUI.color = new Color(1f, 1f, 1f, 1f * statusDisplayOpacity);
 		guiComponents.DrawStatusPanel(statusDisplayOpacity * 1f, statusPanelX, statusPanelY, statusPanelWidth, statusPanelHeight, false, true);
+		GUI.color = new Color(1f, 1f, 1f, 1f * statusDisplayOpacity);
 
 		
 		//----------------------

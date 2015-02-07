@@ -112,10 +112,11 @@ public class PumaController : MonoBehaviour
 				Debug.Log("======================================");
 
 				if (levelManager.gameState == "gameStateStalking" || levelManager.gameState == "gameStateChasing") {
-					float forceFactor = (levelManager.gameState == "gameStateStalking") ? 0.10f : 0.30f;
+					float forceFactor = (levelManager.gameState == "gameStateStalking") ? 0.20f : 0.30f;
 					levelManager.BeginTreeCollision();
 					// create force to push puma back from tree
-					float collisionScale = 1.6f * 75000f * inputControls.GetInputVert() * forceFactor;
+					float inputVert = inputControls.GetInputVert() < 0.5f ? 0.5f : inputControls.GetInputVert();
+					float collisionScale = 1.6f * 75000f * inputVert * forceFactor;
 					float heading = guiUtils.GetAngleFromOffset(0f, 0f, collisionInfo.contacts[0].normal.x, collisionInfo.contacts[0].normal.z);
 					heading += Random.Range(20f, 40f);
 					collisionForceOffsetX = Mathf.Sin(heading*Mathf.PI/180) * collisionScale;

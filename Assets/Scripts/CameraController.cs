@@ -96,44 +96,47 @@ public class CameraController : MonoBehaviour
 		previousCameraRotOffsetY = currentCameraRotOffsetY;
 		
 		float terrainScaleFactor = 0.5f;
+		float fieldOfViewDistanceFactor = 0.6f;		// default field of view is 60
+		float fieldOfViewHeightFactor = 0.9f;		// default field of view is 60
+				
 		
 		// select target position
 		switch (targetPositionLabel) {
 		
 		case "cameraPosHigh":
-			targetCameraY = 5.7f * terrainScaleFactor;
+			targetCameraY = 5.7f * terrainScaleFactor * fieldOfViewHeightFactor;
 			targetCameraRotX = 12.8f;
-			targetCameraDistance = 8.6f * terrainScaleFactor;
+			targetCameraDistance = 8.6f * terrainScaleFactor * fieldOfViewDistanceFactor;
 			break;
 
 		case "cameraPosMedium":
-			targetCameraY = 4f * terrainScaleFactor;
+			targetCameraY = 4f * terrainScaleFactor * fieldOfViewHeightFactor;
 			targetCameraRotX = 4f;
-			targetCameraDistance = 7.5f * terrainScaleFactor;
+			targetCameraDistance = 7.5f * terrainScaleFactor * fieldOfViewDistanceFactor;
 			break;
 
 		case "cameraPosLow":
-			targetCameraY = 3f * terrainScaleFactor;
+			targetCameraY = 3f * terrainScaleFactor * fieldOfViewHeightFactor;
 			targetCameraRotX = -2f;
-			targetCameraDistance = 7f * terrainScaleFactor;
+			targetCameraDistance = 7f * terrainScaleFactor * fieldOfViewDistanceFactor;
 			break;
 
 		case "cameraPosCloseup":
-			targetCameraY = 2.75f * terrainScaleFactor;
+			targetCameraY = 2.75f * terrainScaleFactor * fieldOfViewHeightFactor;
 			targetCameraRotX = 2.75f;
-			targetCameraDistance = 6.5f * terrainScaleFactor;
+			targetCameraDistance = 6.5f * terrainScaleFactor * fieldOfViewDistanceFactor;
 			break;
 
 		case "cameraPosEating":
-			targetCameraY = 9f * terrainScaleFactor;
+			targetCameraY = 9f * terrainScaleFactor * fieldOfViewHeightFactor;
 			targetCameraRotX = 30f;
-			targetCameraDistance = 9f * terrainScaleFactor;
+			targetCameraDistance = 9f * terrainScaleFactor * fieldOfViewDistanceFactor;
 			break;
 
 		case "cameraPosGui":
-			targetCameraY = 90f * terrainScaleFactor;
+			targetCameraY = 90f * terrainScaleFactor * fieldOfViewHeightFactor;
 			targetCameraRotX = 33f;
-			targetCameraDistance = 48f * terrainScaleFactor;
+			targetCameraDistance = 48f * terrainScaleFactor * fieldOfViewDistanceFactor;
 			break;
 		}
 
@@ -356,10 +359,6 @@ public class CameraController : MonoBehaviour
 		
 
 
-
-
-
-
 		// turn on side view cameras near roads
 
 		Vector3 nearestRoadPos = trafficManager.FindClosestNode(new Vector3(pumaX, 0, pumaZ));
@@ -367,7 +366,8 @@ public class CameraController : MonoBehaviour
 		float pumaRoadAngle = levelManager.GetAngleFromOffset(pumaX, pumaZ, nearestRoadPos.x, nearestRoadPos.z);
 
 		bool sideViewVisible = true;
-		if (levelManager.GetCurrentLevel() == 0 || levelManager.GetCurrentLevel() == 3 || levelManager.GetCurrentLevel() == 4)
+//		if (levelManager.GetCurrentLevel() == 0 || levelManager.GetCurrentLevel() == 3 || levelManager.GetCurrentLevel() == 4)
+		if (levelManager.GetCurrentLevel() == 0 || levelManager.GetCurrentLevel() == 4)
 			sideViewVisible = false;
 		else if (levelManager.gameState != "gameStateStalking" && levelManager.gameState != "gameStateChasing")
 			sideViewVisible = false;
@@ -377,10 +377,10 @@ public class CameraController : MonoBehaviour
 			sideViewVisible = false;
 		else if (cameraRotY > pumaRoadAngle && cameraRotY - pumaRoadAngle > 90f && cameraRotY - pumaRoadAngle < 270f)
 			sideViewVisible = false;
-		else if (levelManager.GetCurrentLevel() == 2 && trafficManager.FindClosestRoad(new Vector3(pumaX, 0, pumaZ)) == 1)
-			sideViewVisible = false;
+		//else if (levelManager.GetCurrentLevel() == 2 && trafficManager.FindClosestRoad(new Vector3(pumaX, 0, pumaZ)) == 1)
+			//sideViewVisible = false;
 				
-
+				
 		float transTime = (levelManager.gameState == "gameStateChasing") ? 0.25f : 0.5f;
 
 		if (sideCameraState == "sideCameraStateOpen") {

@@ -419,6 +419,7 @@ public class TrafficManager : MonoBehaviour {
 	{
 		float segmentPercent = 0f;
 		float followDistance = (laneNum == 0) ? roadArray[roadNum].followDistance1 : ((laneNum == 1) ? roadArray[roadNum].followDistance2 : roadArray[roadNum].followDistance3);
+		followDistance = 0.8f * followDistance * (2f - levelManager.difficultyLevel) * (2f - levelManager.difficultyLevel);
 		NodeInfo[] nodeArray = (ascendingFlag == true) ? roadArray[roadNum].nodeArrayAscending : roadArray[roadNum].nodeArrayDescending;
 
 		int  i = 0;
@@ -443,7 +444,8 @@ public class TrafficManager : MonoBehaviour {
 				vehicleInfo.previousSegmentHeading = nodeArray[i].vNodes[laneNum].previousSegmentHeading;
 				vehicleInfo.nextSegmentHeading = nodeArray[i].vNodes[laneNum].nextSegmentHeading;
 				vehicleList.Add(vehicleInfo);
-				segmentPercent += followDistance / nodeArray[i].vNodes[laneNum].segmentLength;
+				float followRandomize = Random.Range(0f, followDistance*2);
+				segmentPercent += (followDistance+followRandomize) / nodeArray[i].vNodes[laneNum].segmentLength;
 			}
 			while (segmentPercent >= 1f) {
 				// increment to next node where vehicle needs to go
@@ -464,14 +466,15 @@ public class TrafficManager : MonoBehaviour {
 
 	void Update ()
 	{
-		if (disableCarsFlag == true)
+		if (disableCarsFlag == true || vehicleList == null)
 			return;
 	
 		for(int i=0; i<vehicleList.Count; i++) {
 			VehicleInfo vehicleInfo = vehicleList[i];
 			
 			// add new distance to vehicle position
-			float distanceTravelled = vehicleInfo.speed * Time.deltaTime;
+			float distanceTravelled = vehicleInfo.speed * Time.deltaTime * levelManager.difficultyLevel * levelManager.difficultyLevel * levelManager.difficultyLevel;
+
 			float segmentLengthRemaining = vehicleInfo.segmentLength * (1f - vehicleInfo.percentTravelled);
 
 			while (distanceTravelled >= segmentLengthRemaining) {
@@ -578,107 +581,107 @@ public class TrafficManager : MonoBehaviour {
 		case 1:  // level 2
 			roadArray[0].lanesPerSide = 1;
 			roadArray[0].laneSpeed1 = 30;
-			roadArray[0].laneSpeed2 = 33;
-			roadArray[0].laneSpeed3 = 36;
-			roadArray[0].followDistance1 = 200;
-			roadArray[0].followDistance2 = 35;
-			roadArray[0].followDistance3 = 40;
+			roadArray[0].laneSpeed2 = 0;
+			roadArray[0].laneSpeed3 = 0;
+			roadArray[0].followDistance1 = 100;
+			roadArray[0].followDistance2 = 0;
+			roadArray[0].followDistance3 = 0;
 			////////////
 			roadArray[1].lanesPerSide = 1;
-			roadArray[1].laneSpeed1 = 30;
-			roadArray[1].laneSpeed2 = 33;
-			roadArray[1].laneSpeed3 = 36;
-			roadArray[1].followDistance1 = 150;
-			roadArray[1].followDistance2 = 35;
-			roadArray[1].followDistance3 = 40;
+			roadArray[1].laneSpeed1 = 26;
+			roadArray[1].laneSpeed2 = 0;
+			roadArray[1].laneSpeed3 = 0;
+			roadArray[1].followDistance1 = 140;
+			roadArray[1].followDistance2 = 0;
+			roadArray[1].followDistance3 = 0;
 			////////////
 			roadArray[2].lanesPerSide = 1;
-			roadArray[2].laneSpeed1 = 30;
-			roadArray[2].laneSpeed2 = 33;
-			roadArray[2].laneSpeed3 = 36;
-			roadArray[2].followDistance1 = 175;
-			roadArray[2].followDistance2 = 35;
-			roadArray[2].followDistance3 = 40;
+			roadArray[2].laneSpeed1 = 28;
+			roadArray[2].laneSpeed2 = 0;
+			roadArray[2].laneSpeed3 = 0;
+			roadArray[2].followDistance1 = 120;
+			roadArray[2].followDistance2 = 0;
+			roadArray[2].followDistance3 = 0;
 			break;
 		
 		case 2:  // level 3
 			roadArray[0].lanesPerSide = 2;
-			roadArray[0].laneSpeed1 = 35;
-			roadArray[0].laneSpeed2 = 38;
-			roadArray[0].laneSpeed3 = 41;
-			roadArray[0].followDistance1 = 100;
-			roadArray[0].followDistance2 = 120;
-			roadArray[0].followDistance3 = 40;
+			roadArray[0].laneSpeed1 = 38;
+			roadArray[0].laneSpeed2 = 41;
+			roadArray[0].laneSpeed3 = 0;
+			roadArray[0].followDistance1 = 60;
+			roadArray[0].followDistance2 = 70;
+			roadArray[0].followDistance3 = 0;
 			////////////
 			roadArray[1].lanesPerSide = 1;
 			roadArray[1].laneSpeed1 = 35;
-			roadArray[1].laneSpeed2 = 38;
-			roadArray[1].laneSpeed3 = 41;
-			roadArray[1].followDistance1 = 75;
-			roadArray[1].followDistance2 = 35;
-			roadArray[1].followDistance3 = 40;
+			roadArray[1].laneSpeed2 = 0;
+			roadArray[1].laneSpeed3 = 0;
+			roadArray[1].followDistance1 = 90;
+			roadArray[1].followDistance2 = 0;
+			roadArray[1].followDistance3 = 0;
 			////////////
 			roadArray[2].lanesPerSide = 1;
-			roadArray[2].laneSpeed1 = 35;
-			roadArray[2].laneSpeed2 = 38;
-			roadArray[2].laneSpeed3 = 41;
-			roadArray[2].followDistance1 = 90;
-			roadArray[2].followDistance2 = 35;
-			roadArray[2].followDistance3 = 40;
+			roadArray[2].laneSpeed1 = 32;
+			roadArray[2].laneSpeed2 = 0;
+			roadArray[2].laneSpeed3 = 0;
+			roadArray[2].followDistance1 = 80;
+			roadArray[2].followDistance2 = 0;
+			roadArray[2].followDistance3 = 0;
 			break;
 		
 		case 3:  // level 4
 			bool followClose = false;
 		
 			roadArray[0].lanesPerSide = 3;
-			roadArray[0].laneSpeed1 = 40;
-			roadArray[0].laneSpeed2 = 43;
-			roadArray[0].laneSpeed3 = 46;
-			roadArray[0].followDistance1 = (followClose == true) ? 4 : 30;
-			roadArray[0].followDistance2 = (followClose == true) ? 4 : 35;
-			roadArray[0].followDistance3 = (followClose == true) ? 4 : 40;
+			roadArray[0].laneSpeed1 = 43;
+			roadArray[0].laneSpeed2 = 46;
+			roadArray[0].laneSpeed3 = 49;
+			roadArray[0].followDistance1 = (followClose == true) ? 4 : 40;
+			roadArray[0].followDistance2 = (followClose == true) ? 4 : 45;
+			roadArray[0].followDistance3 = (followClose == true) ? 4 : 50;
 			////////////
 			roadArray[1].lanesPerSide = 1;
 			roadArray[1].laneSpeed1 = 40;
-			roadArray[1].laneSpeed2 = 43;
-			roadArray[1].laneSpeed3 = 46;
-			roadArray[1].followDistance1 = (followClose == true) ? 4 : 30;
-			roadArray[1].followDistance2 = (followClose == true) ? 4 : 35;
-			roadArray[1].followDistance3 = (followClose == true) ? 4 : 40;
+			roadArray[1].laneSpeed2 = 0;
+			roadArray[1].laneSpeed3 = 0;
+			roadArray[1].followDistance1 = (followClose == true) ? 4 : 40;
+			roadArray[1].followDistance2 = 0;
+			roadArray[1].followDistance3 = 0;
 			////////////
 			roadArray[2].lanesPerSide = 2;
 			roadArray[2].laneSpeed1 = 40;
 			roadArray[2].laneSpeed2 = 43;
-			roadArray[2].laneSpeed3 = 46;
-			roadArray[2].followDistance1 = (followClose == true) ? 4 : 30;
-			roadArray[2].followDistance2 = (followClose == true) ? 4 : 35;
-			roadArray[2].followDistance3 = (followClose == true) ? 4 : 40;
+			roadArray[2].laneSpeed3 = 0;
+			roadArray[2].followDistance1 = (followClose == true) ? 4 : 40;
+			roadArray[2].followDistance2 = 45;
+			roadArray[2].followDistance3 = 0;
 			break;
 		
 		case 4:  // level 5
 			roadArray[0].lanesPerSide = 3;
-			roadArray[0].laneSpeed1 = 40;
-			roadArray[0].laneSpeed2 = 43;
-			roadArray[0].laneSpeed3 = 46;
-			roadArray[0].followDistance1 = 30;
-			roadArray[0].followDistance2 = 35;
-			roadArray[0].followDistance3 = 40;
+			roadArray[0].laneSpeed1 = 43;
+			roadArray[0].laneSpeed2 = 46;
+			roadArray[0].laneSpeed3 = 49;
+			roadArray[0].followDistance1 = 40;
+			roadArray[0].followDistance2 = 45;
+			roadArray[0].followDistance3 = 50;
 			////////////
 			roadArray[1].lanesPerSide = 1;
 			roadArray[1].laneSpeed1 = 40;
-			roadArray[1].laneSpeed2 = 43;
-			roadArray[1].laneSpeed3 = 46;
-			roadArray[1].followDistance1 = 30;
-			roadArray[1].followDistance2 = 35;
-			roadArray[1].followDistance3 = 40;
+			roadArray[1].laneSpeed2 = 0;
+			roadArray[1].laneSpeed3 = 0;
+			roadArray[1].followDistance1 = 40;
+			roadArray[1].followDistance2 = 0;
+			roadArray[1].followDistance3 = 0;
 			////////////
 			roadArray[2].lanesPerSide = 2;
 			roadArray[2].laneSpeed1 = 40;
 			roadArray[2].laneSpeed2 = 43;
-			roadArray[2].laneSpeed3 = 46;
-			roadArray[2].followDistance1 = 30;
-			roadArray[2].followDistance2 = 35;
-			roadArray[2].followDistance3 = 40;
+			roadArray[2].laneSpeed3 = 0;
+			roadArray[2].followDistance1 = 40;
+			roadArray[2].followDistance2 = 45;
+			roadArray[2].followDistance3 = 0;
 			break;
 		}
 	}

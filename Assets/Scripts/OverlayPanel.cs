@@ -14,7 +14,6 @@ public class OverlayPanel : MonoBehaviour
 
 	private Rect overlayRect;
 	private int currentScreen;
-	private int difficultyLevel;
 	private int soundEnable;
 	private float soundVolume;
 	private float pawRightFlag;
@@ -84,7 +83,7 @@ public class OverlayPanel : MonoBehaviour
 	private GuiComponents guiComponents;
 	private GuiUtils guiUtils;
 	private LevelManager levelManager;
-	//private InputControls inputControls;
+	private TrafficManager trafficManager;
 	private ScoringSystem scoringSystem;
 	
 
@@ -101,7 +100,7 @@ public class OverlayPanel : MonoBehaviour
 		guiComponents = GetComponent<GuiComponents>();
 		guiUtils = GetComponent<GuiUtils>();
 		levelManager = GetComponent<LevelManager>();
-		//inputControls = GetComponent<InputControls>();
+		trafficManager = GetComponent<TrafficManager>();
 		scoringSystem = GetComponent<ScoringSystem>();
 		
 		// texture references from GuiManager
@@ -187,7 +186,6 @@ public class OverlayPanel : MonoBehaviour
 
 		// additional initialization
 		currentScreen = 0;
-		difficultyLevel = 1;
 		soundEnable = 1;
 		soundVolume = 0.5f;
 		pawRightFlag = 1;
@@ -404,7 +402,7 @@ public class OverlayPanel : MonoBehaviour
 		bigButtonStyle.fontSize = (int)(overlayRect.width * 0.032);;
 		bigButtonDisabledStyle.fontSize = (int)(overlayRect.width * 0.03);;
 		GUI.skin = guiManager.customGUISkin;
-		guiManager.customGUISkin.button.fontSize = (int)(overlayRect.width * 0.0225);
+		guiManager.customGUISkin.button.fontSize = (int)(overlayRect.width * 0.025);
 		guiManager.customGUISkin.button.fontStyle = FontStyle.Bold;
 		GUI.backgroundColor = new Color(1f, 1f, 1f, 1f);
 		if (guiManager.selectedPuma != -1) {
@@ -1450,333 +1448,67 @@ public class OverlayPanel : MonoBehaviour
 		GUIStyle style = new GUIStyle();
 		style.alignment = TextAnchor.MiddleCenter;
 
-		// background rectangle
+		// background rectangles
 		GUI.color = new Color(0f, 0f, 0f, 1f * optionsScreenOpacity);
 		GUI.Box(new Rect(optionsScreenX - overlayRect.width * 0.02f, optionsScreenY - overlayRect.height * 0.025f, optionsScreenWidth + overlayRect.width * 0.04f, optionsScreenHeight + overlayRect.height * 0.05f), "");
 		GUI.color = new Color(0f, 0f, 0f, 0.5f * optionsScreenOpacity);
 		GUI.Box(new Rect(optionsScreenX, optionsScreenY, optionsScreenWidth, optionsScreenHeight), "");
 		GUI.color = new Color(1f, 1f, 1f, 1f * optionsScreenOpacity);
 
-
-		// add population bar
-		
-		float yOffsetForAddingPopulationBar = overlayRect.height * -0.012f;
-		float actualoptionsScreenOpacity = optionsScreenOpacity;
-		optionsScreenOpacity = optionsScreenOpacity * 0.9f;
-		GUI.color = new Color(1f, 1f, 1f, 1f * optionsScreenOpacity);		
-		
-		float healthBarX = overlayRect.x + overlayRect.width * 0.04f;
-		float healthBarY = overlayRect.y + overlayRect.height * 0.844f + yOffsetForAddingPopulationBar;
-		float healthBarWidth = overlayRect.width * 0.92f;
-		float healthBarHeight = overlayRect.height * 0.048f;	
-		float healthBarLabelWidth = healthBarWidth * 0.13f;
-
+		// title
 		GUI.color = new Color(0f, 0f, 0f, 0.8f * optionsScreenOpacity);
-		//GUI.Box(new Rect(healthBarX, healthBarY, healthBarLabelWidth * 0.985f, healthBarHeight), "");
-		//GUI.Box(new Rect(healthBarX, healthBarY, healthBarLabelWidth * 0.985f, healthBarHeight), "");
-		//GUI.Box(new Rect(healthBarX + healthBarWidth - healthBarLabelWidth * 0.985f, healthBarY, healthBarLabelWidth * 0.985f, healthBarHeight), "");
-		//GUI.Box(new Rect(healthBarX + healthBarWidth - healthBarLabelWidth * 0.985f, healthBarY, healthBarLabelWidth * 0.985f, healthBarHeight), "");
+		GUI.Box(new Rect(optionsScreenX + optionsScreenWidth * 0.25f, optionsScreenY + optionsScreenHeight * 0.1f, optionsScreenWidth * 0.5f, optionsScreenHeight * 0.14f), "");
 		GUI.color = new Color(1f, 1f, 1f, 1f * optionsScreenOpacity);
 
-		//guiComponents.DrawPopulationHealthBar(optionsScreenOpacity, healthBarX + healthBarLabelWidth, healthBarY, healthBarWidth - healthBarLabelWidth * 2f, healthBarHeight, false, false);
-
-		optionsScreenOpacity = actualoptionsScreenOpacity;
-		GUI.color = new Color(1f, 1f, 1f, 1f * optionsScreenOpacity);		
-
-
-
-
-		return;
-
-
-		float textureX;
-		float textureY;
-		float textureWidth;
-		float textureHeight;
-		
-		float titleX = optionsScreenX + overlayRect.width * 0.027f;
-		float titleY = optionsScreenY + overlayRect.height * 0.04f;
-
-		style.alignment = TextAnchor.UpperCenter;
+		style.normal.textColor = new Color(0.90f, 0.75f, 0.4f, 0.7f);	
+		style.fontSize = (int)(overlayRect.width * 0.03f);
 		style.fontStyle = FontStyle.BoldAndItalic;
-
-		// background rectangle
-		GUI.color = new Color(0f, 0f, 0f, 1f);
-		GUI.Box(new Rect(optionsScreenX - overlayRect.width * 0.035f, optionsScreenY - overlayRect.height * 0.035f, optionsScreenWidth + overlayRect.width * 0.07f, optionsScreenHeight + overlayRect.height * 0.07f), "");
-		GUI.color = new Color(0f, 0f, 0f, 0.5f);
-		GUI.Box(new Rect(optionsScreenX, optionsScreenY, optionsScreenWidth, optionsScreenHeight), "");
-		GUI.color = new Color(0f, 0f, 0f, 1f);
-		GUI.color = new Color(1f, 1f, 1f, 1f);
-		guiUtils.DrawRect(new Rect(optionsScreenX, optionsScreenY, optionsScreenWidth, optionsScreenHeight), new Color(1f, 1f, 1f, 0.665f));	
-
-		// ======================================
-		
-		// DIFFICULTY
-
-		// title
-		style.fontSize = (int)(overlayRect.width * 0.024f);
-		style.normal.textColor = new Color(0.063f, 0.059f, 0.161f, 1f);
-		style.alignment = TextAnchor.UpperLeft;
-		GUI.Button(new Rect(titleX, titleY, overlayRect.width * 0.16f, overlayRect.height * 0.03f), "Challenge Level", style);
-		style.alignment = TextAnchor.UpperCenter;
-
-		// radio buttons and labels
-		GUI.color = new Color(1f, 1f, 1f, 1f);
-		style.fontSize = (int)(overlayRect.width * 0.025f);
-		style.normal.textColor = new Color(0.392f, 0.0588f, 0.0588f, 1f);
-		style.alignment = TextAnchor.MiddleLeft;
-		textureX = overlayRect.x + overlayRect.width * 0.44f;
-		textureY = overlayRect.y + overlayRect.height * 0.264f;
-		textureWidth = overlayRect.width * 0.026f;
-		textureHeight = radioButtonTexture.height * (textureWidth / radioButtonTexture.width);
-		GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), radioButtonTexture);
-		if (difficultyLevel == 0) {
-			float selectTextureX = textureX + textureWidth * 0.165f;
-			float selectTextureY = textureY + textureHeight * 0.165f;
-			float selectTextureWidth = textureWidth * 0.65f;
-			float selectTextureHeight = radioSelectTexture.height * (selectTextureWidth / radioSelectTexture.width);
-			GUI.DrawTexture(new Rect(selectTextureX, selectTextureY, selectTextureWidth, selectTextureHeight), radioSelectTexture);
-		}
-		if (GUI.Button(new Rect(textureX, textureY, textureWidth * 3, textureHeight), "", style))
-			difficultyLevel = 0;
-		if (GUI.Button(new Rect(textureX + textureWidth, textureY, textureWidth * 3, textureHeight), " easy", style))
-			difficultyLevel = 0;
-		textureX += overlayRect.width * 0.135f;
-		GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), radioButtonTexture);
-		if (difficultyLevel == 1) {
-			float selectTextureX = textureX + textureWidth * 0.165f;
-			float selectTextureY = textureY + textureHeight * 0.165f;
-			float selectTextureWidth = textureWidth * 0.65f;
-			float selectTextureHeight = radioSelectTexture.height * (selectTextureWidth / radioSelectTexture.width);
-			GUI.DrawTexture(new Rect(selectTextureX, selectTextureY, selectTextureWidth, selectTextureHeight), radioSelectTexture);
-		}
-		if (GUI.Button(new Rect(textureX, textureY, textureWidth * 3, textureHeight), "", style))
-			difficultyLevel = 1;
-		if (GUI.Button(new Rect(textureX + textureWidth, textureY, textureWidth * 3, textureHeight), " mid", style))
-			difficultyLevel = 1;
-		textureX += overlayRect.width * 0.125f;
-		GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), radioButtonTexture);
-		if (difficultyLevel == 2) {
-			float selectTextureX = textureX + textureWidth * 0.165f;
-			float selectTextureY = textureY + textureHeight * 0.165f;
-			float selectTextureWidth = textureWidth * 0.65f;
-			float selectTextureHeight = radioSelectTexture.height * (selectTextureWidth / radioSelectTexture.width);
-			GUI.DrawTexture(new Rect(selectTextureX, selectTextureY, selectTextureWidth, selectTextureHeight), radioSelectTexture);
-		}
-		if (GUI.Button(new Rect(textureX, textureY, textureWidth * 3, textureHeight), "", style))
-			difficultyLevel = 2;
-		if (GUI.Button(new Rect(textureX + textureWidth, textureY, textureWidth * 3, textureHeight), " hard", style))
-			difficultyLevel = 2;
-
-		// ======================================	
-		// DIVIDER
-		guiUtils.DrawRect(new Rect(optionsScreenX, optionsScreenY + overlayRect.height * 0.113f, optionsScreenWidth, overlayRect.height * 0.005f), new Color(0f, 0f, 0f, 0.2f));	
-		guiUtils.DrawRect(new Rect(optionsScreenX, optionsScreenY + overlayRect.height * 0.118f, optionsScreenWidth, overlayRect.height * 0.005f), new Color(1f, 1f, 1f, 0.5f));	
-		// ======================================
-
-		// SOUND VOLUME
-
-		// title
-		style.fontSize = (int)(overlayRect.width * 0.024f);
+		GUI.Button(new Rect(optionsScreenX + optionsScreenWidth * 0.2f, optionsScreenY + optionsScreenHeight * 0.1f, optionsScreenWidth * 0.6f, optionsScreenHeight * 0.14f), "Difficulty Level", style);
+	
+		// difficulty options
+		float optionWidth = optionsScreenWidth * 0.2f;
+		float optionMargin =  (optionsScreenWidth - (optionWidth*3)) / 4;
+		float optionY =  optionsScreenY + optionsScreenHeight * 0.4f;
+		float optionHeight =  optionsScreenHeight * 0.4f;
+		GUI.color = new Color(0f, 0f, 0f, 0.8f * optionsScreenOpacity);
+		GUI.Box(new Rect(optionsScreenX + optionMargin, optionY, optionWidth, optionHeight), "");
+		GUI.Box(new Rect(optionsScreenX + optionMargin  + optionWidth + optionMargin, optionY, optionWidth, optionHeight), "");
+		GUI.Box(new Rect(optionsScreenX + optionMargin  + optionWidth + optionMargin  + optionWidth + optionMargin, optionY, optionWidth, optionHeight), "");
+		GUI.color = new Color(1f, 1f, 1f, 1f * optionsScreenOpacity);
+	
+		float neonX = optionsScreenX;
+		if (levelManager.difficultyLevel == 0.8f)
+			neonX = optionsScreenX + optionMargin;
+		else if (levelManager.difficultyLevel == 0.9f)
+			neonX = optionsScreenX + optionMargin  + optionWidth + optionMargin;
+		else if (levelManager.difficultyLevel == 1f)
+			neonX = optionsScreenX + optionMargin  + optionWidth + optionMargin  + optionWidth + optionMargin;
+		GUI.color = new Color(0.7f, 0.7f, 0.7f, 0.7f * optionsScreenOpacity);
+		GUI.DrawTexture(new Rect(neonX, optionY, optionWidth, optionHeight), greenOutlineRectVertTexture);
+		GUI.color = new Color(1f, 1f, 1f, 1f * optionsScreenOpacity);
+	
+	
+		style.fontSize = (int)(overlayRect.width * 0.03f);
 		style.fontStyle = FontStyle.BoldAndItalic;
-		style.alignment = TextAnchor.UpperCenter;
-		style.normal.textColor = new Color(0.063f, 0.059f, 0.161f, 1f);
-		style.alignment = TextAnchor.UpperLeft;
-		GUI.Button(new Rect(titleX, titleY + overlayRect.height * 0.113f, overlayRect.width * 0.12f, overlayRect.height * 0.03f), "Sound Volume", style);
-		style.alignment = TextAnchor.UpperCenter;
-
-		// radio buttons and labels
-		GUI.color = new Color(1f, 1f, 1f, 1f);
-		style.fontSize = (int)((soundEnable == 1) ? overlayRect.width * 0.0235f : overlayRect.width * 0.028f );
-		style.normal.textColor = new Color(0.392f, 0.0588f, 0.0588f, 1f);
-		style.alignment = TextAnchor.MiddleLeft;
-		textureX = overlayRect.x + overlayRect.width * 0.44f;
-		textureY = overlayRect.y + overlayRect.height * 0.377f;
-		textureWidth = overlayRect.width * 0.026f;
-		textureHeight = radioButtonTexture.height * (textureWidth / radioButtonTexture.width);
-		GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), radioButtonTexture);
-		if (soundEnable == 1) {
-			float selectTextureX = textureX + textureWidth * 0.165f;
-			float selectTextureY = textureY + textureHeight * 0.165f;
-			float selectTextureWidth = textureWidth * 0.65f;
-			float selectTextureHeight = radioSelectTexture.height * (selectTextureWidth / radioSelectTexture.width);
-			GUI.DrawTexture(new Rect(selectTextureX, selectTextureY, selectTextureWidth, selectTextureHeight), radioSelectTexture);
+		style.normal.textColor = levelManager.difficultyLevel == 0.8f ? (new Color(0.816f * 1.05f, 0.537f * 1.05f, 0.18f * 1.05f, 1f)) : (new Color(0.90f, 0.75f, 0.4f, 0.7f));
+		if (GUI.Button(new Rect(optionsScreenX + optionMargin, optionY, optionWidth, optionHeight), "Easy", style)) {
+			levelManager.difficultyLevel = 0.8f;
+			trafficManager.InitLevel(levelManager.currentLevel);
 		}
-		if (GUI.Button(new Rect(textureX, textureY, textureWidth * 2, textureHeight), "", style))
-			soundEnable = (soundEnable == 1) ? 0 : 1;
-		if (GUI.Button(new Rect(textureX + textureWidth, textureY, textureWidth * 2, textureHeight), (soundEnable == 1) ? " ON" : " off", style))
-			soundEnable = (soundEnable == 1) ? 0 : 1;
+		style.normal.textColor = levelManager.difficultyLevel == 0.9f ? (new Color(0.816f * 1.05f, 0.537f * 1.05f, 0.18f * 1.05f, 1f)) : (new Color(0.90f, 0.75f, 0.4f, 0.7f));
+		if (GUI.Button(new Rect(optionsScreenX + optionMargin  + optionWidth + optionMargin, optionY, optionWidth, optionHeight), "Medium", style)) {
+			levelManager.difficultyLevel = 0.9f;
+			trafficManager.InitLevel(levelManager.currentLevel);
+		}
+		style.normal.textColor = levelManager.difficultyLevel == 1.0f ? (new Color(0.816f * 1.05f, 0.537f * 1.05f, 0.18f * 1.05f, 1f)) : (new Color(0.90f, 0.75f, 0.4f, 0.7f));
+		if (GUI.Button(new Rect(optionsScreenX + optionMargin  + optionWidth + optionMargin  + optionWidth + optionMargin, optionY, optionWidth, optionHeight), "Hard", style)) {
+			levelManager.difficultyLevel = 1f;
+			trafficManager.InitLevel(levelManager.currentLevel);
+		}
+				
+		style.normal.textColor = new Color(0.816f * 1.05f, 0.537f * 1.05f, 0.18f * 1.05f, 1f);
 		
-
-		///////////////////////////////////////////////////////////////////
-		// background rectangle -- FOR SCREEN CONFIG -- needs to go here to avoid problems after slider changes GUI.skin
-		///////////////////////////////////////////////////////////////////
-		float meterBoxX = optionsScreenX + ((pawRightFlag == 1) ? (optionsScreenWidth * 0.445f) : (optionsScreenWidth * 0.800f));
-		float meterBoxY = optionsScreenY + optionsScreenHeight * 0.46f;
-		float meterBoxWidth = optionsScreenWidth * 0.1f;
-		float meterBoxHeight = optionsScreenHeight * 0.10f;
-		GUI.color = new Color(0f, 0f, 0f, 0.8f);
-		GUI.Box(new Rect(meterBoxX,  meterBoxY, meterBoxWidth, meterBoxHeight), "");
-		//GUI.color = new Color(0f, 0f, 0f, 0.3f);
-		//GUI.Box(new Rect(meterBoxX,  meterBoxY, meterBoxWidth, meterBoxHeight), "");
-		GUI.color = new Color(1f, 1f, 1f, 1f);
-
-
-		// volume slider
-		float sliderX = overlayRect.x + overlayRect.width * 0.564f;
-		float sliderY = overlayRect.y + overlayRect.height * 0.367f;
-		float sliderWidth = overlayRect.width * 0.22f;
-		float sliderHeight = overlayRect.height * 0.056f;
-		//GUI.color = new Color(1f, 1f, 1f, soundEnable == 1 ? 1f : 0.6f);
-		GUI.color = new Color(1f, 1f, 1f, soundEnable == 1 ? 1f : 0f);
-		GUI.DrawTexture(new Rect(sliderX, sliderY + overlayRect.height * 0.0265f, sliderWidth, overlayRect.height * 0.01f), sliderBarTexture);
-		GUI.skin = customSkin;		
-		sliderThumbStyle.fixedWidth = overlayRect.width * 0.020f;
-		//GUI.color = new Color(1f, 1f, 1f, soundEnable == 1 ? 1f : 0.35f);
-		GUI.color = new Color(1f, 1f, 1f, soundEnable == 1 ? 1f : 0f);
-		soundVolume = GUI.HorizontalSlider(new Rect(sliderX, sliderY, sliderWidth, sliderHeight), soundVolume, 0f, 1f);
-		GUI.color = new Color(1f, 1f, 1f, 1f);
 		
-
-		// ======================================	
-		// DIVIDER
-		guiUtils.DrawRect(new Rect(optionsScreenX, optionsScreenY + overlayRect.height * 0.226f, optionsScreenWidth, overlayRect.height * 0.005f), new Color(0f, 0f, 0f, 0.2f));	
-		guiUtils.DrawRect(new Rect(optionsScreenX, optionsScreenY + overlayRect.height * 0.231f, optionsScreenWidth, overlayRect.height * 0.005f), new Color(1f, 1f, 1f, 0.5f));	
-		// ======================================
-
-		// SCREEN CONFIG
-
-		// title
-		style.fontSize = (int)(overlayRect.width * 0.024f);
-		style.fontStyle = FontStyle.BoldAndItalic;
-		style.alignment = TextAnchor.UpperCenter;
-		style.normal.textColor = new Color(0.063f, 0.059f, 0.161f, 1f);
-		style.alignment = TextAnchor.UpperLeft;
-		GUI.Button(new Rect(titleX, titleY + overlayRect.height * 0.113f * 2f, overlayRect.width * 0.17f, overlayRect.height * 0.03f), "Screen Layout", style);
-		style.alignment = TextAnchor.UpperCenter;
-
-		// button
-		GUI.skin = guiManager.customGUISkin;
-		guiManager.customGUISkin.button.fontSize = (int)(overlayRect.width * 0.0165);
-		guiManager.customGUISkin.button.fontStyle = FontStyle.Normal;
-		GUI.color = new Color(1f, 1f, 1f, 1f);
-		GUI.backgroundColor = new Color(1f, 0f, 0f, 1f);
-		if (GUI.Button(new Rect(overlayRect.width * -0.003f + optionsScreenX + overlayRect.width * 0.11f + overlayRect.width * 0.302f, overlayRect.width * -0.0025f + titleY + overlayRect.height * 0.113f * 2f - overlayRect.height * 0.006f, overlayRect.width * 0.006f + overlayRect.width * 0.06f, overlayRect.width * 0.005f + overlayRect.height * 0.0585f), ""))
-			pawRightFlag = (pawRightFlag == 0) ? 1 : 0;
-		GUI.backgroundColor = new Color(0.5f, 0.5f, 0.9f, 1f);
-		if (GUI.Button(new Rect(optionsScreenX + overlayRect.width * 0.11f + overlayRect.width * 0.302f, titleY + overlayRect.height * 0.113f * 2f - overlayRect.height * 0.006f, overlayRect.width * 0.06f, overlayRect.height * 0.0585f), ""))
-			pawRightFlag = (pawRightFlag == 0) ? 1 : 0;
-		if (GUI.Button(new Rect(optionsScreenX + overlayRect.width * 0.11f + overlayRect.width * 0.302f, titleY + overlayRect.height * 0.113f * 2f - overlayRect.height * 0.006f, overlayRect.width * 0.06f, overlayRect.height * 0.0585f), ""))
-			pawRightFlag = (pawRightFlag == 0) ? 1 : 0;
-		GUI.backgroundColor = new Color(1f, 1f, 1f, 1f);
-		GUI.color = new Color(1f, 1f, 1f, 1f);
-		buttonStyle.fontSize = buttonDownStyle.fontSize = (int)(overlayRect.width * 0.019);
-		if (GUI.Button(new Rect(titleX + overlayRect.width * 0.395f, titleY + overlayRect.height * 0.113f * 2f - overlayRect.height * 0.00f, overlayRect.width * 0.04f, overlayRect.height * 0.048f), "", swapButtonStyle))
-			pawRightFlag = (pawRightFlag == 0) ? 1 : 0;
-		GUI.color = new Color(1f, 1f, 1f, 1f);
-
-		// arrow tray
-		float trayX = optionsScreenX + ((pawRightFlag == 1) ? (optionsScreenWidth * 0.797f) : (optionsScreenWidth * 0.450f));
-		float trayWidth = optionsScreenWidth * 0.097f;
-		float trayHeight = arrowTrayTopTexture.height * (trayWidth / arrowTrayTopTexture.width);
-		float trayY = optionsScreenY + optionsScreenHeight * 0.58f - trayHeight;
-		GUI.color = new Color(1f, 1f, 1f, 0.75f);
-		GUI.DrawTexture(new Rect(trayX, trayY, trayWidth, trayHeight), arrowTrayTopTexture);
-		GUI.color = new Color(1f, 1f, 1f, 0.75f);
-		GUI.DrawTexture(new Rect(trayX, trayY, trayWidth, trayHeight), arrowTrayTexture);
-			
-		// health meter...
-		// background
-		// PLACED ABOVE TO AVOID PROBLEMS FROM GUI.Skin BEING CHANGED BY SLIDER
-		
-		// filler
-		GUI.color = new Color(1f, 1f, 1f, 1f);
-		float health = 0.8f; 
-		Color healthColor = (health > 0.66f) ? new Color(0f, 1f, 0f, 0.7f) : ((health > 0.33f) ? new Color(1f, 1f, 0f, 0.81f) : new Color(1f, 0f, 0f, 1f));
-		guiUtils.DrawRect(new Rect(meterBoxX + meterBoxWidth * 0.05f,  meterBoxY + meterBoxHeight * 0.1f, meterBoxWidth * 0.9f, meterBoxHeight * 0.25f), new Color(0.61f, 0.64f, 0.66f, 1f));	
-		guiUtils.DrawRect(new Rect(meterBoxX + meterBoxWidth * 0.07f,  meterBoxY + meterBoxHeight * 0.11f, (meterBoxWidth * 0.85f) * (health / 1.0f), meterBoxHeight * 0.23f), healthColor);			
-		// 'pause' button
-		GUI.color = new Color(1f, 1f, 1f, 0.75f);
-		GUI.skin = guiManager.customGUISkin;
-		guiManager.customGUISkin.button.fontSize = (int)(overlayRect.width * 0.009);;
-		GUI.Button(new Rect(meterBoxX + meterBoxWidth * 0.05f,  meterBoxY + meterBoxHeight * 0.47f, meterBoxWidth * 0.9f, meterBoxHeight * 0.41f), "EXIT");
-		GUI.color = new Color(1f, 1f, 1f, 1f);
-
-
-		// ======================================	
-		// DIVIDER
-		guiUtils.DrawRect(new Rect(optionsScreenX, optionsScreenY + overlayRect.height * 0.339f, optionsScreenWidth, overlayRect.height * 0.005f), new Color(0f, 0f, 0f, 0.2f));	
-		guiUtils.DrawRect(new Rect(optionsScreenX, optionsScreenY + overlayRect.height * 0.344f, optionsScreenWidth, overlayRect.height * 0.005f), new Color(1f, 1f, 1f, 0.5f));	
-		// ======================================
-
-		// INTRO VIDEO
-
-		// title
-		style.fontSize = (int)(overlayRect.width * 0.024f);
-		style.fontStyle = FontStyle.BoldAndItalic;
-		style.alignment = TextAnchor.UpperCenter;
-		style.normal.textColor = new Color(0.063f, 0.059f, 0.161f, 1f);
-		style.alignment = TextAnchor.UpperLeft;
-		GUI.Button(new Rect(titleX, titleY + overlayRect.height * 0.113f * 3f, overlayRect.width * 0.17f, overlayRect.height * 0.03f), "Video Options", style);
-		style.alignment = TextAnchor.UpperCenter;
-
-		// button
-		//GUI.color = new Color(1f, 1f, 1f, 0.5f);
-		//guiUtils.DrawRect(new Rect(optionsScreenX + overlayRect.width * 0.025f + overlayRect.width * 0.292f, titleY + overlayRect.height * 0.113f * 3f - overlayRect.height * 0.006f, overlayRect.width * 0.25f, overlayRect.height * 0.0585f), new Color(0f, 0f, 0f, 1f));	
-		GUI.skin = guiManager.customGUISkin;
-		guiManager.customGUISkin.button.fontSize = (int)(overlayRect.width * 0.0185);
-		guiManager.customGUISkin.button.fontStyle = FontStyle.Normal;
-		GUI.color = new Color(1f, 1f, 1f, 1f);
-		GUI.backgroundColor = new Color(1f, 0f, 0f, 1f);
-		if (GUI.Button(new Rect(overlayRect.width * -0.003f + optionsScreenX + overlayRect.width * 0.025f + overlayRect.width * 0.292f, overlayRect.width * -0.0025f + titleY + overlayRect.height * 0.113f * 3f - overlayRect.height * 0.006f, overlayRect.width * 0.006f + overlayRect.width * 0.25f, overlayRect.width * 0.005f + overlayRect.height * 0.0585f), "")) {
-			guiManager.OpenInfoPanel(0);
-		}
-		GUI.backgroundColor = new Color(0.5f, 0.5f, 0.9f, 1f);
-		if (GUI.Button(new Rect(optionsScreenX + overlayRect.width * 0.025f + overlayRect.width * 0.292f, titleY + overlayRect.height * 0.113f * 3f - overlayRect.height * 0.006f, overlayRect.width * 0.25f, overlayRect.height * 0.0585f), "")) {
-			guiManager.OpenInfoPanel(0);
-		}
-		if (GUI.Button(new Rect(optionsScreenX + overlayRect.width * 0.025f + overlayRect.width * 0.292f, titleY + overlayRect.height * 0.113f * 3f - overlayRect.height * 0.006f, overlayRect.width * 0.25f, overlayRect.height * 0.0585f), "Play Introduction....")) {
-			guiManager.OpenInfoPanel(0);
-		}
-		GUI.backgroundColor = new Color(1f, 1f, 1f, 1f);
-		GUI.color = new Color(1f, 1f, 1f, 1f);
-
-		
-		// ======================================	
-		// DIVIDER
-		guiUtils.DrawRect(new Rect(optionsScreenX, optionsScreenY + overlayRect.height * 0.452f, optionsScreenWidth, overlayRect.height * 0.005f), new Color(0f, 0f, 0f, 0.2f));	
-		guiUtils.DrawRect(new Rect(optionsScreenX, optionsScreenY + overlayRect.height * 0.457f, optionsScreenWidth, overlayRect.height * 0.005f), new Color(1f, 1f, 1f, 0.5f));	
-		// ======================================
-
-		// OPTIONS FOR CHANGE
-
-		// title
-		style.fontSize = (int)(overlayRect.width * 0.024f);
-		style.fontStyle = FontStyle.BoldAndItalic;
-		style.alignment = TextAnchor.UpperCenter;
-		style.normal.textColor = new Color(0f, 0.35f, 0f, 1f);
-		style.alignment = TextAnchor.UpperLeft;
-		GUI.Button(new Rect(titleX, titleY + overlayRect.height * 0.113f * 4f, overlayRect.width * 0.17f, overlayRect.height * 0.03f), "Other Options", style);
-		style.alignment = TextAnchor.UpperCenter;
-
-		// button
-		GUI.skin = guiManager.customGUISkin;
-		guiManager.customGUISkin.button.fontSize = (int)(overlayRect.width * 0.0185);
-		guiManager.customGUISkin.button.fontStyle = FontStyle.Normal;
-		GUI.color = new Color(1f, 1f, 1f, 1f);
-		GUI.backgroundColor = new Color(1f, 0f, 0f, 1f);
-		if (GUI.Button(new Rect(overlayRect.width * -0.003f + optionsScreenX + overlayRect.width * 0.025f + overlayRect.width * 0.292f, overlayRect.width * -0.0025f + titleY + overlayRect.height * 0.113f * 4f - overlayRect.height * 0.006f, overlayRect.width * 0.006f + overlayRect.width * 0.25f, overlayRect.width * 0.005f + overlayRect.height * 0.0585f), "")) {
-			guiManager.OpenInfoPanel(5);
-		}
-		GUI.backgroundColor = new Color(0.5f, 0.5f, 0.9f, 1f);
-		if (GUI.Button(new Rect(optionsScreenX + overlayRect.width * 0.025f + overlayRect.width * 0.292f, titleY + overlayRect.height * 0.113f * 4f - overlayRect.height * 0.006f, overlayRect.width * 0.25f, overlayRect.height * 0.0585f), "")) {
-			guiManager.OpenInfoPanel(5);
-		}
-		if (GUI.Button(new Rect(optionsScreenX + overlayRect.width * 0.025f + overlayRect.width * 0.292f, titleY + overlayRect.height * 0.113f * 4f - overlayRect.height * 0.006f, overlayRect.width * 0.25f, overlayRect.height * 0.0585f), "Help Protect Pumas....")) {
-			guiManager.OpenInfoPanel(5);
-		}
-		GUI.backgroundColor = new Color(1f, 1f, 1f, 1f);
-		GUI.color = new Color(1f, 1f, 1f, 1f);
 	}
 
 

@@ -95,6 +95,8 @@ public class GuiManager : MonoBehaviour
 	public Texture2D pumaCrossbonesDarkRedTexture; 
 	public Texture2D pumaStealthTexture; 
 	public Texture2D pumaRunTexture; 
+	public Texture2D pumaStealthDarkTexture; 
+	public Texture2D pumaRunDarkTexture; 
 	public Texture2D pumaAttackTexture; 
 	public Texture2D pumaJumpTexture; 
 	public Texture2D pumaPreyTexture; 
@@ -133,6 +135,9 @@ public class GuiManager : MonoBehaviour
 	public Texture2D arrowDownOnTexture; 
 	public Texture2D arrowTurnLeftTexture; 
 	public Texture2D arrowTurnRightTexture;
+	public Texture2D pawDiagLeftTexture;
+	public Texture2D pawDiagRightTexture;
+	public Texture2D pawStraightTexture;
 	public Texture2D controlRightIconsTexture;
 	public Texture2D controlRightIconsLowerTexture;
 	public Texture2D controlLeftJumpTexture;
@@ -165,6 +170,9 @@ public class GuiManager : MonoBehaviour
 	public Texture2D predationCirclesTexture; 
 	public Texture2D huntLongTexture; 
 	public Texture2D huntShortTexture; 
+	public Texture2D crossingScreenshotTexture; 
+	public Texture2D crossingBadAngleTexture; 
+	public Texture2D crossingGoodAngleTexture; 
 	
 
 	// EXTERNAL MODULES
@@ -1259,22 +1267,42 @@ public class GuiManager : MonoBehaviour
 		if (displayFrameRate == true && levelManager != null) {
 			GUI.color = Color.white;
 
-			int msec = levelManager.frameAverageDuration;
-			GUI.Box(new Rect(Screen.width * 0.24f - 80f, 0, 160, 24), "Avg Frame time: " + msec.ToString());		
+			GUIStyle style = new GUIStyle();
+			style.alignment = TextAnchor.MiddleCenter;
 
-			GUI.Box(new Rect(Screen.width * 0.50f - 80f, 0, 160, 24), "Screen Res: " + Screen.width.ToString() + "x" + Screen.height.ToString());				
+			float fontRef = Screen.height * 0.1f;
+			style.fontSize = (int)(fontRef * 0.22f);
+			style.normal.textColor =  new Color(1f, 1f, 1f, 1f);
+			style.fontStyle = FontStyle.Bold;
+			
+			float backBoxWidth = Screen.height * 0.28f;
+			float backBoxHeight = Screen.height * 0.036f;
+
+			int msec = levelManager.frameAverageDuration;
+			GUI.Box(new Rect(Screen.width * 0.24f - backBoxWidth/2, 0, backBoxWidth, backBoxHeight), "");		
+			GUI.Button(new Rect(Screen.width * 0.24f - backBoxWidth/2, 0, backBoxWidth, backBoxHeight), "Avg Frame time: " + msec.ToString(), style);		
+
+			GUI.Box(new Rect(Screen.width * 0.50f - backBoxWidth/2, 0, backBoxWidth, backBoxHeight), "");		
+			GUI.Button(new Rect(Screen.width * 0.50f - backBoxWidth/2, 0, backBoxWidth, backBoxHeight), "Screen Res: " + Screen.width.ToString() + "x" + Screen.height.ToString(), style);				
 			
 			int averageFrameRate = (levelManager.frameAverageDuration == 0) ? 0 : (int)(1000 / levelManager.frameAverageDuration);
-			GUI.Box(new Rect(Screen.width * 0.76f - 80f, 0, 160, 24), "Avg Frame rate: " + averageFrameRate.ToString());		
+			GUI.Box(new Rect(Screen.width * 0.76f - backBoxWidth/2, 0, backBoxWidth, backBoxHeight), "");		
+			GUI.Button(new Rect(Screen.width * 0.76f - backBoxWidth/2, 0, backBoxWidth, backBoxHeight), "Avg Frame rate: " + averageFrameRate.ToString(), style);		
 
-			GUI.Box(new Rect(Screen.width * 0.24f - 80f, Screen.height - 24, 160, 24), "displayVar1:  " + levelManager.displayVar1.ToString());		
-			GUI.Box(new Rect(Screen.width * 0.50f - 80f, Screen.height - 24, 160, 24), "displayVar2:  " + levelManager.displayVar2.ToString());				
-			GUI.Box(new Rect(Screen.width * 0.76f - 80f, Screen.height - 24, 160, 24), "displayVar3:  " + levelManager.displayVar3.ToString());		
+			GUI.Box(new Rect(Screen.width * 0.24f - backBoxWidth/2, Screen.height - backBoxHeight*2, backBoxWidth, backBoxHeight), "");		
+			GUI.Button(new Rect(Screen.width * 0.24f - backBoxWidth/2, Screen.height - backBoxHeight*2, backBoxWidth, backBoxHeight), levelManager.displayVar1, style);		
+			GUI.Box(new Rect(Screen.width * 0.50f - backBoxWidth/2, Screen.height - backBoxHeight*2, backBoxWidth, backBoxHeight), "");		
+			GUI.Button(new Rect(Screen.width * 0.50f - backBoxWidth/2, Screen.height - backBoxHeight*2, backBoxWidth, backBoxHeight), levelManager.displayVar3, style);				
+			GUI.Box(new Rect(Screen.width * 0.76f - backBoxWidth/2, Screen.height - backBoxHeight*2, backBoxWidth, backBoxHeight), "");		
+			GUI.Button(new Rect(Screen.width * 0.76f - backBoxWidth/2, Screen.height - backBoxHeight*2, backBoxWidth, backBoxHeight), levelManager.displayVar5, style);		
 
 			Vector3 mousePos = Input.mousePosition;
-			GUI.Box(new Rect(Screen.width * 0.24f - 80f, Screen.height - 48, 160, 24), "mouseX:  " + mousePos.x / Screen.width);		
-			GUI.Box(new Rect(Screen.width * 0.50f - 80f, Screen.height - 48, 160, 24), "mouseY:  " + mousePos.y / Screen.height);				
-			GUI.Box(new Rect(Screen.width * 0.76f - 80f, Screen.height - 48, 160, 24), "mouseZ:  " + mousePos.z);		
+			GUI.Box(new Rect(Screen.width * 0.24f - backBoxWidth/2, Screen.height - backBoxHeight, backBoxWidth, backBoxHeight), "");		
+			GUI.Button(new Rect(Screen.width * 0.24f - backBoxWidth/2, Screen.height - backBoxHeight, backBoxWidth, backBoxHeight), levelManager.displayVar2, style);		
+			GUI.Box(new Rect(Screen.width * 0.50f - backBoxWidth/2, Screen.height -backBoxHeight, backBoxWidth, backBoxHeight), "");		
+			GUI.Button(new Rect(Screen.width * 0.50f - backBoxWidth/2, Screen.height - backBoxHeight, backBoxWidth, backBoxHeight), levelManager.displayVar4, style);				
+			GUI.Box(new Rect(Screen.width * 0.76f - backBoxWidth/2, Screen.height - backBoxHeight, backBoxWidth, backBoxHeight), "");		
+			GUI.Button(new Rect(Screen.width * 0.76f - backBoxWidth/2, Screen.height - backBoxHeight, backBoxWidth, backBoxHeight), levelManager.displayVar6, style);		
 		}		
 	}	
  

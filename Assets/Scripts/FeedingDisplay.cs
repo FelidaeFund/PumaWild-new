@@ -85,9 +85,9 @@ public class FeedingDisplay : MonoBehaviour
 
 	public void Draw(float mainContentOpacity, float rollingScoreFactor, float levelCompleteOpacity, float okButtonOpacity) 
 	{ 
-		float feedingDisplayX = (Screen.width / 2) - (Screen.height * 0.7f);
+		float feedingDisplayX = (Screen.width / 2) - (Screen.height * 0.6f);
 		float feedingDisplayY = Screen.height * 0.025f;
-		float feedingDisplayWidth = Screen.height * 1.4f;
+		float feedingDisplayWidth = Screen.height * 1.2f;
 		float feedingDisplayHeight = Screen.height * 0.37f;
 		
 		bool failedHuntFlag = (levelManager.caughtDeer == null) ? true : false;
@@ -201,7 +201,7 @@ public class FeedingDisplay : MonoBehaviour
 		GUI.color = new Color(1f, 1f, 1f, 1f * mainContentOpacity);
 
 		GUI.color = new Color(1f, 1f, 1f, 0.9f * mainContentOpacity);
-		GUI.Box(new Rect(feedingDisplayX + feedingDisplayWidth * 0.22f + backgroundOffset, feedingDisplayY + feedingDisplayHeight * 0.1f, feedingDisplayWidth * 0.56f - backgroundOffset * 02f, feedingDisplayHeight * 0.11f), "");
+		GUI.Box(new Rect(feedingDisplayX + feedingDisplayWidth * 0.19f + backgroundOffset, feedingDisplayY + feedingDisplayHeight * 0.1f, feedingDisplayWidth * 0.62f - backgroundOffset*2f, feedingDisplayHeight * 0.11f), "");
 		GUI.color = new Color(1f, 1f, 1f, 1f * mainContentOpacity);
 
 		GUI.color = new Color(1f, 1f, 1f, 0.1f * mainContentOpacity);
@@ -458,10 +458,10 @@ public class FeedingDisplay : MonoBehaviour
 
 		int successCount = scoringSystem.GetHuntSuccessCount();
 
-		float levelDisplayX = feedingDisplayX + feedingDisplayWidth * 0.74f;
 		float levelDisplayY = feedingDisplayY + feedingDisplayHeight * 1.282f;
-		float levelDisplayW = feedingDisplayWidth * 0.24f; 
+		float levelDisplayW = feedingDisplayWidth * 0.28f; 
 		float levelDisplayH = feedingDisplayHeight * 0.55f;
+		float levelDisplayX = Screen.width - feedingDisplayX - levelDisplayW;
 		
 		float borderPercent = 0.05f;
 		float innerX = levelDisplayX + levelDisplayW * borderPercent;
@@ -578,7 +578,7 @@ public class FeedingDisplay : MonoBehaviour
 
 		float statsLinkX = feedingDisplayX;
 		float statsLinkY = feedingDisplayY + feedingDisplayHeight * 1.282f;
-		float statsLinkW = feedingDisplayWidth * 0.24f; 
+		float statsLinkW = feedingDisplayWidth * 0.28f; 
 		float statsLinkH = feedingDisplayHeight * (successCount == 3 ? 0.95f : 0.65f);
 		
 		borderPercent = 0.05f;

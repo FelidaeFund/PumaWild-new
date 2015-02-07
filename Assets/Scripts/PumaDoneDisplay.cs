@@ -63,9 +63,9 @@ public class PumaDoneDisplay : MonoBehaviour
 
 	public void Draw(float backgroundPanelOpacity, float carCollisionOpacity, float starvedOpacity, float okButtonOpacity) 
 	{ 
-		float pumaDoneDisplayX = (Screen.width / 2) - (Screen.height * 0.7f);
+		float pumaDoneDisplayX = (Screen.width / 2) - (Screen.height * 0.6f);
 		float pumaDoneDisplayY = Screen.height * 0.025f;
-		float pumaDoneDisplayWidth = Screen.height * 1.4f;
+		float pumaDoneDisplayWidth = Screen.height * 1.2f;
 		float pumaDoneDisplayHeight = Screen.height * 0.37f;
 		
 		int caloriesExpended = (int)scoringSystem.GetLastKillExpense(guiManager.selectedPuma);
@@ -295,7 +295,7 @@ public class PumaDoneDisplay : MonoBehaviour
 				
 			// left label
 			style.alignment = TextAnchor.MiddleLeft;
-			leftLabelX = pumaDoneDisplayX + pumaDoneDisplayWidth * 0.39f + leftShiftAmount;
+			leftLabelX = pumaDoneDisplayX + pumaDoneDisplayWidth * 0.385f + leftShiftAmount;
 			leftLabelY1 = pumaDoneDisplayY + pumaDoneDisplayHeight * (0.50f + panelOffsetY) + vertShiftAmount;
 			leftLabelY2 = pumaDoneDisplayY + pumaDoneDisplayHeight * (0.61f + panelOffsetY) + vertShiftAmount;
 			leftLabelY3 = pumaDoneDisplayY + pumaDoneDisplayHeight * (0.72f + panelOffsetY) + vertShiftAmount;
@@ -312,7 +312,7 @@ public class PumaDoneDisplay : MonoBehaviour
 			GUI.Button(new Rect(leftLabelX, leftLabelY5, leftLabelW, leftLabelH), "with vehicles", style);
 
 			// right label
-			rightLabelX = pumaDoneDisplayX + pumaDoneDisplayWidth * 0.77f;
+			rightLabelX = pumaDoneDisplayX + pumaDoneDisplayWidth * 0.765f;
 			rightLabelY1 = pumaDoneDisplayY + pumaDoneDisplayHeight * (0.48f + panelOffsetY) + vertShiftAmount;
 			rightLabelY2 = pumaDoneDisplayY + pumaDoneDisplayHeight * (0.59f + panelOffsetY) + vertShiftAmount;
 			rightLabelY3 = pumaDoneDisplayY + pumaDoneDisplayHeight * (0.70f + panelOffsetY) + vertShiftAmount;
@@ -321,7 +321,7 @@ public class PumaDoneDisplay : MonoBehaviour
 			style.normal.textColor = new Color(0.65f, 0.65f, 0.65f, 1f);
 			style.fontSize = (int)(fontRef * 0.16f);
 			GUI.Button(new Rect(rightLabelX, rightLabelY1, rightLabelW, rightLabelH), "Pumas need to", style);
-			GUI.Button(new Rect(rightLabelX, rightLabelY2, rightLabelW, rightLabelH), "move cautiously", style);
+			GUI.Button(new Rect(rightLabelX, rightLabelY2, rightLabelW, rightLabelH), "move carefully", style);
 			GUI.Button(new Rect(rightLabelX, rightLabelY3, rightLabelW, rightLabelH), "to avoid cars", style);
 			style.alignment = TextAnchor.MiddleCenter;
 
@@ -395,7 +395,7 @@ public class PumaDoneDisplay : MonoBehaviour
 					
 				// left label
 				style.alignment = TextAnchor.MiddleLeft;
-				leftLabelX = pumaDoneDisplayX + pumaDoneDisplayWidth * 0.38f + leftShiftAmount;
+				leftLabelX = pumaDoneDisplayX + pumaDoneDisplayWidth * 0.375f + leftShiftAmount;
 				leftLabelY1 = pumaDoneDisplayY + pumaDoneDisplayHeight * (0.48f + panelOffsetY) + vertShiftAmount;
 				leftLabelY2 = pumaDoneDisplayY + pumaDoneDisplayHeight * (0.59f + panelOffsetY) + vertShiftAmount;
 				leftLabelY3 = pumaDoneDisplayY + pumaDoneDisplayHeight * (0.70f + panelOffsetY) + vertShiftAmount;
@@ -412,7 +412,7 @@ public class PumaDoneDisplay : MonoBehaviour
 				GUI.Button(new Rect(leftLabelX, leftLabelY5, leftLabelW, leftLabelH), "deer populations", style);
 
 				// right label
-				rightLabelX = pumaDoneDisplayX + pumaDoneDisplayWidth * 0.78f;
+				rightLabelX = pumaDoneDisplayX + pumaDoneDisplayWidth * 0.775f;
 				rightLabelY1 = pumaDoneDisplayY + pumaDoneDisplayHeight * (0.48f + panelOffsetY) + vertShiftAmount;
 				rightLabelY2 = pumaDoneDisplayY + pumaDoneDisplayHeight * (0.59f + panelOffsetY) + vertShiftAmount;
 				rightLabelY3 = pumaDoneDisplayY + pumaDoneDisplayHeight * (0.70f + panelOffsetY) + vertShiftAmount;
@@ -461,7 +461,7 @@ public class PumaDoneDisplay : MonoBehaviour
 
 				// left label
 				style.alignment = TextAnchor.MiddleLeft;
-				leftLabelX = pumaDoneDisplayX + pumaDoneDisplayWidth * 0.38f + leftShiftAmount;
+				leftLabelX = pumaDoneDisplayX + pumaDoneDisplayWidth * 0.375f + leftShiftAmount;
 				leftLabelY1 = pumaDoneDisplayY + pumaDoneDisplayHeight * (0.48f + panelOffsetY) + vertShiftAmount;
 				leftLabelY2 = pumaDoneDisplayY + pumaDoneDisplayHeight * (0.63f + panelOffsetY) + vertShiftAmount;
 				leftLabelY3 = pumaDoneDisplayY + pumaDoneDisplayHeight * (0.74f + panelOffsetY) + vertShiftAmount;
@@ -497,7 +497,7 @@ public class PumaDoneDisplay : MonoBehaviour
 				GUI.Button(new Rect(leftLabelX, leftLabelY5, leftLabelW, leftLabelH), "puma population", style);
 
 				// right label
-				rightLabelX = pumaDoneDisplayX + pumaDoneDisplayWidth * 0.763f;
+				rightLabelX = pumaDoneDisplayX + pumaDoneDisplayWidth * 0.758f;
 				rightLabelY1 = pumaDoneDisplayY + pumaDoneDisplayHeight * (0.48f + panelOffsetY) + vertShiftAmount;
 				rightLabelY2 = pumaDoneDisplayY + pumaDoneDisplayHeight * (0.595f + panelOffsetY) + vertShiftAmount;
 				rightLabelY3 = pumaDoneDisplayY + pumaDoneDisplayHeight * (0.765f + panelOffsetY) + vertShiftAmount;
@@ -512,17 +512,17 @@ public class PumaDoneDisplay : MonoBehaviour
 				GUI.Button(new Rect(rightLabelX, rightLabelY1, rightLabelW, rightLabelH), "WINNER:", style);
 				style.fontSize = (int)(fontRef * 0.16f);
 				style.normal.textColor = new Color(0.8f, 0.8f, 0.8f, 1f);
-				GUI.Button(new Rect(rightLabelX, rightLabelY2, rightLabelW, rightLabelH), "All The Deer", style);
+				GUI.Button(new Rect(rightLabelX, rightLabelY2, rightLabelW, rightLabelH), "The Deer", style);
 				style.normal.textColor = new Color(0.7f, 0.7f, 0.7f, 1f);
 				style.normal.textColor = new Color(0.6f, 0.6f, 0.6f, 1f);
 				style.fontSize = (int)(fontRef * 0.14f);
 				GUI.Button(new Rect(rightLabelX, rightLabelY3, rightLabelW, rightLabelH), "LOSER:", style);
 				style.fontSize = (int)(fontRef * 0.16f);
 				style.normal.textColor = new Color(0.8f, 0.8f, 0.8f, 1f);
-				GUI.Button(new Rect(rightLabelX, rightLabelY4, rightLabelW, rightLabelH), "The Ecosystem", style);
+				GUI.Button(new Rect(rightLabelX, rightLabelY4, rightLabelW, rightLabelH), "The Pumas", style);
 				style.fontSize = (int)(fontRef * 0.14f);
 				style.normal.textColor = new Color(0.7f, 0.7f, 0.7f, 1f);
-				GUI.Button(new Rect(rightLabelX, rightLabelY5, rightLabelW, rightLabelH), "(with too many deer)", style);
+				GUI.Button(new Rect(rightLabelX, rightLabelY5, rightLabelW, rightLabelH), "and the ecosystem", style);
 				style.alignment = TextAnchor.MiddleCenter;
 				
 			}

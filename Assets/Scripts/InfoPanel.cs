@@ -18,7 +18,6 @@ public class InfoPanel : MonoBehaviour
 	
 	private Rect overlayRect;
 	private int currentScreen;
-	private int difficultyLevel;
 	private int soundEnable;
 	private float soundVolume;
 	private float pawRightFlag;
@@ -86,6 +85,9 @@ public class InfoPanel : MonoBehaviour
 	private Texture2D predationCirclesTexture;
 	private Texture2D huntLongTexture;
 	private Texture2D huntShortTexture;
+	private Texture2D crossingScreenshotTexture; 
+	private Texture2D crossingBadAngleTexture; 
+	private Texture2D crossingGoodAngleTexture; 
 
 	private Texture2D iconFacebookTexture; 
 	private Texture2D iconTwitterTexture; 
@@ -178,6 +180,9 @@ public class InfoPanel : MonoBehaviour
 		predationCirclesTexture = guiManager.predationCirclesTexture;		
 		huntLongTexture = guiManager.huntLongTexture;		
 		huntShortTexture = guiManager.huntShortTexture;		
+		crossingScreenshotTexture = guiManager.crossingScreenshotTexture;		
+		crossingBadAngleTexture = guiManager.crossingBadAngleTexture;		
+		crossingGoodAngleTexture = guiManager.crossingGoodAngleTexture;		
 
 		iconFacebookTexture = guiManager.iconFacebookTexture;
 		iconTwitterTexture = guiManager.iconTwitterTexture;
@@ -235,7 +240,6 @@ public class InfoPanel : MonoBehaviour
 
 		// additional initialization
 		currentScreen = 0;
-		difficultyLevel = 1;
 		soundEnable = 1;
 		soundVolume = 0.5f;
 		pawRightFlag = 1;
@@ -307,7 +311,7 @@ public class InfoPanel : MonoBehaviour
 	
 		// background panel
 		GUI.color = new Color(0f, 0f, 0f, 1f * infoPanelOpacity);
-		GUI.Box(new Rect(overlayRect.x, overlayRect.y, overlayRect.width, overlayRect.height), "");
+		GUI.Box(new Rect(overlayRect.x + overlayRect.width*0.02f, overlayRect.y, overlayRect.width - overlayRect.width*0.04f, overlayRect.height), "");
 		//GUI.color = new Color(0f, 0f, 0f, 0.3f * infoPanelOpacity);
 		//GUI.Box(new Rect(overlayRect.x, overlayRect.y, overlayRect.width, overlayRect.height), "");
 		GUI.color = new Color(1f, 1f, 1f, 1f * infoPanelOpacity);
@@ -377,7 +381,7 @@ public class InfoPanel : MonoBehaviour
 		
 			// background rectangle
 			GUI.color = new Color(0f, 0f, 0f, 1f * infoPanelOpacity);
-			GUI.Box(new Rect(overlayRect.x + overlayRect.width * 0f, overlayRect.y + overlayRect.height * 0.926f, overlayRect.width * 1f, overlayRect.height * 0.074f), "");
+			GUI.Box(new Rect(overlayRect.x + overlayRect.width * 0.02f, overlayRect.y + overlayRect.height * 0.926f, overlayRect.width * 0.96f, overlayRect.height * 0.074f), "");
 			GUI.color = new Color(1f, 1f, 1f, 1f * infoPanelOpacity);
 
 			buttonStyle.fontSize = buttonDownStyle.fontSize = (int)(overlayRect.width * 0.0225);
@@ -482,7 +486,7 @@ public class InfoPanel : MonoBehaviour
 				bigButtonStyle.fontSize = (int)(overlayRect.width * 0.032f);;
 				bigButtonDisabledStyle.fontSize = (int)(overlayRect.width * 0.03f);;
 				GUI.skin = guiManager.customGUISkin;
-				guiManager.customGUISkin.button.fontSize = (int)(overlayRect.width * 0.0225f);
+				guiManager.customGUISkin.button.fontSize = (int)(overlayRect.width * 0.025f);
 				guiManager.customGUISkin.button.fontStyle = FontStyle.Bold;
 				GUI.backgroundColor = new Color(1f, 1f, 1f, 1f);
 				if (guiManager.selectedPuma != -1) {
@@ -885,34 +889,34 @@ public class InfoPanel : MonoBehaviour
 					subTextColor1 = new Color(0.9f, 0.05f, 0f, 1f);
 					subTextColor2 = new Color(0.86f, 0.07f, 0f, 1f);
 					landscapeText1 = "CRITICAL";
-					landscapeText2 = "But it will improve in this good habitat";
+					landscapeText2 = "They will improve in this good habitat";
 				}
 				else if (scoringSystem.GetPopulationHealth() < 0.4f) {
 					subTextColor1 = new Color(0.975f, 0.40f, 0f, 1f);
 					subTextColor2 = new Color(0.99f, 0.40f, 0f, 1f);
 					landscapeText1 = "ENDANGERED";
-					landscapeText2 = "But it will improve in this good habitat";
+					landscapeText2 = "They will improve in this good habitat";
 				}
 				else if (scoringSystem.GetPopulationHealth() < 0.6f) {
 					subTextColor1 = new Color(0.85f * 1.13f, 0.80f * 1.13f, 0f, 0.9f);
 					subTextColor2 = new Color(0.85f * 0.90f, 0.80f * 0.90f, 0f, 0.85f);
 					landscapeText1 = "SUSTAINING";
-					landscapeText2 = "It will get stronger in this good habitat";
+					landscapeText2 = "They will get stronger in this good habitat";
 				}
 				else if (scoringSystem.GetPopulationHealth() < 0.8f) {
 					subTextColor1 = new Color(0.5f * 1.4f, 0.7f * 1.4f, 0f, 1f);
 					subTextColor2 = new Color(0.5f * 1.04f, 0.7f * 1.04f, 0f, 1f);
 					landscapeText1 = "ESTABLISHED";
-					landscapeText2 = "It will stay strong in this good habitat";
+					landscapeText2 = "They will stay strong in this good habitat";
 				}
 				else {
 					subTextColor1 = new Color(0f, 0.85f, 0f, 1f);
 					subTextColor2 = new Color(0f, 0.75f, 0f, 1f);
 					landscapeText1 = "THRIVING";
-					landscapeText2 = "It will stay strong in this good habitat";
+					landscapeText2 = "They will stay strong in this good habitat";
 				}
 			}
-			survivalText1 = "Puma Populations face great risks";
+			survivalText1 = "Puma Populations face increasing risks";
 			survivalText2 = "You can make a difference...";
 			break;
 		}
@@ -945,7 +949,9 @@ public class InfoPanel : MonoBehaviour
 		style.normal.textColor = new Color(0.99f * colorScale, 0.88f * colorScale, 0.66f * colorScale, 1f);
 		if (currentLevel == 5 && populationDoneFlag == false) {
 			// final screen after successful game completion
+			style.normal.textColor = subTextColor2;
 			GUI.Button(new Rect(xOffset + panelX + panelWidth * 0.6f, yOffset + panelY + panelHeight * 0.37f, panelWidth * 0.4f, panelHeight * 0.1f), "Population:", style);
+			style.normal.textColor = new Color(0.99f * 0.7f, 0.88f * 0.7f, 0.55f  * 0.7f, 1f);
 			GUI.Button(new Rect(xOffset + panelX + panelWidth * 0.6f, yOffset + panelY + panelHeight * 0.45f, panelWidth * 0.4f, panelHeight * 0.1f), landscapeText2, style);
 			style.normal.textColor = subTextColor2;
 			GUI.Button(new Rect(xOffset + panelX + panelWidth * 0.81f, yOffset + panelY + panelHeight * 0.37f, panelWidth * 0.4f, panelHeight * 0.1f), landscapeText1, style);
@@ -1846,6 +1852,14 @@ public class InfoPanel : MonoBehaviour
 		GUI.Box(new Rect(panelX, panelY, panelWidth/2 - overlayRect.width * 0.02f - gapSize/2, panelHeight), "");
 		GUI.color = new Color(1f, 1f, 1f, 1f * panelOpacity);
 
+		float roadPanelX = panelX + gapSize*0.75f;
+		float roadPanelY1 = panelY  + panelHeight * 0.13f;
+		float roadPanelY2 = panelY  + panelHeight * 0.58f;
+		float roadPanelWidth = panelWidth * 0.45f - gapSize*0.75f;
+		float roadPanelHeight = panelHeight * 0.42f - gapSize*0.75f;
+				
+		GUI.Box(new Rect(roadPanelX, roadPanelY1, roadPanelWidth, roadPanelHeight), "");
+		GUI.Box(new Rect(roadPanelX, roadPanelY2, roadPanelWidth, roadPanelHeight), "");
 
 		// right side
 		GUI.color = new Color(0f, 0f, 0f, 1f * panelOpacity);
@@ -1863,7 +1877,7 @@ public class InfoPanel : MonoBehaviour
 		float textureHeight;
 		float textureWidth;
 
-		string headerTextL = "Avoiding Cars";
+		string headerTextL = "Crossing Roads";
 		string headerTextR = "Survival Threats";
 		
 		yOffset = overlayRect.height * 0.115f;
@@ -1882,6 +1896,57 @@ public class InfoPanel : MonoBehaviour
 		GUI.Button(new Rect(panelX + panelWidth/2 + overlayRect.width * 0.02f + gapSize/2, yOffset + overlayRect.y + overlayRect.height * 0.077f, panelWidth/2 - overlayRect.width * 0.02f - gapSize/2, overlayRect.height * 0.1f), headerTextR, style);
 
 
+		// labels
+		
+		GUI.color = new Color(1f, 1f, 1f, panelOpacity);
+		float textGap = panelWidth * 0.012f;
+
+		colorScale = 0.74f;
+		style.normal.textColor = new Color(0.99f * colorScale, 0.88f * colorScale, 0.66f * colorScale, 1f);
+		style.fontSize = (int)(overlayRect.width * 0.014f);
+		style.fontStyle = FontStyle.BoldAndItalic;
+		style.alignment = TextAnchor.MiddleCenter;
+
+		style.fontSize = (int)(overlayRect.width * 0.019f);
+		style.fontStyle = FontStyle.BoldAndItalic;
+		style.normal.textColor = new Color(0.816f * 1.0f, 0.537f * 1.0f, 0.18f * 1.0f, 1f);
+		GUI.Button(new Rect(roadPanelX, roadPanelY1 + roadPanelHeight * 0.78f, roadPanelWidth, roadPanelHeight * 0.2f), "Look Both Ways!", style);	
+		GUI.Button(new Rect(roadPanelX, roadPanelY2 + roadPanelHeight * 0.72f, roadPanelWidth, roadPanelHeight * 0.2f), "Pick a Safe Spot", style);
+
+		// explanatory text
+		
+		float textOffsetY = panelHeight * 0.02f;
+		style.fontSize = (int)(overlayRect.width * 0.015f);
+		style.fontStyle = FontStyle.BoldAndItalic;
+		style.normal.textColor = new Color(0.88f, 0.64f, 0f, 0.9f);
+		float sideViewHeightOffset = roadPanelHeight * 0.03f;
+		GUI.Button(new Rect(roadPanelX, roadPanelY1 + roadPanelHeight * 0.3f + sideViewHeightOffset, roadPanelWidth * 0.2f, roadPanelHeight * 0.2f), "side", style);
+		GUI.Button(new Rect(roadPanelX + roadPanelWidth*0.8f, roadPanelY1 + roadPanelHeight * 0.3f + sideViewHeightOffset, roadPanelWidth * 0.2f, roadPanelHeight * 0.2f), "side", style);
+		GUI.Button(new Rect(roadPanelX, roadPanelY1 + roadPanelHeight * 0.41f + sideViewHeightOffset, roadPanelWidth * 0.2f, roadPanelHeight * 0.2f), "view", style);
+		GUI.Button(new Rect(roadPanelX + roadPanelWidth*0.8f, roadPanelY1 + roadPanelHeight * 0.41f + sideViewHeightOffset, roadPanelWidth * 0.2f, roadPanelHeight * 0.2f), "view", style);
+
+		sideViewHeightOffset = roadPanelHeight * 0.32f;
+		GUI.Button(new Rect(roadPanelX, roadPanelY2 + roadPanelHeight * 0.35f + sideViewHeightOffset, roadPanelWidth * 0.2f, roadPanelHeight * 0.2f), "bad", style);
+		GUI.Button(new Rect(roadPanelX + roadPanelWidth*0.8f, roadPanelY2 + roadPanelHeight * 0.35f + sideViewHeightOffset, roadPanelWidth * 0.2f, roadPanelHeight * 0.2f), "good", style);
+		GUI.Button(new Rect(roadPanelX, roadPanelY2 + roadPanelHeight * 0.46f + sideViewHeightOffset, roadPanelWidth * 0.2f, roadPanelHeight * 0.2f), "view", style);
+		GUI.Button(new Rect(roadPanelX + roadPanelWidth*0.8f, roadPanelY2 + roadPanelHeight * 0.46f + sideViewHeightOffset, roadPanelWidth * 0.2f, roadPanelHeight * 0.2f), "view", style);
+
+		// ROAD REPRESENTATION
+		GUI.color = new Color(1f, 1f, 1f, 0.85f * panelOpacity);
+
+		textureHeight = roadPanelHeight * 0.73f;
+		textureWidth = crossingScreenshotTexture.width * (textureHeight / crossingScreenshotTexture.height);
+		GUI.DrawTexture(new Rect(roadPanelX + roadPanelWidth * 0.5f - textureWidth/2, roadPanelY1 + roadPanelHeight * 0.05f, textureWidth, textureHeight), crossingScreenshotTexture);
+
+		GUI.color = new Color(1f, 1f, 1f, 1f * panelOpacity);
+
+		textureWidth = roadPanelWidth * 0.45f;
+		textureHeight = crossingBadAngleTexture.height * (textureWidth / crossingBadAngleTexture.width);
+		GUI.DrawTexture(new Rect(roadPanelX + roadPanelWidth * 0.033f, roadPanelY2 + roadPanelHeight * 0.1f, textureWidth, textureHeight), crossingBadAngleTexture);
+
+		textureWidth = roadPanelWidth * 0.45f;
+		textureHeight = crossingGoodAngleTexture.height * (textureWidth / crossingGoodAngleTexture.width);
+		GUI.DrawTexture(new Rect(roadPanelX + roadPanelWidth * 0.516f, roadPanelY2 + roadPanelHeight * 0.1f, textureWidth, textureHeight), crossingGoodAngleTexture);
 
 	}	
 

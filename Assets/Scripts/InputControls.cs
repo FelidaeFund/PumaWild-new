@@ -150,6 +150,7 @@ public class InputControls : MonoBehaviour
 		bool keyStateLeftButton = false;
 		bool keyStateMiddleButton = false;
 		bool keyStateRightButton = false;
+		bool previousKeyStateRightButton = false;
 		bool keyStateForward = false;
 		bool keyStateBack = false;
 		bool keyStateDiagLeft = false;
@@ -159,7 +160,15 @@ public class InputControls : MonoBehaviour
 
 		float oldInputVert = inputVert;
 		float oldInputHorz = inputHorz;
-		
+
+		levelManager.displayVar1 = "";		// TEMP !!!!!
+		levelManager.displayVar2 = "";
+		levelManager.displayVar3 = "";
+		levelManager.displayVar4 = "";
+		levelManager.displayVar5 = "";
+		levelManager.displayVar6 = "";
+
+			
 		if (inputVertExternalSetFlag == true) {
 			// external setting of inputVert -- allows level mgr to make puma walk after feeding
 			inputVert = inputVertExternal;
@@ -169,122 +178,152 @@ public class InputControls : MonoBehaviour
 			}
 		}
 
-        else if (Input.touchCount > 0) {
-			foreach (Touch touch in Input.touches) {
-				if (touch.phase != TouchPhase.Ended && touch.phase != TouchPhase.Canceled) {
-					// do something
-				}				
-			}
-		}
+        else if (Input.touchCount > 0 || Input.GetMouseButton(0)) {
 
-		else if (Input.GetMouseButton(0)) {		
-			// handle mouse input	
-			float mouseX = Input.mousePosition.x;
-			float mouseY = Screen.height - Input.mousePosition.y;	
-			
-			// check for pressed mouse within any of the onscreen rects		
-			if (mouseX >= rectLeftButton.xMin && mouseX <= rectLeftButton.xMax && mouseY >= rectLeftButton.yMin && mouseY <= rectLeftButton.yMax) {
-				keyStateLeftButton = true;
-			}
-			if (mouseX >= rectMiddleButton.xMin && mouseX <= rectMiddleButton.xMax && mouseY >= rectMiddleButton.yMin && mouseY <= rectMiddleButton.yMax) {
-				keyStateMiddleButton = true;
-			}
-			if (mouseX >= rectRightButton.xMin && mouseX <= rectRightButton.xMax && mouseY >= rectRightButton.yMin && mouseY <= rectRightButton.yMax) {
-				keyStateRightButton = true;
-			}
-			if (mouseX >= rectForward.xMin && mouseX <= rectForward.xMax && mouseY >= rectForward.yMin && mouseY <= rectForward.yMax) {
-				keyStateForward = true;
-			}
-			if (mouseX >= rectBack.x && mouseX <= rectBack.x+rectBack.width && mouseY >= rectBack.y && mouseY <= rectBack.y+rectBack.height) {
-				keyStateBack = true;
-			}
-			if (mouseX >= rectDiagLeft.x && mouseX <= rectDiagLeft.x+rectDiagLeft.width && mouseY >= rectDiagLeft.y && mouseY <= rectDiagLeft.y+rectDiagLeft.height) {
-				keyStateDiagLeft = true;
-			}
-			if (mouseX >= rectDiagRight.x && mouseX <= rectDiagRight.x+rectDiagRight.width && mouseY >= rectDiagRight.y && mouseY <= rectDiagRight.y+rectDiagRight.height) {
-				keyStateDiagRight = true;
-			}
-			if (mouseX >= rectTurnLeft.x && mouseX <= rectTurnLeft.x+rectTurnLeft.width && mouseY >= rectTurnLeft.y && mouseY <= rectTurnLeft.y+rectTurnLeft.height) {
-				keyStateTurnLeft = true;
-			}
-			if (mouseX >= rectTurnRight.x && mouseX <= rectTurnRight.x+rectTurnRight.width && mouseY >= rectTurnRight.y && mouseY <= rectTurnRight.y+rectTurnRight.height) {
-				keyStateTurnRight = true;
-			}
-						
-			if ((navInProgress == true) || (mouseX >= rectRightButton.xMin && mouseX <= rectRightButton.xMax && mouseY >= rectRightButton.yMin && mouseY <= (rectRightButton.yMax + (rectRightButton.yMax-rectRightButton.yMin)*0.2f))) {
+			int count = Input.touchCount > 0 ? Input.touchCount : 1;
 
-				// MOTION CONTROLS 
-			
-				if (navInProgress == false) {
-					navInProgress = true;
-					levelManager.pumaAnimator.SetBool("Movement Engaged", true);
-					navBasedOnZero = (mouseY > rectRightButton.yMax) ? true : false;
-				}
-				else if (navBasedOnZero == false && mouseY > rectRightButton.yMax) {
-					navBasedOnZero = true;
-				}
-			
-				if (mouseY > rectRightButton.yMax) {
-					inputVert = 0f;
+			for (int i = 0; i < count; i++) {
+				float mouseX;
+				float mouseY;
+
+				if (Input.touchCount > 0) {
+					// using touch
+					Touch touch = Input.GetTouch(i);
+					if (touch.phase != TouchPhase.Ended && touch.phase != TouchPhase.Canceled) {
+						mouseX = touch.position.x;
+						mouseY = Screen.height - touch.position.y;	
+						if (i == 0)	{
+							levelManager.displayVar1 = "touch1 xPos: " + mouseX;		// TEMP !!!!!
+							levelManager.displayVar2 = "touch1 yPos: " + mouseY;
+						}
+						else if (i == 1) {
+							levelManager.displayVar3 = "touch2 xPos: " + mouseX;		// TEMP !!!!!
+							levelManager.displayVar4 = "touch2 yPos: " + mouseY;
+						}
+					}
+					else {
+						continue;
+					}
 				}
 				else {
-					// use bottom 20% as slow setting
-					float rightButtonHeight = rectRightButton.yMax - rectRightButton.yMin;
-					if (mouseY > rectRightButton.yMin + rightButtonHeight*0.80f)
-						inputVert = 0.001f;
-					else
-						inputVert = 1f - ((mouseY - rectRightButton.yMin) / (rightButtonHeight*0.80f));
+					// using mouse
+					mouseX = Input.mousePosition.x;
+					mouseY = Screen.height - Input.mousePosition.y;	
+					levelManager.displayVar1 = "mouse xPos: " + mouseX;		// TEMP !!!!!
+					levelManager.displayVar2 = "mouse yPos: " + mouseY;
 				}
-				
-				if (inputVert > 0f)
-					navBasedOnZero = false;
-					
-				inputHorz = (((mouseX - rectRightButton.xMin) / (rectRightButton.xMax - rectRightButton.xMin)) * 2f) - 1f;
-					
-				if (inputVert > 1.0f)
-					inputVert = 1.0f;
-				if (inputHorz < -1.0f)
-					inputHorz = -1.0f;
-				if (inputHorz > 1.0f)
-					inputHorz = 1.0f;
 
-				if (levelManager.gameState == "gameStateStalking" || levelManager.gameState == "gameStateFeeding7")
-					inputVert = 1f - (1f - inputVert) * (1f - inputVert);
-				else if (levelManager.gameState == "gameStateChasing" || levelManager.gameState == "gameStateFeeding1a")
-					inputVert = inputVert * inputVert;
-					//inputVert = inputVert;
-					//inputVert = 1f - (1f - inputVert) * (1f - inputVert);
-				
-				if (navBasedOnZero == false) {
-					if (levelManager.gameState == "gameStateStalking")
-						inputVert = 0.20f + inputVert * 0.80f;
-					else if (levelManager.gameState == "gameStateChasing")
-						inputVert = 0.67f + inputVert * 0.33f;
-				}
-				
-				bool horzFlippedFlag = false;
-				if (inputHorz < 0f) {
-					horzFlippedFlag = true;
-					inputHorz *= -1f;
-				}
-				inputHorz = 1f - (1f - inputHorz) * (1f - inputHorz);
-				if (horzFlippedFlag == true)
-					inputHorz *= -1f;	
-					
-					
-				// lastly, filter all this out during tree collision, so when it resumes it ramps up
+				previousKeyStateRightButton = keyStateRightButton;
 
-				if (levelManager.gameState == "gameStateTree1" || levelManager.gameState == "gameStateTree2") {
-					navInProgress = false;
-					levelManager.pumaAnimator.SetBool("Movement Engaged", false);
-					inputVert = 0f;
-					inputHorz = 0f;
+					// check for pressed mouse within any of the onscreen rects		
+				if (mouseX >= rectLeftButton.xMin && mouseX <= rectLeftButton.xMax && mouseY >= rectLeftButton.yMin && mouseY <= rectLeftButton.yMax) {
+					keyStateLeftButton = true;
+				}
+				if (mouseX >= rectMiddleButton.xMin && mouseX <= rectMiddleButton.xMax && mouseY >= rectMiddleButton.yMin && mouseY <= rectMiddleButton.yMax) {
+					keyStateMiddleButton = true;
+				}
+				if (mouseX >= rectRightButton.xMin && mouseX <= rectRightButton.xMax && mouseY >= rectRightButton.yMin && mouseY <= rectRightButton.yMax) {
+					keyStateRightButton = true;
+				}
+				if (mouseX >= rectForward.xMin && mouseX <= rectForward.xMax && mouseY >= rectForward.yMin && mouseY <= rectForward.yMax) {
+					keyStateForward = true;
+				}
+				if (mouseX >= rectBack.x && mouseX <= rectBack.x+rectBack.width && mouseY >= rectBack.y && mouseY <= rectBack.y+rectBack.height) {
+					keyStateBack = true;
+				}
+				if (mouseX >= rectDiagLeft.x && mouseX <= rectDiagLeft.x+rectDiagLeft.width && mouseY >= rectDiagLeft.y && mouseY <= rectDiagLeft.y+rectDiagLeft.height) {
+					keyStateDiagLeft = true;
+				}
+				if (mouseX >= rectDiagRight.x && mouseX <= rectDiagRight.x+rectDiagRight.width && mouseY >= rectDiagRight.y && mouseY <= rectDiagRight.y+rectDiagRight.height) {
+					keyStateDiagRight = true;
+				}
+				if (mouseX >= rectTurnLeft.x && mouseX <= rectTurnLeft.x+rectTurnLeft.width && mouseY >= rectTurnLeft.y && mouseY <= rectTurnLeft.y+rectTurnLeft.height) {
+					keyStateTurnLeft = true;
+				}
+				if (mouseX >= rectTurnRight.x && mouseX <= rectTurnRight.x+rectTurnRight.width && mouseY >= rectTurnRight.y && mouseY <= rectTurnRight.y+rectTurnRight.height) {
+					keyStateTurnRight = true;
+				}
+
+				if ((keyStateRightButton == true && previousKeyStateRightButton == false) || (navInProgress == true && (Input.touchCount == 0 || (keyStateLeftButton == false && keyStateMiddleButton == false)))) {
+
+					// MOTION CONTROLS 
+				
+					float rightButtonUpperAreaHeight = (rectRightButton.yMax - rectRightButton.yMin) * 0.80f;
+
+					if (navInProgress == false) {
+						navInProgress = true;
+						levelManager.pumaAnimator.SetBool("Movement Engaged", true);
+						navBasedOnZero = (mouseY > rectRightButton.yMin + rightButtonUpperAreaHeight) ? true : false;
+					}
+					else if (navBasedOnZero == false && (mouseY > rectRightButton.yMin + rightButtonUpperAreaHeight)) {
+						navBasedOnZero = true;
+					}
+				
+					if (mouseY > rectRightButton.yMax) {
+						inputVert = 0f;
+					}
+					else {
+						// use bottom 20% as slow setting
+						if (mouseY > rectRightButton.yMin + rightButtonUpperAreaHeight) {
+							inputVert = 0.001f;
+						}
+						else {
+							inputVert = 1f - ((mouseY - rectRightButton.yMin) / rightButtonUpperAreaHeight);
+						}
+					}
+					
+					if (inputVert > 0.001f)
+						navBasedOnZero = false;
+						
+					inputHorz = (((mouseX - rectRightButton.xMin) / (rectRightButton.xMax - rectRightButton.xMin)) * 2f) - 1f;
+						
+					if (inputVert > 1.0f)
+						inputVert = 1.0f;
+					if (inputHorz < -1.0f)
+						inputHorz = -1.0f;
+					if (inputHorz > 1.0f)
+						inputHorz = 1.0f;
+
+					if (levelManager.gameState == "gameStateStalking" || levelManager.gameState == "gameStateFeeding7")
+						inputVert = 1f - (1f - inputVert) * (1f - inputVert);
+					else if (levelManager.gameState == "gameStateChasing" || levelManager.gameState == "gameStateFeeding1a")
+						inputVert = inputVert * inputVert;
+						//inputVert = inputVert;
+						//inputVert = 1f - (1f - inputVert) * (1f - inputVert);
+					
+					if (navBasedOnZero == false) {
+						if (levelManager.gameState == "gameStateStalking")
+							inputVert = 0.20f + inputVert * 0.80f;
+						else if (levelManager.gameState == "gameStateChasing")
+							inputVert = 0.67f + inputVert * 0.33f;
+					}
+					
+					bool horzFlippedFlag = false;
+					if (inputHorz < 0f) {
+						horzFlippedFlag = true;
+						inputHorz *= -1f;
+					}
+					//inputHorz = 1f - (1f - inputHorz) * (1f - inputHorz);
+					inputHorz = 1f - (1f - inputHorz);
+					//inputHorz = inputHorz * inputHorz;
+					if (horzFlippedFlag == true)
+						inputHorz *= -1f;	
+						
+						
+					// lastly, filter all this out during tree collision, so when it resumes it ramps up
+
+					if (levelManager.gameState == "gameStateTree1" || levelManager.gameState == "gameStateTree2") {
+						navInProgress = false;
+						levelManager.pumaAnimator.SetBool("Movement Engaged", false);
+						inputVert = 0f;
+						inputHorz = 0f;
+					}
 				}
 			}
 		}
 
 		else {
-			// no movement
+			// no user input
 			navInProgress = false;
 			levelManager.pumaAnimator.SetBool("Movement Engaged", false);
 			inputVert = 0f;
@@ -400,8 +439,9 @@ public class InputControls : MonoBehaviour
 			}
 			else if (levelManager.gameState == "gameStateStalking") {
 				//if (navInProgress == true) {
-					// side-stalk				
-					levelManager.SetPumaSideStalk(true);		
+					// side-stalk		
+					if (levelManager.GetPumaSideStalk() == false)					
+						levelManager.SetPumaSideStalk(true);		
 				//}
 			}
 			else if (levelManager.gameState == "gameStateChasing") {

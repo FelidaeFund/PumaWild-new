@@ -56,6 +56,7 @@ public class ScoringSystem : MonoBehaviour
 
 	// EXTERNAL MODULES
 	private GuiManager guiManager;
+	private LevelManager levelManager;
 
 	//===================================
 	//===================================
@@ -67,6 +68,7 @@ public class ScoringSystem : MonoBehaviour
     {
 		// connect to external modules
 		guiManager = GetComponent<GuiManager>();
+		levelManager = GetComponent<LevelManager>();
 
 		InitScoringSystem();
 	}
@@ -396,8 +398,8 @@ public class ScoringSystem : MonoBehaviour
 			return;
 		}
 		
-		meatEaten *= meatEatenOverdrive;
-		caloriesEaten *= meatEatenOverdrive;
+		meatEaten *= meatEatenOverdrive * (1f / levelManager.difficultyLevel);
+		caloriesEaten *= meatEatenOverdrive * (1f / levelManager.difficultyLevel);
 
 		lastKillMeatEaten = meatEaten;
 		lastKillCaloriesEaten = caloriesEaten;
