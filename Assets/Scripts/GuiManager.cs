@@ -32,7 +32,6 @@ public class GuiManager : MonoBehaviour
 	// MISC VARIABLES
 	public int selectedPuma = -1;			// TEMP: !!! should not be public; need to consolidate in either LevelManager or GUIManager, with function call to get it	
 	public GUISkin customGUISkin;
-	private Rect overlayRect;
 	
 	// KEYBOARD TRACKING
 	private bool spacePressed = false;
@@ -326,6 +325,14 @@ public class GuiManager : MonoBehaviour
 
 		case "guiStateLeavingOverlay":
 			// fade-out of overlay panel
+			guiStateDuration = 1f;
+			FadeOutOpacityLogarithmic();
+			if (Time.time > guiStateStartTime + guiStateDuration)
+				SetGuiState("guiStateEnteringGameplay1");
+			break;
+			
+		case "guiStateLeavingInfoPanel":
+			// fade-out of info panel
 			guiStateDuration = 1f;
 			FadeOutOpacityLogarithmic();
 			if (Time.time > guiStateStartTime + guiStateDuration)
@@ -697,8 +704,8 @@ public class GuiManager : MonoBehaviour
 				// after last level; add one more screen
 				infoPanel.SetNewLevelFlag(false);
 				infoPanel.SetNewLevelNumber(6);
-				OpenInfoPanel(4, true);
 				infoPanel.SetCurrentScreen(4);
+				OpenInfoPanel(4, true);
 				SetGuiState("guiStateFinalScreen6");
 			}
 			break;
@@ -968,8 +975,6 @@ public class GuiManager : MonoBehaviour
 		inputControls.SetRectLeftButton(new Rect(0f, 0f, 0f, 0f)); 
 		inputControls.SetRectRightButton(new Rect(0f, 0f, 0f, 0f)); 
 
-		CalculateOverlayRect();
-	
 		if (infoPanelVisible == false || Time.time - infoPanelTransStart < infoPanelTransTime) {
 		
 			float infoPanelOpacityComplement = 1f;
@@ -1220,6 +1225,7 @@ public class GuiManager : MonoBehaviour
 		else if (guiState == "guiStateFinalScreen9")
 			backRectOpacity = guiOpacity * 0.5f;
 			
+			
 		if (guiState == "guiStateNextLevel3" || guiState == "guiStateNextLevel4" || guiState == "guiStateNextLevel5" || guiState == "guiStateNextLevel6" || guiState == "guiStateNextLevel7" || guiState == "guiStateFinalScreen1" || guiState == "guiStateFinalScreen2" || guiState == "guiStateFinalScreen6")  
 			goButtonOpacity = 0f;
 		else if (guiState == "guiStateNextLevel8" || guiState == "guiStateFinalScreen3" || guiState == "guiStateFinalScreen7")
@@ -1229,7 +1235,7 @@ public class GuiManager : MonoBehaviour
 		if (guiState == "guiStateNextLevel3" || guiState == "guiStateNextLevel4") {
 			infoPanel.Draw(0f, backRectOpacity, goButtonOpacity);
 		}
-		if (guiState == "guiStateNextLevel5") {
+		else if (guiState == "guiStateNextLevel5") {
 			infoPanel.Draw(guiOpacity, backRectOpacity, goButtonOpacity);
 		}
 		else if (infoPanelVisible == true && elapsedTime < infoPanelTransTime) {
@@ -1259,6 +1265,11 @@ public class GuiManager : MonoBehaviour
 			// ... and during final fadeout
 			infoPanel.Draw(0f, backRectOpacity, 0f);
 		}
+		else if (elapsedTime >= infoPanelTransTime) {
+			// shut it off
+			infoPanel.Draw(0f, 0f, 0f);			
+		}
+		
 
 		//------------------------------
 		// Frame Rate Display
@@ -1336,41 +1347,6 @@ public class GuiManager : MonoBehaviour
 		infoPanelVisible = false;
 	}
 	
-	//////////////////
-	//////////////////
-
-	public Rect GetOverlayRect()
-	{
-		return overlayRect;
-	}
-
-	void CalculateOverlayRect()
-	{ 
-		// this rect is used by both OverlayPanel and InfoPanel
-		
-		float overlayBackgroundInset = backgroundTexture.width * 0.02f;
-		float overlayWidth = backgroundTexture.width + overlayBackgroundInset;
-		float overlayHeight = backgroundTexture.height + overlayBackgroundInset;
-		float overlayAspectRatio = overlayWidth / overlayHeight;
-		float overlayInsetHorz = Screen.width * 0.05f;
-		float overlayInsetVert = overlayInsetHorz / overlayAspectRatio;
-
-		if (overlayAspectRatio > (Screen.width - overlayInsetHorz) / (Screen.height - overlayInsetVert)) {
-			// overlay wider than screen; tight to left/right
-			overlayRect.width = Screen.width - (overlayInsetHorz * 2);
-			overlayRect.height = overlayRect.width / overlayAspectRatio;
-			overlayRect.x = overlayInsetHorz;
-			overlayRect.y = Screen.height/2 - overlayRect.height/2;
-		}
-		else {
-			// overlay narrower than screen; tight to top/bottom
-			overlayRect.height = Screen.height - (overlayInsetVert * 2);
-			overlayRect.width = overlayRect.height * overlayAspectRatio;
-			overlayRect.y = overlayInsetVert;
-			overlayRect.x = Screen.width/2 - overlayRect.width/2;
-		}	
-	}
-
 	//////////////////
 	//////////////////
 

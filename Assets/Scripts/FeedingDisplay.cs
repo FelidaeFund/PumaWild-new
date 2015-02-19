@@ -12,7 +12,8 @@ public class FeedingDisplay : MonoBehaviour
 	//===================================
 	//===================================
 
-	float flashStartTime = 0f;
+	private bool USE_NEW_GUI = true;	
+	private float flashStartTime;
 	
 	// textures based on bitmap files
 	private Texture2D buckHeadTexture;
@@ -85,6 +86,28 @@ public class FeedingDisplay : MonoBehaviour
 
 	public void Draw(float mainContentOpacity, float rollingScoreFactor, float levelCompleteOpacity, float okButtonOpacity) 
 	{ 
+
+
+
+
+
+	
+	
+
+
+		//if (USE_NEW_GUI == true)
+			//return; 
+		
+		
+		//////////////////////////////////
+		//////////////////////////////////
+		
+		// LEGACY DRAW CODE
+
+		//////////////////////////////////
+		//////////////////////////////////
+
+		
 		float feedingDisplayX = (Screen.width / 2) - (Screen.height * 0.6f);
 		float feedingDisplayY = Screen.height * 0.025f;
 		float feedingDisplayWidth = Screen.height * 1.2f;

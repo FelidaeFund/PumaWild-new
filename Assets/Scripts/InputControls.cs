@@ -161,13 +161,16 @@ public class InputControls : MonoBehaviour
 		float oldInputVert = inputVert;
 		float oldInputHorz = inputHorz;
 
-		levelManager.displayVar1 = "";		// TEMP !!!!!
-		levelManager.displayVar2 = "";
-		levelManager.displayVar3 = "";
-		levelManager.displayVar4 = "";
-		levelManager.displayVar5 = "";
-		levelManager.displayVar6 = "";
+		bool DISPLAY_MOUSE_POS = false;
 
+		if (DISPLAY_MOUSE_POS == true) {
+			levelManager.displayVar1 = "";
+			levelManager.displayVar2 = "";
+			levelManager.displayVar3 = "";
+			levelManager.displayVar4 = "";
+			levelManager.displayVar5 = "";
+			levelManager.displayVar6 = "";
+		}
 			
 		if (inputVertExternalSetFlag == true) {
 			// external setting of inputVert -- allows level mgr to make puma walk after feeding
@@ -191,14 +194,16 @@ public class InputControls : MonoBehaviour
 					Touch touch = Input.GetTouch(i);
 					if (touch.phase != TouchPhase.Ended && touch.phase != TouchPhase.Canceled) {
 						mouseX = touch.position.x;
-						mouseY = Screen.height - touch.position.y;	
-						if (i == 0)	{
-							levelManager.displayVar1 = "touch1 xPos: " + mouseX;		// TEMP !!!!!
-							levelManager.displayVar2 = "touch1 yPos: " + mouseY;
-						}
-						else if (i == 1) {
-							levelManager.displayVar3 = "touch2 xPos: " + mouseX;		// TEMP !!!!!
-							levelManager.displayVar4 = "touch2 yPos: " + mouseY;
+						mouseY = Screen.height - touch.position.y;
+						if (DISPLAY_MOUSE_POS == true) {
+							if (i == 0)	{
+								levelManager.displayVar1 = "touch1 xPos: " + mouseX;
+								levelManager.displayVar2 = "touch1 yPos: " + mouseY;
+							}
+							else if (i == 1) {
+								levelManager.displayVar3 = "touch2 xPos: " + mouseX;
+								levelManager.displayVar4 = "touch2 yPos: " + mouseY;
+							}
 						}
 					}
 					else {
@@ -209,8 +214,10 @@ public class InputControls : MonoBehaviour
 					// using mouse
 					mouseX = Input.mousePosition.x;
 					mouseY = Screen.height - Input.mousePosition.y;	
-					levelManager.displayVar1 = "mouse xPos: " + mouseX;		// TEMP !!!!!
-					levelManager.displayVar2 = "mouse yPos: " + mouseY;
+					if (DISPLAY_MOUSE_POS == true) {
+						levelManager.displayVar1 = "mouse xPos: " + mouseX;
+						levelManager.displayVar2 = "mouse yPos: " + mouseY;
+					}
 				}
 
 				previousKeyStateRightButton = keyStateRightButton;

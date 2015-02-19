@@ -12,7 +12,8 @@ public class PumaDoneDisplay : MonoBehaviour
 	//===================================
 	//===================================
 
-	float flashStartTime = 0f;
+	private bool USE_NEW_GUI = true;	
+	private float flashStartTime;
 
 	// textures based on bitmap files
 	private Texture2D closeup1Texture;
@@ -63,6 +64,28 @@ public class PumaDoneDisplay : MonoBehaviour
 
 	public void Draw(float backgroundPanelOpacity, float carCollisionOpacity, float starvedOpacity, float okButtonOpacity) 
 	{ 
+
+
+
+
+
+	
+	
+
+
+		//if (USE_NEW_GUI == true)
+			//return; 
+		
+		
+		//////////////////////////////////
+		//////////////////////////////////
+		
+		// LEGACY DRAW CODE
+
+		//////////////////////////////////
+		//////////////////////////////////
+
+		
 		float pumaDoneDisplayX = (Screen.width / 2) - (Screen.height * 0.6f);
 		float pumaDoneDisplayY = Screen.height * 0.025f;
 		float pumaDoneDisplayWidth = Screen.height * 1.2f;
@@ -451,11 +474,11 @@ public class PumaDoneDisplay : MonoBehaviour
 				boxW = pumaDoneDisplayWidth * 0.22f;
 				boxH = pumaDoneDisplayHeight * (0.62f * sourcePercent + 0.8f * destPercent);
 				boxX = pumaDoneDisplayX + pumaDoneDisplayWidth/2 - boxW/2 - pumaDoneDisplayWidth * 0.35f;
-				GUI.color = new Color(1f, 1f, 1f, 0.8f * starvedOpacity);
+				GUI.color = new Color(1f, 1f, 1f, 1f * starvedOpacity);
 				GUI.Box(new Rect(boxX, boxY, boxW, boxH), "");
 				GUI.color = new Color(1f, 1f, 1f, 1f * starvedOpacity);
 				boxX = pumaDoneDisplayX + pumaDoneDisplayWidth/2 - boxW/2 + pumaDoneDisplayWidth * 0.35f;
-				GUI.color = new Color(1f, 1f, 1f, 0.8f * starvedOpacity);
+				GUI.color = new Color(1f, 1f, 1f, 1f * starvedOpacity);
 				GUI.Box(new Rect(boxX, boxY, boxW, boxH), "");
 				GUI.color = new Color(1f, 1f, 1f, 1f * starvedOpacity);
 
@@ -489,40 +512,44 @@ public class PumaDoneDisplay : MonoBehaviour
 					flashingOpacity = flashingOpacity * flashingOpacity;
 				style.normal.textColor = new Color(0.75f, 0.75f, 0.75f, flashingOpacity);
 				GUI.Button(new Rect(leftLabelX, leftLabelY1, leftLabelW, leftLabelH), "- GAME OVER -", style);
-				style.fontSize = (int)(fontRef * 0.16f);
+				style.fontSize = (int)(fontRef * 0.15f);
 				style.normal.textColor = new Color(0.7f, 0.7f, 0.7f, 1f);
 				GUI.Button(new Rect(leftLabelX, leftLabelY2, leftLabelW, leftLabelH), "The last puma in", style);
 				GUI.Button(new Rect(leftLabelX, leftLabelY3, leftLabelW, leftLabelH), "the area has died", style);
-				GUI.Button(new Rect(leftLabelX, leftLabelY4, leftLabelW, leftLabelH), "There is no local", style);
+				style.normal.textColor = new Color(0.7f, 0.6f, 0.5f, 1f);
+				GUI.Button(new Rect(leftLabelX, leftLabelY4, leftLabelW, leftLabelH), "Extinction of local", style);
 				GUI.Button(new Rect(leftLabelX, leftLabelY5, leftLabelW, leftLabelH), "puma population", style);
+				style.normal.textColor = new Color(0.7f, 0.7f, 0.7f, 1f);
 
 				// right label
 				rightLabelX = pumaDoneDisplayX + pumaDoneDisplayWidth * 0.758f;
 				rightLabelY1 = pumaDoneDisplayY + pumaDoneDisplayHeight * (0.48f + panelOffsetY) + vertShiftAmount;
 				rightLabelY2 = pumaDoneDisplayY + pumaDoneDisplayHeight * (0.595f + panelOffsetY) + vertShiftAmount;
-				rightLabelY3 = pumaDoneDisplayY + pumaDoneDisplayHeight * (0.765f + panelOffsetY) + vertShiftAmount;
+				rightLabelY3 = pumaDoneDisplayY + pumaDoneDisplayHeight * (0.695f + panelOffsetY) + vertShiftAmount;
 				rightLabelY4 = pumaDoneDisplayY + pumaDoneDisplayHeight * (0.88f + panelOffsetY) + vertShiftAmount;
 				rightLabelY5 = pumaDoneDisplayY + pumaDoneDisplayHeight * (0.99f + panelOffsetY) + vertShiftAmount;
 				rightLabelW = pumaDoneDisplayWidth * 0.1f;
 				rightLabelH = pumaDoneDisplayHeight * 0.03f;
 				style.normal.textColor = new Color(0.7f, 0.7f, 0.7f, 1f);
 				style.fontSize = (int)(fontRef * 0.16f);
-				style.normal.textColor = new Color(0.6f, 0.6f, 0.6f, 1f);
+				style.normal.textColor = new Color(0.6f, 0.55f, 0.5f, 1f);
 				style.fontSize = (int)(fontRef * 0.14f);
-				GUI.Button(new Rect(rightLabelX, rightLabelY1, rightLabelW, rightLabelH), "WINNER:", style);
+				GUI.Button(new Rect(rightLabelX, rightLabelY1, rightLabelW, rightLabelH), "BIG WINNER:", style);
 				style.fontSize = (int)(fontRef * 0.16f);
 				style.normal.textColor = new Color(0.8f, 0.8f, 0.8f, 1f);
 				GUI.Button(new Rect(rightLabelX, rightLabelY2, rightLabelW, rightLabelH), "The Deer", style);
+				style.fontSize = (int)(fontRef * 0.13f);
 				style.normal.textColor = new Color(0.7f, 0.7f, 0.7f, 1f);
-				style.normal.textColor = new Color(0.6f, 0.6f, 0.6f, 1f);
+				style.fontStyle = FontStyle.BoldAndItalic;
+				GUI.Button(new Rect(rightLabelX, rightLabelY3, rightLabelW, rightLabelH), "can graze anywhere", style);
+				style.fontStyle = FontStyle.Bold;
+				style.normal.textColor = new Color(0.7f, 0.7f, 0.7f, 1f);
+				style.normal.textColor = new Color(0.6f, 0.55f, 0.5f, 1f);
 				style.fontSize = (int)(fontRef * 0.14f);
-				GUI.Button(new Rect(rightLabelX, rightLabelY3, rightLabelW, rightLabelH), "LOSER:", style);
+				GUI.Button(new Rect(rightLabelX, rightLabelY4, rightLabelW, rightLabelH), "BIG LOSER:", style);
 				style.fontSize = (int)(fontRef * 0.16f);
 				style.normal.textColor = new Color(0.8f, 0.8f, 0.8f, 1f);
-				GUI.Button(new Rect(rightLabelX, rightLabelY4, rightLabelW, rightLabelH), "The Pumas", style);
-				style.fontSize = (int)(fontRef * 0.14f);
-				style.normal.textColor = new Color(0.7f, 0.7f, 0.7f, 1f);
-				GUI.Button(new Rect(rightLabelX, rightLabelY5, rightLabelW, rightLabelH), "and the ecosystem", style);
+				GUI.Button(new Rect(rightLabelX, rightLabelY5, rightLabelW, rightLabelH), "The Ecosystem", style);
 				style.alignment = TextAnchor.MiddleCenter;
 				
 			}

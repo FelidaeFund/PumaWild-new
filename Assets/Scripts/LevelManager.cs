@@ -436,12 +436,12 @@ public class LevelManager : MonoBehaviour
 		
 		InitLevel(0);
 		
-		displayVar1 = "DisplayVar1";
-		displayVar2 = "DisplayVar2";
-		displayVar3 = "DisplayVar3";
-		displayVar4 = "DisplayVar4";
-		displayVar5 = "DisplayVar5";
-		displayVar6 = "DisplayVar6";
+		displayVar1 = "";
+		displayVar2 = "";
+		displayVar3 = "";
+		displayVar4 = "";
+		displayVar5 = "";
+		displayVar6 = "";
 			
 		difficultyLevel = 0.9f;
 	}

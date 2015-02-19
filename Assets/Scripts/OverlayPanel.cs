@@ -12,6 +12,8 @@ public class OverlayPanel : MonoBehaviour
 	//===================================
 	//===================================
 
+	private bool USE_NEW_GUI = true;	
+
 	private Rect overlayRect;
 	private int currentScreen;
 	private int soundEnable;
@@ -191,21 +193,6 @@ public class OverlayPanel : MonoBehaviour
 		pawRightFlag = 1;
 	}
 	
-	//===================================
-	//===================================
-	//	 PUBLIC ACCESS TO MODULE VARS
-	//===================================
-	//===================================
-	
-	public int GetCurrentScreen()
-	{
-		return currentScreen;
-	}
-
-	public void SetCurrentScreen(int newVal)
-	{
-		currentScreen = newVal;
-	}
 
 	//===================================
 	//===================================
@@ -215,8 +202,30 @@ public class OverlayPanel : MonoBehaviour
 	
 	public void Draw(float overlayPanelOpacity) 
 	{ 
-		overlayRect = guiManager.GetOverlayRect();
+
+
+
+
+
 	
+	
+
+
+		//if (USE_NEW_GUI == true)
+			//return; 
+		
+		
+		//////////////////////////////////
+		//////////////////////////////////
+		
+		// LEGACY DRAW CODE
+
+		//////////////////////////////////
+		//////////////////////////////////
+
+		
+		CalculateOverlayRect();
+
 		// background panel
 		GUI.color = new Color(0f, 0f, 0f, 1f * overlayPanelOpacity);
 		GUI.Box(new Rect(overlayRect.x, overlayRect.y, overlayRect.width, overlayRect.height), "");
@@ -3246,11 +3255,55 @@ public class OverlayPanel : MonoBehaviour
 
 		return true;
 	}
+
+
+	//===================================
+	//===================================
+	//	 PUBLIC ACCESS TO MODULE VARS
+	//===================================
+	//===================================
 	
-	
-	
-	
-	
+	public int GetCurrentScreen()
+	{
+		return currentScreen;
+	}
+
+	public void SetCurrentScreen(int newVal)
+	{
+		currentScreen = newVal;
+	}
 
 	
+	//===================================
+	//===================================
+	//	 UTILITY FUNCTION
+	//===================================
+	//===================================
+	
+	void CalculateOverlayRect()
+	{ 
+		// this rect is used by both OverlayPanel and InfoPanel
+		
+		float overlayBackgroundInset = backgroundTexture.width * 0.02f;
+		float overlayWidth = backgroundTexture.width + overlayBackgroundInset;
+		float overlayHeight = backgroundTexture.height + overlayBackgroundInset;
+		float overlayAspectRatio = overlayWidth / overlayHeight;
+		float overlayInsetHorz = Screen.width * 0.05f;
+		float overlayInsetVert = overlayInsetHorz / overlayAspectRatio;
+
+		if (overlayAspectRatio > (Screen.width - overlayInsetHorz) / (Screen.height - overlayInsetVert)) {
+			// overlay wider than screen; tight to left/right
+			overlayRect.width = Screen.width - (overlayInsetHorz * 2);
+			overlayRect.height = overlayRect.width / overlayAspectRatio;
+			overlayRect.x = overlayInsetHorz;
+			overlayRect.y = Screen.height/2 - overlayRect.height/2;
+		}
+		else {
+			// overlay narrower than screen; tight to top/bottom
+			overlayRect.height = Screen.height - (overlayInsetVert * 2);
+			overlayRect.width = overlayRect.height * overlayAspectRatio;
+			overlayRect.y = overlayInsetVert;
+			overlayRect.x = Screen.width/2 - overlayRect.width/2;
+		}	
+	}
 }

@@ -12,6 +12,7 @@ public class GameplayDisplay : MonoBehaviour
 	//===================================
 	//===================================
 
+	private bool USE_NEW_GUI = true;	
 	private float flashStartTime;
 	
 	// outside dimensions for deer head indicators
@@ -121,6 +122,28 @@ public class GameplayDisplay : MonoBehaviour
 	
 	public void Draw(float movementControlsOpacity, float positionIndicatorBackgroundOpacity, float positionIndicatorOpacity, float positionIndicatorZoom, float statusDisplayOpacity) 
 	{ 
+
+
+
+
+
+	
+	
+
+
+		//if (USE_NEW_GUI == true)
+			//return; 
+		
+		
+		//////////////////////////////////
+		//////////////////////////////////
+		
+		// LEGACY DRAW CODE
+
+		//////////////////////////////////
+		//////////////////////////////////
+
+		
 		GUIStyle style = new GUIStyle();
 		style.alignment = TextAnchor.MiddleCenter;
 
@@ -331,7 +354,7 @@ public class GameplayDisplay : MonoBehaviour
 		float statusPanelHeight = leftAreaHeight * 0.88f;
 		float statusPanelX = leftAreaX + leftAreaWidth * 0.45f;
 		float statusPanelY = leftAreaY + leftAreaHeight - statusPanelHeight - leftAreaHeight * 0.03f;
-		GUI.color = new Color(1f, 1f, 1f, 0.4f * movementControlsOpacity);
+		GUI.color = new Color(1f, 1f, 1f, 0.4f * statusDisplayOpacity);
 		GUI.Box(new Rect(statusPanelX, statusPanelY, statusPanelWidth, statusPanelHeight), "");
 		GUI.color = new Color(1f, 1f, 1f, 1f * statusDisplayOpacity);
 		guiComponents.DrawStatusPanel(statusDisplayOpacity * 1f, statusPanelX, statusPanelY, statusPanelWidth, statusPanelHeight, false, true);
