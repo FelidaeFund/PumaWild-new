@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
 /// GameplayDisplay
@@ -13,6 +14,9 @@ public class GameplayDisplay : MonoBehaviour
 	//===================================
 
 	private bool USE_NEW_GUI = true;	
+	private bool initComplete = false;
+	private float lastSeenScreenWidth;
+	private float lastSeenScreenHeight;
 	private float flashStartTime;
 	
 	// outside dimensions for deer head indicators
@@ -112,40 +116,228 @@ public class GameplayDisplay : MonoBehaviour
 		closeupSensesTexture = guiManager.closeupSensesTexture;
 		pumaStealthDarkTexture = guiManager.pumaStealthDarkTexture;
 		pumaRunDarkTexture = guiManager.pumaRunDarkTexture;
+		
+		// create and position GUI elements
+		CreateGUIItems();
+		PositionGUIItems();
+		lastSeenScreenWidth = Screen.width;
+		lastSeenScreenHeight = Screen.height;
 	}
 
-	//===================================
-	//===================================
-	//	  DRAW THE GAMEPLAY DISPLAY
-	//===================================
-	//===================================
+
+	//===========================
+	//===========================
+	//	  GUI ELEMENTS
+	//===========================
+	//===========================
 	
-	public void Draw(float movementControlsOpacity, float positionIndicatorBackgroundOpacity, float positionIndicatorOpacity, float positionIndicatorZoom, float statusDisplayOpacity) 
+	public GameObject gameplayPositionIndicatorsBgnd;
+	public GameObject gameplayPositionIndicators;
+	public GameObject gameplayMovementControls;
+	public GameObject gameplayStatusDisplay;
+
+	// prefab gui components
+	public GameObject uiPanel;
+	public GameObject uiSubPanel;
+	public GameObject uiRect;
+	public GameObject uiText;
+	public GameObject uiRawImage;
+	public GameObject uiButton;
+	public GameObject uiButtonSeeThru;
+	public GameObject uiImageButton;
+		
+	// programatically created items 
+	private GameObject leftPawImage;
+	private GameObject statusBackgroundPanel;
+	private GameObject statusHeadImage;
+	private GameObject statusNameText;
+	private GameObject menuPawImage;
+	private GameObject menuPawText;
+	private GameObject healthBar;
+	private GameObject navControlUpperPanel;
+	private GameObject navControlLowerPanel;
+	private GameObject navControlUpperArrowsImage;
+	private GameObject navControlLowerArrowsImage;
+	private GameObject navControlBigPumaImage;
+	private GameObject navControlSmallPumaImage;
+	private GameObject indicatorBackgroundPanel;
+	private GameObject indicatorPumaHeadImage;
+	private GameObject indicatorPumaSensesImage;
+	private GameObject indicatorRectLeft;
+	private GameObject indicatorRectTop;
+	private GameObject indicatorRectRight;
+	private GameObject indicatorRectBottom;
+	private GameObject indicatorDeerHeadBuck;
+	private GameObject indicatorDeerHeadDoe;
+	private GameObject indicatorDeerHeadFawn;
+	private GameObject cheatButton;
+	
+	private bool previousChasingFlag = false;
+	private bool previousDiagLeftFlag = false;
+	private int previousSelectedPuma = 0;
+	private float previousPositionIndicatorZoom = 0f;
+
+
+	void CreateGUIItems()
+	{
+		// set enables to 'off' before populating sub-items
+		gameplayPositionIndicatorsBgnd.SetActive(false);
+		gameplayPositionIndicators.SetActive(false);
+		gameplayMovementControls.SetActive(false);
+		gameplayStatusDisplay.SetActive(false);
+		
+		// left side
+		leftPawImage = 					guiUtils.CreateImage(gameplayMovementControls, pawDiagLeftTexture, new Color(1f, 1f, 1f, 0.8f));
+		statusBackgroundPanel = 		guiUtils.CreatePanel(gameplayStatusDisplay, new Color(0f, 0f, 0f, 0.4f * 1.2f));
+		statusHeadImage = 				guiUtils.CreateImage(gameplayStatusDisplay, closeup1Texture, new Color(1f, 1f, 1f, 0.85f));
+		statusNameText = 				guiUtils.CreateText(gameplayStatusDisplay, "Name", new Color(0.99f, 0.66f, 0f, 0.7f), FontStyle.BoldAndItalic, TextAnchor.UpperCenter);
+		menuPawImage = 					guiUtils.CreateImage(gameplayMovementControls, pawStraightTexture, new Color(1f, 1f, 1f, 0.8f));
+		menuPawText = 					guiUtils.CreateText(gameplayMovementControls, "Menu", new Color(0f, 0f, 0f, 0.8f), FontStyle.Bold);
+		healthBar =						guiComponents.CreatePumaHealthBar(gameplayStatusDisplay);
+		
+		// right side
+		navControlUpperPanel = 			guiUtils.CreatePanel(gameplayMovementControls, new Color(0f, 0f, 0f, 0.4f * 0.9f));
+		navControlLowerPanel = 			guiUtils.CreatePanel(gameplayMovementControls, new Color(0f, 0f, 0f, 0.4f * 1.6f));
+		navControlUpperArrowsImage = 	guiUtils.CreateImage(gameplayMovementControls, controlRightIconsTexture, new Color(1f, 1f, 1f, 0.7f));
+		navControlLowerArrowsImage = 	guiUtils.CreateImage(gameplayMovementControls, controlRightIconsLowerTexture, new Color(1f, 1f, 1f, 0.75f));
+		navControlBigPumaImage = 		guiUtils.CreateImage(gameplayMovementControls, pumaStealthDarkTexture, new Color(1f, 1f, 1f, 0.9f));
+		navControlSmallPumaImage = 		guiUtils.CreateImage(gameplayMovementControls, pumaStealthDarkTexture, new Color(1f, 1f, 1f, 0.9f));
+		
+		// deer head indicators
+		indicatorBackgroundPanel = 		guiUtils.CreatePanel(gameplayPositionIndicatorsBgnd, new Color(0f, 0f, 0f, 0.4f));
+		indicatorPumaHeadImage = 		guiUtils.CreateImage(gameplayPositionIndicatorsBgnd, closeup1Texture, new Color(1f, 1f, 1f, 0.82f));
+		indicatorPumaSensesImage = 		guiUtils.CreateImage(gameplayPositionIndicatorsBgnd, closeupSensesTexture, new Color(1f, 1f, 1f, 0.5f));
+		indicatorRectLeft = 			guiUtils.CreateRect(gameplayPositionIndicatorsBgnd, new Color(0f, 0f, 0f, 0.35f));
+		indicatorRectTop = 				guiUtils.CreateRect(gameplayPositionIndicatorsBgnd, new Color(0f, 0f, 0f, 0.35f));
+		indicatorRectRight = 			guiUtils.CreateRect(gameplayPositionIndicatorsBgnd, new Color(0f, 0f, 0f, 0.35f));
+		indicatorRectBottom = 			guiUtils.CreateRect(gameplayPositionIndicatorsBgnd, new Color(0f, 0f, 0f, 0.35f));
+		indicatorDeerHeadBuck =			CreateDeerHead(gameplayPositionIndicators, "Buck");
+		indicatorDeerHeadDoe =			CreateDeerHead(gameplayPositionIndicators, "Doe");
+		indicatorDeerHeadFawn =			CreateDeerHead(gameplayPositionIndicators, "Fawn");
+		
+		// cheat button
+		cheatButton = 					guiUtils.CreateSeeThruButton(gameplayPositionIndicatorsBgnd, "", new Color(1f, 1f, 1f, 1f), FontStyle.Normal);
+		cheatButton.GetComponent<Button>().onClick.AddListener( delegate { levelManager.goStraightToFeeding = true; } );
+
+		initComplete = true;
+	}
+
+
+	void PositionGUIItems()
+	{
+		if (initComplete == false)
+			return;
+	
+		float leftAreaX = Screen.height * 0.08f;
+		float leftAreaY = Screen.height * 0.80f;
+		float leftAreaWidth = Screen.height * 0.37f;
+		float leftAreaHeight = Screen.height * 0.12f;
+
+		float rightAreaY = Screen.height * 0.67f;
+		float rightAreaWidth = Screen.height * 0.24f;
+		float rightAreaHeight = Screen.height * 0.20f;
+		float rightAreaExtraHeight = Screen.height * 0.05f;
+		float rightAreaX = Screen.width - rightAreaWidth - leftAreaX;
+
+		float boxWidth = Screen.height * 0.30f * 1.4f;
+		float boxHeight = arrowTrayTexture.height * (boxWidth / arrowTrayTexture.width);
+
+		// left side
+		float textureX = leftAreaX - leftAreaWidth * 0.027f;
+		float textureY = leftAreaY - leftAreaHeight * 0.16f;			
+		float textureHeight = leftAreaHeight * 1.25f;
+		float textureWidth = (pawDiagLeftTexture.width * (textureHeight / pawDiagLeftTexture.height)) * 1.1f;
+		guiUtils.SetItemOffsets(leftPawImage, textureX + textureWidth * 0.10f, textureY + textureHeight * 0.2f, textureWidth * 0.8f, textureHeight * 0.94f * 0.8f);
+		float statusPanelWidth = Screen.height * 0.11f;
+		float statusPanelHeight = leftAreaHeight * 0.88f;
+		float statusPanelX = leftAreaX + leftAreaWidth * 0.45f;
+		float statusPanelY = leftAreaY + leftAreaHeight - statusPanelHeight - leftAreaHeight * 0.03f;
+		guiUtils.SetItemOffsets(statusBackgroundPanel, statusPanelX, statusPanelY, statusPanelWidth, statusPanelHeight);
+		textureHeight = statusPanelHeight * 0.58f;
+		textureWidth = statusHeadImage.GetComponent<RawImage>().texture.width * (textureHeight / statusHeadImage.GetComponent<RawImage>().texture.height);
+		textureX = statusPanelX + statusPanelWidth - textureWidth - statusPanelWidth * 0.08f;
+		textureY = statusPanelY + statusPanelHeight * 0.03f;
+		guiUtils.SetItemOffsets(statusHeadImage,textureX, textureY, textureWidth, textureHeight);
+		float textX = statusPanelX;
+		float textY = statusPanelY + statusPanelHeight * 0.70f;
+		float textWidth = statusPanelWidth;
+		float textHeight = statusPanelHeight * 0.3f;
+		float fontRef = statusPanelWidth * 1000f / 320f;
+		guiUtils.SetTextOffsets(statusNameText, textX, textY, textWidth, textHeight, (int)(fontRef * 0.062f));
+		guiUtils.SetItemOffsets(menuPawImage, leftAreaX + leftAreaWidth * 0.82f, leftAreaY + leftAreaHeight * 0.17f, leftAreaWidth * 0.41f * 0.8f, leftAreaHeight * 0.8f);
+		guiUtils.SetTextOffsets(menuPawText, leftAreaX + leftAreaWidth * 0.82f, leftAreaY + leftAreaHeight * 0.5f, leftAreaWidth * 0.41f * 0.8f, leftAreaHeight * 0.5f, (int)(leftAreaWidth * 0.06f));
+		float healthBarWidth = Screen.height * 0.36f;
+		float healthBarHeight = Screen.height * 0.032f;
+		float healthBarX = Screen.width/2 - healthBarWidth/2;
+		float healthBarY = Screen.height - healthBarHeight - healthBarHeight * 0.3f;
+		guiComponents.PositionPumaHealthBar(healthBar, guiManager.selectedPuma, healthBarX, healthBarY, healthBarWidth, healthBarHeight);
+		
+		// right side
+		guiUtils.SetItemOffsets(navControlUpperPanel, rightAreaX, rightAreaY, rightAreaWidth, rightAreaHeight * 1.01f);
+		guiUtils.SetItemOffsets(navControlLowerPanel, rightAreaX, rightAreaY + rightAreaHeight, rightAreaWidth, rightAreaExtraHeight);
+		guiUtils.SetItemOffsets(navControlUpperArrowsImage, rightAreaX, rightAreaY - rightAreaExtraHeight*0.1f, rightAreaWidth, rightAreaHeight + rightAreaExtraHeight);
+		guiUtils.SetItemOffsets(navControlLowerArrowsImage, rightAreaX, rightAreaY - rightAreaExtraHeight*0.1f, rightAreaWidth, rightAreaHeight + rightAreaExtraHeight);
+		textureHeight = rightAreaExtraHeight * 1.5f;
+		textureWidth = pumaStealthDarkTexture.width * (textureHeight / pumaStealthDarkTexture.height);
+		guiUtils.SetItemOffsets(navControlBigPumaImage, rightAreaX + rightAreaWidth/2 - textureWidth*0.52f, rightAreaY + rightAreaHeight*0.0f, textureWidth, textureHeight);
+		textureHeight = rightAreaExtraHeight * 0.9f;
+		textureWidth = pumaStealthDarkTexture.width * (textureHeight / pumaStealthDarkTexture.height);
+		guiUtils.SetItemOffsets(navControlSmallPumaImage, rightAreaX + rightAreaWidth/2 - textureWidth*0.52f, rightAreaY + rightAreaHeight*0.75f, textureWidth, textureHeight);
+		
+		// deer head indicators
+		float positionIndicatorZoom = previousPositionIndicatorZoom;  // use last remembered value
+		int borderThickness = (int)(Screen.height * 0.06f);
+		indicatorMinX = Screen.width * 0.25f * (1f-positionIndicatorZoom);
+		indicatorMinY = Screen.height * 0.05f * (1f-positionIndicatorZoom);
+		indicatorMaxX = Screen.width - indicatorMinX;
+		indicatorMaxY = Screen.height - (Screen.height * 0.45f * (1f-positionIndicatorZoom));
+		float zoom = positionIndicatorZoom > 0.5f ? 1f : positionIndicatorZoom * 2f;
+		float scaleFactor = 1f - (1f-zoom)*(1f-zoom);
+		indicatorBackgroundPanel.GetComponent<Image>().color = new Color(0f, 0f, 0f, 0.4f * (1f - scaleFactor));
+		indicatorPumaHeadImage.GetComponent<RawImage>().color = new Color(1f, 1f, 1f, 0.82f * (1f - scaleFactor));
+		float flashingPeriod = 0.5f;
+		float flashingOpacity = 0f;
+		if (Time.time > flashStartTime + flashingPeriod) {
+			flashStartTime = Time.time;
+		}
+		if (Time.time < flashStartTime + flashingPeriod * 0.3f) {
+			// first half
+			flashingOpacity = (Time.time - flashStartTime) / (flashingPeriod * 0.3f);
+		}
+		else {
+			// second half
+			flashingOpacity = 1f - ((Time.time - flashStartTime - flashingPeriod * 0.3f) / (flashingPeriod * 0.7f));			
+		}	
+		flashingOpacity = 0.3f + flashingOpacity * 0.5f;
+		flashingOpacity = flashingOpacity * flashingOpacity;
+		indicatorPumaSensesImage.GetComponent<RawImage>().color = new Color(1f, 1f, 1f, 0.5f * (1f - scaleFactor) * flashingOpacity);
+		guiUtils.SetItemOffsets(indicatorBackgroundPanel, indicatorMinX, indicatorMinY, indicatorMaxX - indicatorMinX, indicatorMaxY - indicatorMinY);
+		textureWidth = (indicatorMaxX - indicatorMinX) * 0.2f;
+		textureHeight = indicatorPumaHeadImage.GetComponent<RawImage>().texture.height * (textureWidth / indicatorPumaHeadImage.GetComponent<RawImage>().texture.width);
+		textureX = (indicatorMaxX + indicatorMinX) / 2 - textureWidth/2;
+		textureY = (indicatorMaxY + indicatorMinY) / 2 - textureHeight/2;
+		guiUtils.SetItemOffsets(indicatorPumaHeadImage, textureX, textureY, textureWidth, textureHeight);
+		guiUtils.SetItemOffsets(indicatorPumaSensesImage, indicatorMinX, indicatorMinY, indicatorMaxX - indicatorMinX, indicatorMaxY - indicatorMinY);
+		guiUtils.SetItemOffsets(indicatorRectLeft, indicatorMinX, indicatorMinY + borderThickness + 1, borderThickness, (indicatorMaxY-indicatorMinY)-(borderThickness*2) - 2);
+		guiUtils.SetItemOffsets(indicatorRectTop, indicatorMinX, indicatorMinY, indicatorMaxX-indicatorMinX, borderThickness);
+		guiUtils.SetItemOffsets(indicatorRectRight, indicatorMaxX-borderThickness, indicatorMinY + borderThickness + 1, borderThickness, (indicatorMaxY-indicatorMinY)-(borderThickness*2) - 2);
+		guiUtils.SetItemOffsets(indicatorRectBottom, indicatorMinX, indicatorMaxY-borderThickness, indicatorMaxX-indicatorMinX, borderThickness);
+		
+		// cheat button
+		float killButtonX = Screen.width * 0.5f - Screen.height * 0.075f;
+		float killButtonY = 0f;
+		float killButtonWidth = Screen.height * 0.15f;
+		float killButtonHeight = Screen.height * 0.15f;
+		guiUtils.SetButtonOffsets(cheatButton, killButtonX,  killButtonY, killButtonWidth, killButtonHeight, 12);
+	}
+	
+	
+	public void UpdateGUIItems(float movementControlsOpacity, float positionIndicatorBackgroundOpacity, float positionIndicatorOpacity, float positionIndicatorZoom, float statusDisplayOpacity) 
 	{ 
-
-
-
-
-
+		if (initComplete == false)
+			return;
 	
-	
-
-
-		//if (USE_NEW_GUI == true)
-			//return; 
-		
-		
-		//////////////////////////////////
-		//////////////////////////////////
-		
-		// LEGACY DRAW CODE
-
-		//////////////////////////////////
-		//////////////////////////////////
-
-		
-		GUIStyle style = new GUIStyle();
-		style.alignment = TextAnchor.MiddleCenter;
+		int borderThickness = (int)(Screen.height * 0.06f);
 
 		float leftAreaX = Screen.height * 0.08f;
 		float leftAreaY = Screen.height * 0.80f;
@@ -157,6 +349,183 @@ public class GameplayDisplay : MonoBehaviour
 		float rightAreaHeight = Screen.height * 0.20f;
 		float rightAreaExtraHeight = Screen.height * 0.05f;
 		float rightAreaX = Screen.width - rightAreaWidth - leftAreaX;
+
+		bool diagLeftFlag = levelManager.PumaSideStalkDirectionIsLeft();
+		bool chasingFlag;
+		
+		if (levelManager.gameState == "gameStateChasing" || levelManager.gameState == "gameStateFeeding1" || levelManager.gameState == "gameStateFeeding1a")
+			chasingFlag = true;
+		else if (levelManager.gameState == "gameStateEnteringGameplay1" || levelManager.gameState == "gameStateEnteringGameplay2" || levelManager.gameState == "gameStateStalking")
+			chasingFlag = false;
+		else
+			chasingFlag = previousChasingFlag;
+
+		if (USE_NEW_GUI == true) {
+
+			// check for screen size change
+			if (lastSeenScreenWidth != Screen.width || lastSeenScreenHeight != Screen.height) {
+				lastSeenScreenWidth = Screen.width;
+				lastSeenScreenHeight = Screen.height;
+				PositionGUIItems();
+			}
+
+			// top level enables and opacities
+			gameplayPositionIndicatorsBgnd.SetActive(positionIndicatorBackgroundOpacity > 0f ? true : false);
+			gameplayPositionIndicatorsBgnd.GetComponent<CanvasGroup>().alpha = positionIndicatorBackgroundOpacity;
+			gameplayPositionIndicators.SetActive(positionIndicatorOpacity > 0f ? true : false);
+			gameplayPositionIndicators.GetComponent<CanvasGroup>().alpha = positionIndicatorOpacity;
+			gameplayMovementControls.SetActive(movementControlsOpacity > 0f ? true : false);
+			gameplayMovementControls.GetComponent<CanvasGroup>().alpha = movementControlsOpacity;
+			gameplayStatusDisplay.SetActive(statusDisplayOpacity > 0f ? true : false);
+			gameplayStatusDisplay.GetComponent<CanvasGroup>().alpha = statusDisplayOpacity;
+			
+			// set movement control rects
+			if (movementControlsOpacity > 0f) {
+				inputControls.SetRectLeftButton(new Rect(leftAreaX, leftAreaY, leftAreaWidth * 0.41f, leftAreaHeight));
+				inputControls.SetRectMiddleButton(new Rect(leftAreaX + leftAreaWidth * 0.82f, leftAreaY + leftAreaHeight * 0.2f, leftAreaWidth * 0.41f * 0.8f, leftAreaHeight * 0.8f));
+				inputControls.SetRectRightButton(new Rect(rightAreaX, rightAreaY, rightAreaWidth, rightAreaHeight + rightAreaExtraHeight));
+			}
+			
+			// update textures that might have changed
+			bool callPositionFunction = false;
+			if (chasingFlag != previousChasingFlag) {
+				if (chasingFlag == true) {
+					leftPawImage.GetComponent<RawImage>().texture = controlLeftJumpTexture;
+					navControlBigPumaImage.GetComponent<RawImage>().texture = pumaRunDarkTexture;
+					navControlSmallPumaImage.GetComponent<RawImage>().texture = pumaRunDarkTexture;
+				}
+				else {
+					leftPawImage.GetComponent<RawImage>().texture = (diagLeftFlag == true ? pawDiagLeftTexture : pawDiagRightTexture);
+					previousDiagLeftFlag = diagLeftFlag;
+					navControlBigPumaImage.GetComponent<RawImage>().texture = pumaStealthDarkTexture;
+					navControlSmallPumaImage.GetComponent<RawImage>().texture = pumaStealthDarkTexture;
+				}
+				previousChasingFlag = chasingFlag;
+			}
+			if (chasingFlag == false && diagLeftFlag != previousDiagLeftFlag) {
+				leftPawImage.GetComponent<RawImage>().texture = (diagLeftFlag == true ? pawDiagLeftTexture : pawDiagRightTexture);
+				previousDiagLeftFlag = diagLeftFlag;
+			}
+			if (guiManager.selectedPuma != previousSelectedPuma) {
+				Texture2D pumaHeadTexture = closeup1Texture;
+				string pumaName = "no name";
+				switch (guiManager.selectedPuma) {
+				case 0:
+					pumaHeadTexture = closeup1Texture;
+					pumaName = "Eric";
+					break;
+				case 1:
+					pumaHeadTexture = closeup2Texture;
+					pumaName = "Palo";
+					break;
+				case 2:
+					pumaHeadTexture = closeup3Texture;
+					pumaName = "Mitch";
+					break;
+				case 3:
+					pumaHeadTexture = closeup4Texture;
+					pumaName = "Trish";
+					break;
+				case 4:
+					pumaHeadTexture = closeup5Texture;
+					pumaName = "Liam";
+					break;
+				case 5:
+					pumaHeadTexture = closeup6Texture;
+					pumaName = "Barb";
+					break;
+				}
+				statusHeadImage.GetComponent<RawImage>().texture = pumaHeadTexture;
+				statusNameText.GetComponent<Text>().text = pumaName;
+				indicatorPumaHeadImage.GetComponent<RawImage>().texture = pumaHeadTexture;
+				previousSelectedPuma = guiManager.selectedPuma;
+				callPositionFunction = true;
+			}
+			
+			// update positionIndicatorZoom if needed
+			if (positionIndicatorZoom != previousPositionIndicatorZoom) {
+				previousPositionIndicatorZoom = positionIndicatorZoom;	// must be done first -- previousPositionIndicatorZoom is used by PositionGUIItems()
+				callPositionFunction = true;
+			}	
+
+			// update flashing of puma senses
+			if (positionIndicatorZoom < 1f) {
+				callPositionFunction = true;
+			}
+			
+			if (callPositionFunction == true)
+				PositionGUIItems();
+				
+			if (levelManager.buck != null && levelManager.doe != null && levelManager.fawn != null ) {
+				PositionDeerHead(indicatorDeerHeadBuck, levelManager.mainHeading, levelManager.pumaObj, levelManager.buck.gameObj, levelManager.buck.type, borderThickness);
+				PositionDeerHead(indicatorDeerHeadDoe, levelManager.mainHeading, levelManager.pumaObj, levelManager.doe.gameObj, levelManager.doe.type, borderThickness);
+				PositionDeerHead(indicatorDeerHeadFawn, levelManager.mainHeading, levelManager.pumaObj, levelManager.fawn.gameObj, levelManager.fawn.type, borderThickness);
+			}
+			
+			float healthBarWidth = Screen.height * 0.36f;
+			float healthBarHeight = Screen.height * 0.032f;
+			float healthBarX = Screen.width/2 - healthBarWidth/2;
+			float healthBarY = Screen.height - healthBarHeight - healthBarHeight * 0.3f;
+			guiComponents.PositionPumaHealthBar(healthBar, guiManager.selectedPuma, healthBarX, healthBarY, healthBarWidth, healthBarHeight);
+		}
+		else {
+			// set enables to 'off'
+			gameplayPositionIndicatorsBgnd.SetActive(false);
+			gameplayPositionIndicators.SetActive(false);
+			gameplayMovementControls.SetActive(false);
+			gameplayStatusDisplay.SetActive(false);
+		}
+	}
+
+	
+	//===================================
+	//===================================
+	//	  DRAW THE GAMEPLAY DISPLAY
+	//===================================
+	//===================================
+	
+	public void Draw(float movementControlsOpacity, float positionIndicatorBackgroundOpacity, float positionIndicatorOpacity, float positionIndicatorZoom, float statusDisplayOpacity) 
+	{ 
+
+		if (USE_NEW_GUI == true)
+			return; 
+		
+		
+		//////////////////////////////////
+		//////////////////////////////////
+		
+		// LEGACY DRAW CODE
+
+		//////////////////////////////////
+		//////////////////////////////////
+
+		
+		int borderThickness = (int)(Screen.height * 0.06f);
+
+		float leftAreaX = Screen.height * 0.08f;
+		float leftAreaY = Screen.height * 0.80f;
+		float leftAreaWidth = Screen.height * 0.37f;
+		float leftAreaHeight = Screen.height * 0.12f;
+
+		float rightAreaY = Screen.height * 0.67f;
+		float rightAreaWidth = Screen.height * 0.24f;
+		float rightAreaHeight = Screen.height * 0.20f;
+		float rightAreaExtraHeight = Screen.height * 0.05f;
+		float rightAreaX = Screen.width - rightAreaWidth - leftAreaX;
+
+		bool diagLeftFlag = levelManager.PumaSideStalkDirectionIsLeft();
+		bool chasingFlag;
+		
+		if (levelManager.gameState == "gameStateChasing" || levelManager.gameState == "gameStateFeeding1" || levelManager.gameState == "gameStateFeeding1a")
+			chasingFlag = true;
+		else if (levelManager.gameState == "gameStateEnteringGameplay1" || levelManager.gameState == "gameStateEnteringGameplay2" || levelManager.gameState == "gameStateStalking")
+			chasingFlag = false;
+		else
+			chasingFlag = previousChasingFlag;
+
+		
+		GUIStyle style = new GUIStyle();
+		style.alignment = TextAnchor.MiddleCenter;
 
 		//guiUtils.DrawRect(new Rect(leftAreaX, leftAreaY, leftAreaWidth, leftAreaHeight), new Color(0f, 0f, 0f, 0.3f));
 		//guiUtils.DrawRect(new Rect(rightAreaX, rightAreaY, rightAreaWidth, rightAreaHeight), new Color(0f, 0f, 0f, 0.3f));
@@ -176,11 +545,12 @@ public class GameplayDisplay : MonoBehaviour
 		float textureY = leftAreaY - leftAreaHeight * 0.16f;			
 		float textureWidth = leftAreaWidth * 0.47f;
 		float textureHeight = leftAreaHeight * 1.25f;
-		bool chasingFlag = levelManager.gameState == "gameStateChasing" || levelManager.gameState == "gameStateFeeding1" || levelManager.gameState == "gameStateFeeding1a";
 
 		GUI.color = new Color(1f, 1f, 1f, 1f * movementControlsOpacity);
-		if (movementControlsOpacity > 0f)
-			inputControls.SetRectLeftButton(new Rect(leftAreaX, leftAreaY, leftAreaWidth * 0.41f, leftAreaHeight));
+		if (USE_NEW_GUI == false) {
+			if (movementControlsOpacity > 0f)
+				inputControls.SetRectLeftButton(new Rect(leftAreaX, leftAreaY, leftAreaWidth * 0.41f, leftAreaHeight));
+		}
 
 		Texture2D iconTexture = null;
 
@@ -190,13 +560,15 @@ public class GameplayDisplay : MonoBehaviour
 			//GUI.DrawTexture(new Rect(textureX + textureWidth * 0.1f, textureY + textureHeight * 0.05f, textureWidth * 0.8f, textureHeight * 0.9f), arrowTrayFlippedTexture);
 			GUI.color = new Color(1f, 1f, 1f, 0.8f * movementControlsOpacity);
 			textureWidth = pawStraightTexture.width * (textureHeight / pawStraightTexture.height);
-			GUI.DrawTexture(new Rect(leftAreaX + leftAreaWidth * 0.0f, leftAreaY + leftAreaHeight * 0.07f, leftAreaWidth * 0.41f * 1.04f, leftAreaHeight * 1.04f), controlLeftJumpTexture);		
+			if (USE_NEW_GUI == false)
+				GUI.DrawTexture(new Rect(leftAreaX + leftAreaWidth * 0.0f, leftAreaY + leftAreaHeight * 0.07f, leftAreaWidth * 0.41f * 1.04f, leftAreaHeight * 1.04f), controlLeftJumpTexture);		
 		}
 		else  {
 			GUI.color = new Color(1f, 1f, 1f, 0.8f * movementControlsOpacity);
 			iconTexture = levelManager.PumaSideStalkDirectionIsLeft() == true ? pawDiagLeftTexture : pawDiagRightTexture;
 			textureWidth = (iconTexture.width * (textureHeight / iconTexture.height)) * 1.1f;
-			GUI.DrawTexture(new Rect(textureX + textureWidth * 0.10f, textureY + textureHeight * 0.2f, textureWidth * 0.8f, textureHeight * 0.94f * 0.8f), iconTexture);
+			if (USE_NEW_GUI == false)
+				GUI.DrawTexture(new Rect(textureX + textureWidth * 0.10f, textureY + textureHeight * 0.2f, textureWidth * 0.8f, textureHeight * 0.94f * 0.8f), iconTexture);
 			//GUI.color = new Color(1f, 1f, 1f, 0.6f * movementControlsOpacity);
 			//GUI.DrawTexture(new Rect(leftAreaX, leftAreaY, leftAreaWidth * 0.41f, leftAreaHeight), levelManager.PumaSideStalkDirectionIsLeft() == true ? controlLeftDiagLeftTexture : controlLeftDiagRightTexture);		
 		}
@@ -205,14 +577,18 @@ public class GameplayDisplay : MonoBehaviour
 		// exit button
 		GUI.color = new Color(1f, 1f, 1f, 0.8f * movementControlsOpacity);
 		textureWidth = pawStraightTexture.width * (textureHeight / pawStraightTexture.height);
-		GUI.DrawTexture(new Rect(leftAreaX + leftAreaWidth * 0.82f, leftAreaY + leftAreaHeight * 0.17f, leftAreaWidth * 0.41f * 0.8f, leftAreaHeight * 0.8f), pawStraightTexture);		
-		if (movementControlsOpacity > 0f)
-			inputControls.SetRectMiddleButton(new Rect(leftAreaX + leftAreaWidth * 0.82f, leftAreaY + leftAreaHeight * 0.2f, leftAreaWidth * 0.41f * 0.8f, leftAreaHeight * 0.8f));
+		if (USE_NEW_GUI == false)
+			GUI.DrawTexture(new Rect(leftAreaX + leftAreaWidth * 0.82f, leftAreaY + leftAreaHeight * 0.17f, leftAreaWidth * 0.41f * 0.8f, leftAreaHeight * 0.8f), pawStraightTexture);		
+		if (USE_NEW_GUI == false) {
+			if (movementControlsOpacity > 0f)
+				inputControls.SetRectMiddleButton(new Rect(leftAreaX + leftAreaWidth * 0.82f, leftAreaY + leftAreaHeight * 0.2f, leftAreaWidth * 0.41f * 0.8f, leftAreaHeight * 0.8f));
+		}
 		GUI.color = new Color(1f, 1f, 1f, 1f * movementControlsOpacity);
 		style.fontSize = (int)(leftAreaWidth * 0.06f);
 		style.fontStyle = FontStyle.Bold;
 		style.normal.textColor = new Color(0f, 0f, 0f, 0.8f);
-		GUI.Button(new Rect(leftAreaX + leftAreaWidth * 0.82f, leftAreaY + leftAreaHeight * 0.5f, leftAreaWidth * 0.41f * 0.8f, leftAreaHeight * 0.5f), "Menu", style);
+		if (USE_NEW_GUI == false)
+			GUI.Button(new Rect(leftAreaX + leftAreaWidth * 0.82f, leftAreaY + leftAreaHeight * 0.5f, leftAreaWidth * 0.41f * 0.8f, leftAreaHeight * 0.5f), "Menu", style);
 		
 		// right paw
 	
@@ -222,9 +598,11 @@ public class GameplayDisplay : MonoBehaviour
 		textureHeight = rightAreaHeight * 1.25f;
 		
 		GUI.color = new Color(1f, 1f, 1f, 0.8f * movementControlsOpacity);
-		GUI.Box(new Rect(rightAreaX, rightAreaY, rightAreaWidth, rightAreaHeight), "");
-		GUI.Box(new Rect(rightAreaX, rightAreaY + rightAreaHeight, rightAreaWidth, rightAreaExtraHeight), "");
-		GUI.Box(new Rect(rightAreaX, rightAreaY + rightAreaHeight, rightAreaWidth, rightAreaExtraHeight), "");
+		if (USE_NEW_GUI == false) {
+			GUI.Box(new Rect(rightAreaX, rightAreaY, rightAreaWidth, rightAreaHeight), "");
+			GUI.Box(new Rect(rightAreaX, rightAreaY + rightAreaHeight, rightAreaWidth, rightAreaExtraHeight), "");
+			GUI.Box(new Rect(rightAreaX, rightAreaY + rightAreaHeight, rightAreaWidth, rightAreaExtraHeight), "");
+		}
 		GUI.color = new Color(1f, 1f, 1f, 0.7f * movementControlsOpacity);
 		//GUI.Box(new Rect(rightAreaX, rightAreaY + rightAreaHeight - rightAreaExtraHeight, rightAreaWidth, rightAreaExtraHeight), "");
 		GUI.color = new Color(1f, 1f, 1f, 1f * movementControlsOpacity);
@@ -237,22 +615,26 @@ public class GameplayDisplay : MonoBehaviour
 		//GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), arrowRightTexture);
 		//GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), arrowUpTexture);
 		//GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), arrowDownTexture);
-		if (movementControlsOpacity > 0f)
-			inputControls.SetRectRightButton(new Rect(rightAreaX, rightAreaY, rightAreaWidth, rightAreaHeight + rightAreaExtraHeight));
+		if (USE_NEW_GUI == false) {
+			if (movementControlsOpacity > 0f)
+				inputControls.SetRectRightButton(new Rect(rightAreaX, rightAreaY, rightAreaWidth, rightAreaHeight + rightAreaExtraHeight));
+		}
 			
-		GUI.color = new Color(1f, 1f, 1f, 0.7f * movementControlsOpacity);
-		GUI.DrawTexture(new Rect(rightAreaX, rightAreaY - rightAreaExtraHeight*0.1f, rightAreaWidth, rightAreaHeight + rightAreaExtraHeight), controlRightIconsTexture);
-		GUI.color = new Color(1f, 1f, 1f, 0.75f * movementControlsOpacity);
-		GUI.DrawTexture(new Rect(rightAreaX, rightAreaY - rightAreaExtraHeight*0.1f, rightAreaWidth, rightAreaHeight + rightAreaExtraHeight), controlRightIconsLowerTexture);
-					
-		GUI.color = new Color(1f, 1f, 1f, 0.9f * movementControlsOpacity);
-		iconTexture = chasingFlag ? pumaRunDarkTexture : pumaStealthDarkTexture;
-		textureHeight = rightAreaExtraHeight * 1.5f;
-		textureWidth = iconTexture.width * (textureHeight / iconTexture.height);
-		GUI.DrawTexture(new Rect(rightAreaX + rightAreaWidth/2 - textureWidth*0.52f, rightAreaY + rightAreaHeight*0.0f, textureWidth, textureHeight), iconTexture);
-		textureHeight = rightAreaExtraHeight * 0.9f;
-		textureWidth = iconTexture.width * (textureHeight / iconTexture.height);
-		GUI.DrawTexture(new Rect(rightAreaX + rightAreaWidth/2 - textureWidth*0.52f, rightAreaY + rightAreaHeight*0.75f, textureWidth, textureHeight), iconTexture);
+		if (USE_NEW_GUI == false) {
+			GUI.color = new Color(1f, 1f, 1f, 0.7f * movementControlsOpacity);
+			GUI.DrawTexture(new Rect(rightAreaX, rightAreaY - rightAreaExtraHeight*0.1f, rightAreaWidth, rightAreaHeight + rightAreaExtraHeight), controlRightIconsTexture);
+			GUI.color = new Color(1f, 1f, 1f, 0.75f * movementControlsOpacity);
+			GUI.DrawTexture(new Rect(rightAreaX, rightAreaY - rightAreaExtraHeight*0.1f, rightAreaWidth, rightAreaHeight + rightAreaExtraHeight), controlRightIconsLowerTexture);
+		
+			GUI.color = new Color(1f, 1f, 1f, 0.9f * movementControlsOpacity);
+			iconTexture = chasingFlag ? pumaRunDarkTexture : pumaStealthDarkTexture;
+			textureHeight = rightAreaExtraHeight * 1.5f;
+			textureWidth = iconTexture.width * (textureHeight / iconTexture.height);
+			GUI.DrawTexture(new Rect(rightAreaX + rightAreaWidth/2 - textureWidth*0.52f, rightAreaY + rightAreaHeight*0.0f, textureWidth, textureHeight), iconTexture);
+			textureHeight = rightAreaExtraHeight * 0.9f;
+			textureWidth = iconTexture.width * (textureHeight / iconTexture.height);
+			GUI.DrawTexture(new Rect(rightAreaX + rightAreaWidth/2 - textureWidth*0.52f, rightAreaY + rightAreaHeight*0.75f, textureWidth, textureHeight), iconTexture);
+		}
 			
 						
 		//----------------------
@@ -261,7 +643,6 @@ public class GameplayDisplay : MonoBehaviour
 					
 		// outer edge display
 		GUI.color = new Color(1f, 1f, 1f, 0.9f * positionIndicatorBackgroundOpacity);
-		int borderThickness = (int)(Screen.height * 0.06f);
 		Color edgeColor = new Color(0f, 0f, 0f, 0.35f);	
 
 		// initial onscreen rect
@@ -277,7 +658,8 @@ public class GameplayDisplay : MonoBehaviour
 
 		// background for indicator rect
 		GUI.color = new Color(1f, 1f, 1f, 1f * positionIndicatorBackgroundOpacity * (1f - scaleFactor));
-		GUI.Box(new Rect(indicatorMinX, indicatorMinY, indicatorMaxX - indicatorMinX, indicatorMaxY - indicatorMinY), "");
+		if (USE_NEW_GUI == false)
+			GUI.Box(new Rect(indicatorMinX, indicatorMinY, indicatorMaxX - indicatorMinX, indicatorMaxY - indicatorMinY), "");
 		GUI.color = new Color(0.4f, 0.4f, 0.4f, 0.6f * positionIndicatorBackgroundOpacity * (1f - scaleFactor));
 		//GUI.DrawTexture(new Rect(indicatorMinX, indicatorMinY, indicatorMaxX - indicatorMinX, indicatorMaxY - indicatorMinY), closeupBackgroundTexture);
 			
@@ -312,7 +694,8 @@ public class GameplayDisplay : MonoBehaviour
 		textureY = (indicatorMaxY + indicatorMinY) / 2 - textureHeight/2;
 		
 		GUI.color = new Color(1f, 1f, 1f, 0.82f * positionIndicatorBackgroundOpacity * (1f - scaleFactor));
-		GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), closeupTexture);
+		if (USE_NEW_GUI == false)
+			GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), closeupTexture);
 		float flashingPeriod = 0.5f;
 		float flashingOpacity = 0f;
 		if (Time.time > flashStartTime + flashingPeriod) {
@@ -330,20 +713,25 @@ public class GameplayDisplay : MonoBehaviour
 		flashingOpacity = flashingOpacity * flashingOpacity;
 		//flashingOpacity = 0f;
 		GUI.color = new Color(1f, 1f, 1f, 0.5f * flashingOpacity * positionIndicatorBackgroundOpacity * (1f - scaleFactor));
-		GUI.DrawTexture(new Rect(indicatorMinX, indicatorMinY, indicatorMaxX - indicatorMinX, indicatorMaxY - indicatorMinY), closeupSensesTexture);
+		if (USE_NEW_GUI == false)
+			GUI.DrawTexture(new Rect(indicatorMinX, indicatorMinY, indicatorMaxX - indicatorMinX, indicatorMaxY - indicatorMinY), closeupSensesTexture);
 		GUI.color = new Color(1f, 1f, 1f, 1f * positionIndicatorBackgroundOpacity);
 
 		// indicator borders
-		guiUtils.DrawRect(new Rect(indicatorMinX, indicatorMinY, indicatorMaxX-indicatorMinX, borderThickness), edgeColor);
-		guiUtils.DrawRect(new Rect(indicatorMinX, indicatorMaxY-borderThickness, indicatorMaxX-indicatorMinX, borderThickness), edgeColor);
-		guiUtils.DrawRect(new Rect(indicatorMinX, indicatorMinY + borderThickness, borderThickness, (indicatorMaxY-indicatorMinY)-(borderThickness*2)), edgeColor);
-		guiUtils.DrawRect(new Rect(indicatorMaxX-borderThickness, indicatorMinY + borderThickness, borderThickness, (indicatorMaxY-indicatorMinY)-(borderThickness*2)), edgeColor);
-
+		if (USE_NEW_GUI == false) {
+			guiUtils.DrawRect(new Rect(indicatorMinX, indicatorMinY, indicatorMaxX-indicatorMinX, borderThickness), edgeColor);
+			guiUtils.DrawRect(new Rect(indicatorMinX, indicatorMaxY-borderThickness, indicatorMaxX-indicatorMinX, borderThickness), edgeColor);
+			guiUtils.DrawRect(new Rect(indicatorMinX, indicatorMinY + borderThickness, borderThickness, (indicatorMaxY-indicatorMinY)-(borderThickness*2)), edgeColor);
+			guiUtils.DrawRect(new Rect(indicatorMaxX-borderThickness, indicatorMinY + borderThickness, borderThickness, (indicatorMaxY-indicatorMinY)-(borderThickness*2)), edgeColor);
+		}
+		
 		// deer head indicators
-		if (levelManager.buck != null && levelManager.doe != null && levelManager.fawn != null ) {
-			DrawIndicator(levelManager.mainHeading, levelManager.pumaObj, levelManager.buck.gameObj, levelManager.buck.type, borderThickness, positionIndicatorOpacity);
-			DrawIndicator(levelManager.mainHeading, levelManager.pumaObj, levelManager.doe.gameObj, levelManager.doe.type, borderThickness, positionIndicatorOpacity);
-			DrawIndicator(levelManager.mainHeading, levelManager.pumaObj, levelManager.fawn.gameObj, levelManager.fawn.type, borderThickness, positionIndicatorOpacity);
+		if (USE_NEW_GUI == false) {
+			if (levelManager.buck != null && levelManager.doe != null && levelManager.fawn != null ) {
+				DrawIndicator(levelManager.mainHeading, levelManager.pumaObj, levelManager.buck.gameObj, levelManager.buck.type, borderThickness, positionIndicatorOpacity);
+				DrawIndicator(levelManager.mainHeading, levelManager.pumaObj, levelManager.doe.gameObj, levelManager.doe.type, borderThickness, positionIndicatorOpacity);
+				DrawIndicator(levelManager.mainHeading, levelManager.pumaObj, levelManager.fawn.gameObj, levelManager.fawn.type, borderThickness, positionIndicatorOpacity);
+			}
 		}
 	
 		//----------------------
@@ -355,9 +743,11 @@ public class GameplayDisplay : MonoBehaviour
 		float statusPanelX = leftAreaX + leftAreaWidth * 0.45f;
 		float statusPanelY = leftAreaY + leftAreaHeight - statusPanelHeight - leftAreaHeight * 0.03f;
 		GUI.color = new Color(1f, 1f, 1f, 0.4f * statusDisplayOpacity);
-		GUI.Box(new Rect(statusPanelX, statusPanelY, statusPanelWidth, statusPanelHeight), "");
+		if (USE_NEW_GUI == false)
+			GUI.Box(new Rect(statusPanelX, statusPanelY, statusPanelWidth, statusPanelHeight), "");
 		GUI.color = new Color(1f, 1f, 1f, 1f * statusDisplayOpacity);
-		guiComponents.DrawStatusPanel(statusDisplayOpacity * 1f, statusPanelX, statusPanelY, statusPanelWidth, statusPanelHeight, false, true);
+		if (USE_NEW_GUI == false)
+			guiComponents.DrawStatusPanel(statusDisplayOpacity * 1f, statusPanelX, statusPanelY, statusPanelWidth, statusPanelHeight, false, true);
 		GUI.color = new Color(1f, 1f, 1f, 1f * statusDisplayOpacity);
 
 		
@@ -365,15 +755,17 @@ public class GameplayDisplay : MonoBehaviour
 		// CHEAT BUTTON
 		//----------------------
 		
-		GUI.color = new Color(1f, 1f, 1f, 0f * statusDisplayOpacity);
-		float killButtonX = Screen.width * 0.5f - Screen.height * 0.075f;
-		float killButtonY = 0f;
-		float killButtonWidth = Screen.height * 0.15f;
-		float killButtonHeight = Screen.height * 0.15f;
-		if (GUI.Button(new Rect(killButtonX,  killButtonY, killButtonWidth, killButtonHeight), "")) {
-			levelManager.goStraightToFeeding = true;
+		if (USE_NEW_GUI == false) {
+			GUI.color = new Color(1f, 1f, 1f, 0f * statusDisplayOpacity);
+			float killButtonX = Screen.width * 0.5f - Screen.height * 0.075f;
+			float killButtonY = 0f;
+			float killButtonWidth = Screen.height * 0.15f;
+			float killButtonHeight = Screen.height * 0.15f;
+			if (GUI.Button(new Rect(killButtonX,  killButtonY, killButtonWidth, killButtonHeight), "")) {
+				levelManager.goStraightToFeeding = true;
+			}
+			GUI.color = new Color(1f, 1f, 1f, 1f * statusDisplayOpacity);
 		}
-		GUI.color = new Color(1f, 1f, 1f, 1f * statusDisplayOpacity);
 	}
 
 	
@@ -382,6 +774,149 @@ public class GameplayDisplay : MonoBehaviour
 	//	  POSITION INDICATORS
 	//===================================
 	//===================================
+
+	GameObject CreateDeerHead(GameObject parentObj, string type) 
+	{ 
+		GameObject deerHead;	
+		GameObject deerHeadBackground;	
+		GameObject deerHeadImage;
+		
+		// invisible panel to hold items
+		deerHead = (GameObject)Instantiate(uiSubPanel);
+		deerHead.GetComponent<RectTransform>().SetParent(parentObj.GetComponent<RectTransform>(), false);
+
+		// background
+		deerHeadBackground = guiUtils.CreateImage(deerHead, indicatorBkgnd, new Color(1f, 1f, 1f, 1f));
+		deerHeadBackground.name = "DeerHeadBackground";
+		
+		// image
+		Texture2D headTexture = null;
+		switch (type) {
+		case "Buck":
+			headTexture = indicatorBuck;
+			break;
+		case "Doe":
+			headTexture = indicatorDoe;
+			break;
+		case "Fawn":
+			headTexture = indicatorFawn;
+			break;
+		}
+		deerHeadImage = guiUtils.CreateImage(deerHead, headTexture, new Color(1f, 1f, 1f, 1f));
+		deerHeadImage.name = "DeerHeadImage";
+		
+		return deerHead;
+	}
+
+
+	void PositionDeerHead(GameObject deerHead, float mainHeading, GameObject pumaObj, GameObject deerObj, string type, int borderThickness) 
+	{ 
+		float xPos = 0;
+		float yPos = 0;
+		float xOffset = 0;
+		float yOffset = 0;
+		float rangeX = (indicatorMaxX - indicatorMinX) - borderThickness;
+		float rangeY = (indicatorMaxY - indicatorMinY) - borderThickness;
+		float deerToPumaAngle = 0;
+		float deerToPumaDistance = 0;
+
+		//------------------------------------------
+		// Determine onscreen position of indicator
+		//------------------------------------------
+
+		while (mainHeading < 0)
+			mainHeading += 360;
+		while (mainHeading > 360)
+			mainHeading -= 360;
+		
+		// angle based on midpoint between camera and puma
+		float refX = (pumaObj.transform.position.x + Camera.main.transform.position.x) / 2;
+		float refY = (pumaObj.transform.position.z + Camera.main.transform.position.z) / 2;
+
+		deerToPumaAngle = guiUtils.GetAngleFromOffset(refX, refY, deerObj.transform.position.x, deerObj.transform.position.z);
+		deerToPumaDistance = Vector3.Distance(pumaObj.transform.position, deerObj.transform.position);
+
+		xOffset = -(Mathf.Sin((mainHeading - deerToPumaAngle) * Mathf.PI / 180) * rangeY);
+		yOffset = (Mathf.Cos((mainHeading - deerToPumaAngle) * Mathf.PI / 180) * rangeY);
+		xOffset *= (rangeX/2) / rangeY; // adjust x offset to fit screen width			
+			
+		if (yOffset > 0) {
+			// stretch out offsets to place deer head along screen edge
+			float scaleVal;
+			if (Mathf.Abs(xOffset / yOffset) > Mathf.Abs((rangeX/2) / rangeY)) {
+				scaleVal = (rangeX/2) / Mathf.Abs(xOffset); // scale by X dimension
+			}
+			else {
+				scaleVal = (rangeY) / Mathf.Abs(yOffset); // scale by Y dimension
+			}
+			xOffset *= scaleVal;
+			yOffset *= scaleVal;
+		}
+		else {
+			// clip y to keep deer head along lower edge
+			yOffset = 0;
+		}
+					
+		xPos = (Screen.width - borderThickness) / 2 + xOffset;
+		yPos = indicatorMaxY - borderThickness - yOffset;
+
+		//--------------------------------------------
+		// Determine settings for distance indication
+		//--------------------------------------------
+
+		Color backdropColor;
+		float fullRedDistance = 20f;
+		float fullYellowDistance = 75f;
+		float startYellowDistance = 175f;
+		float transPercent;
+				
+		if (deerToPumaDistance < fullRedDistance) {
+			backdropColor = new Color(1f, 0f, 0f, 1f);
+		}
+		else if (deerToPumaDistance < fullYellowDistance) {
+			transPercent = (fullYellowDistance - deerToPumaDistance) / (fullYellowDistance - fullRedDistance);
+			backdropColor = new Color(1f, 0.5f - (transPercent/2), 0f, 1f);
+		}
+		else if (deerToPumaDistance < startYellowDistance) {
+			transPercent = (startYellowDistance - deerToPumaDistance) / (startYellowDistance - fullYellowDistance);
+			backdropColor = new Color(1f, 0.5f, 0f, transPercent);
+		}
+		else {
+			backdropColor = new Color(0f, 0f, 0f, 0f);
+		}
+			
+		Color headColor;
+		float fullHeadAlphaDistance = 150f;
+		float startHeadAlphaDistance = 300f;
+
+		if (deerToPumaDistance < fullHeadAlphaDistance) {
+			headColor = new Color(1f, 1f, 1f, 1f);
+		}
+		else if (deerToPumaDistance < startHeadAlphaDistance) {
+			headColor = new Color(1f, 1f, 1f, (0.5f + ((startHeadAlphaDistance - deerToPumaDistance) / (startHeadAlphaDistance - fullHeadAlphaDistance) * 0.5f)));
+		}
+		else {
+			headColor = new Color(1f, 1f, 1f, 0.5f);
+		}
+
+		//-----------------------------------
+		// Position and update the indicator
+		//-----------------------------------
+
+		GameObject deerHeadBackground;	
+		GameObject deerHeadImage;
+	
+		// background
+		deerHeadBackground = deerHead.GetComponent<RectTransform>().FindChild("DeerHeadBackground").gameObject;
+		deerHeadBackground.GetComponent<RawImage>().color = backdropColor;
+		guiUtils.SetItemOffsets(deerHeadBackground, xPos, yPos, borderThickness, borderThickness);
+		
+		// image
+		deerHeadImage = deerHead.GetComponent<RectTransform>().FindChild("DeerHeadImage").gameObject;
+		deerHeadImage.GetComponent<RawImage>().color = headColor;
+		guiUtils.SetItemOffsets(deerHeadImage, xPos, yPos, borderThickness, borderThickness);		
+	}
+
 
 	void DrawIndicator(float mainHeading, GameObject pumaObj, GameObject deerObj, string type, int borderThickness, float guiOpacity)
     {

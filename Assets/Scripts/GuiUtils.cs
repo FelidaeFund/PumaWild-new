@@ -110,28 +110,62 @@ public class GuiUtils : MonoBehaviour
 	{
 		GameObject obj = (GameObject)Instantiate(uiText);
 		obj.GetComponent<RectTransform>().SetParent(parentObj.GetComponent<RectTransform>(), false);
-		obj.GetComponent<Text>().text = text;
-		obj.GetComponent<Text>().color =  textColor;
-		obj.GetComponent<Text>().fontStyle = font;
-		obj.GetComponent<Text>().alignment = alignment;
+		Text t = obj.GetComponent<Text>();		
+		t.text = text;
+		t.color =  textColor;
+		t.fontStyle = font;
+		t.alignment = alignment;
 		return obj;
 	}
 	
+	public GameObject CreateButton(GameObject parentObj, string text, Color textColor, FontStyle font)
+	{
+		GameObject obj = (GameObject)Instantiate(uiButton);
+		obj.GetComponent<RectTransform>().SetParent(parentObj.GetComponent<RectTransform>(), false);
+		Text t = obj.GetComponent<RectTransform>().FindChild("Text").GetComponent<Text>();
+		t.text = text;
+		t.color =  textColor;
+		t.fontStyle = font;
+		return obj;
+	}
+	
+
+	public GameObject CreateSeeThruButton(GameObject parentObj, string text, Color textColor, FontStyle font)
+	{
+		GameObject obj = (GameObject)Instantiate(uiButtonSeeThru);
+		obj.GetComponent<RectTransform>().SetParent(parentObj.GetComponent<RectTransform>(), false);
+		Text t = obj.GetComponent<RectTransform>().FindChild("Text").GetComponent<Text>();
+		t.text = text;
+		t.color =  textColor;
+		t.fontStyle = font;
+		return obj;
+	}
+	
+
+
 	
 	// set offsets
 
 	public void SetItemOffsets(GameObject gameObj, float x, float y, float width, float height)
 	{
 		gameObj.GetComponent<RectTransform>().offsetMin = new Vector2(x, Screen.height - (y + height));
-		gameObj.GetComponent<RectTransform>().offsetMax = new Vector2(-Screen.width + (x + width), -y);
+		gameObj.GetComponent<RectTransform>().offsetMax = new Vector2(-Screen.width + (x + width), -y + 1);
 	}
 	
 
 	public void SetTextOffsets(GameObject gameObj, float x, float y, float width, float height, int fontSize)
 	{
 		gameObj.GetComponent<RectTransform>().offsetMin = new Vector2(x, Screen.height - (y + height));
-		gameObj.GetComponent<RectTransform>().offsetMax = new Vector2(-Screen.width + (x + width), -y);
+		gameObj.GetComponent<RectTransform>().offsetMax = new Vector2(-Screen.width + (x + width), -y + 1);
 		gameObj.GetComponent<Text>().fontSize = fontSize;
+	}
+
+	
+	public void SetButtonOffsets(GameObject gameObj, float x, float y, float width, float height, int fontSize)
+	{
+		gameObj.GetComponent<RectTransform>().offsetMin = new Vector2(x, Screen.height - (y + height));
+		gameObj.GetComponent<RectTransform>().offsetMax = new Vector2(-Screen.width + (x + width), -y + 1);
+		gameObj.GetComponent<RectTransform>().FindChild("Text").GetComponent<Text>().fontSize = fontSize;
 	}
 
 	

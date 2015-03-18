@@ -14,12 +14,12 @@ public class InfoPanel : MonoBehaviour
 	//===================================
 
 	private bool USE_NEW_GUI = true;	
-
+	private bool initComplete = false;
+	private float lastSeenScreenWidth;
+	private float lastSeenScreenHeight;
 	private bool newLevelFlag = true;
 	private int currentLevel = 0;
 	private bool backgroundIsLocked = false;
-	private float lastSeenScreenWidth;
-	private float lastSeenScreenHeight;
 	
 	private Rect overlayRect;
 	private int currentScreen;
@@ -259,11 +259,10 @@ public class InfoPanel : MonoBehaviour
 
 	//===========================
 	//===========================
-	//	  MAIN GUI ELEMENTS
+	//	  GUI ELEMENTS
 	//===========================
 	//===========================
 	
-	// panels to add gui items to
 	public GameObject infoPanelBackRect;
 	public GameObject infoPanelMainPanel;
 	public GameObject infoPanelOkButton;
@@ -469,11 +468,16 @@ public class InfoPanel : MonoBehaviour
 		playAgainButton.GetComponent<RectTransform>().SetParent(infoPanelOkButton.GetComponent<RectTransform>(), false);
 		playAgainButton.GetComponent<RectTransform>().FindChild("Text").GetComponent<Text>().text = "Play Again";
 		playAgainButton.GetComponent<Button>().onClick.AddListener( delegate { guiManager.CloseInfoPanel(true); guiManager.SetGuiState("guiStateStartApp2"); } );
+
+		initComplete = true;
 	}
 
 
 	void PositionGUIItems()
 	{
+		if (initComplete == false)
+			return;
+	
 		// use expanded overlay rect for info panel
 		CalculateOverlayRect();
 		float originalOverlayWidth = overlayRect.width; // used for logo width
@@ -568,24 +572,21 @@ public class InfoPanel : MonoBehaviour
 	}
 	
 	
-	//===================================
-	//===================================
-	//	  DRAW THE INFO PANEL
-	//===================================
-	//===================================
-	
-	public void Draw(float incomingInfoPanelOpacity, float backRectOpacity, float okButtonOpacity, float frontRectOpacity = 0f) 
+	public void UpdateGUIItems(float incomingInfoPanelOpacity, float backRectOpacity, float okButtonOpacity, float frontRectOpacity = 0f) 
 	{ 
-		// check for screen size change
-		if (lastSeenScreenWidth != Screen.width || lastSeenScreenHeight != Screen.height) {
-			lastSeenScreenWidth = Screen.width;
-			lastSeenScreenHeight = Screen.height;
-			PositionGUIItems();
-		}
-
+		if (initComplete == false)
+			return;
+	
 		float infoPanelOpacity = (backgroundIsLocked == true) ? 1f : incomingInfoPanelOpacity;	
 
 		if (USE_NEW_GUI == true) {
+
+			// check for screen size change
+			if (lastSeenScreenWidth != Screen.width || lastSeenScreenHeight != Screen.height) {
+				lastSeenScreenWidth = Screen.width;
+				lastSeenScreenHeight = Screen.height;
+				PositionGUIItems();
+			}
 
 			// set top level enables and opacities
 			infoPanelBackRect.SetActive(backRectOpacity > 0f ? true : false);
@@ -653,11 +654,6 @@ public class InfoPanel : MonoBehaviour
 			UpdateSurvivalItems();
 			UpdateDonateItems(incomingInfoPanelOpacity);
 
-			if (frontRectOpacity > 0f) {
-				// front rect happens last -- USES OLD GUI !!!!  (for clean first frame of game...only used there)
-				GUI.color = new Color(1f, 1f, 1f, 1f * frontRectOpacity);
-				guiUtils.DrawRect(new Rect(0f, 0f, Screen.width, Screen.height), new Color(0f, 0f, 0f, 1f));	
-			}
 		}
 		else {
 			// set all enables to 'off'
@@ -665,10 +661,27 @@ public class InfoPanel : MonoBehaviour
 			infoPanelMainPanel.SetActive(false);
 			infoPanelOkButton.SetActive(false);
 		}
+	}
 
-
-		if (USE_NEW_GUI == true)
+	
+	//===================================
+	//===================================
+	//	  DRAW THE INFO PANEL
+	//===================================
+	//===================================
+	
+	public void Draw(float incomingInfoPanelOpacity, float backRectOpacity, float okButtonOpacity, float frontRectOpacity = 0f) 
+	{ 
+		if (USE_NEW_GUI == true) {
+		
+			if (frontRectOpacity > 0f) {
+				// front rect USES OLD GUI !!!!  (for clean first frame of game...only used there)
+				GUI.color = new Color(1f, 1f, 1f, 1f * frontRectOpacity);
+				guiUtils.DrawRect(new Rect(0f, 0f, Screen.width, Screen.height), new Color(0f, 0f, 0f, 1f));	
+			}
+		
 			return; 
+		}
 		
 		
 		//////////////////////////////////
@@ -679,6 +692,8 @@ public class InfoPanel : MonoBehaviour
 		//////////////////////////////////
 		//////////////////////////////////
 
+		
+		float infoPanelOpacity = (backgroundIsLocked == true) ? 1f : incomingInfoPanelOpacity;	
 
 		GUIStyle style = new GUIStyle();
 		style.alignment = TextAnchor.MiddleCenter;

@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
 /// FeedingDisplay
@@ -13,6 +14,9 @@ public class FeedingDisplay : MonoBehaviour
 	//===================================
 
 	private bool USE_NEW_GUI = true;	
+	private bool initComplete = false;
+	private float lastSeenScreenWidth;
+	private float lastSeenScreenHeight;
 	private float flashStartTime;
 	
 	// textures based on bitmap files
@@ -39,6 +43,7 @@ public class FeedingDisplay : MonoBehaviour
 	// external modules
 	private GuiManager guiManager;
 	private GuiComponents guiComponents;
+	private GuiUtils guiUtils;
 	private LevelManager levelManager;
 	private ScoringSystem scoringSystem;
 
@@ -53,6 +58,7 @@ public class FeedingDisplay : MonoBehaviour
 		// connect to external modules
 		guiManager = GetComponent<GuiManager>();
 		guiComponents = GetComponent<GuiComponents>();
+		guiUtils = GetComponent<GuiUtils>();
 		levelManager = GetComponent<LevelManager>();
 		scoringSystem = GetComponent<ScoringSystem>();
 
@@ -76,8 +82,231 @@ public class FeedingDisplay : MonoBehaviour
 		levelImage3Texture = guiManager.levelImage3Texture;
 		levelImage4Texture = guiManager.levelImage4Texture;
 		levelImage5Texture = guiManager.levelImage5Texture;
+		
+		// create and position GUI elements
+		CreateGUIItems();
+		PositionGUIItems();
+		lastSeenScreenWidth = Screen.width;
+		lastSeenScreenHeight = Screen.height;
 	}
 
+
+	//===========================
+	//===========================
+	//	  GUI ELEMENTS
+	//===========================
+	//===========================
+	
+	public GameObject feedingDisplayMainPanel;
+	public GameObject feedingDisplayLevelComplete;
+	public GameObject feedingDisplayOkButton;
+
+	// prefab gui components
+	public GameObject uiPanel;
+	public GameObject uiSubPanel;
+	public GameObject uiRect;
+	public GameObject uiText;
+	public GameObject uiRawImage;
+	public GameObject uiButton;
+	public GameObject uiButtonSeeThru;
+	public GameObject uiImageButton;
+		
+	// background and title
+	private GameObject mainBackground;
+	private GameObject upperBackground;
+	private GameObject titleBackground;
+	private GameObject titleText;
+	
+	// left side items
+	private GameObject leftBackground;
+	
+	
+	// center area
+	private GameObject centerBackground;
+	
+	
+	// right side items
+	private GameObject rightBackground;
+	
+	
+	
+	
+	
+	void CreateGUIItems()
+	{
+		// set enables to 'off' before populating sub-items
+		feedingDisplayMainPanel.SetActive(false);
+		feedingDisplayLevelComplete.SetActive(false);
+		feedingDisplayOkButton.SetActive(false);
+
+		// background and title
+		mainBackground = 		guiUtils.CreatePanel(feedingDisplayMainPanel, new Color(0f, 0f, 0f, 0.4f * 1.1f));
+		upperBackground = 		guiUtils.CreatePanel(feedingDisplayMainPanel, new Color(0f, 0f, 0f, 0.4f * 0.9f));
+		titleBackground = 		guiUtils.CreatePanel(feedingDisplayMainPanel, new Color(0f, 0f, 0f, 0.4f * 1.1f));
+		titleText = 			guiUtils.CreateText(feedingDisplayMainPanel, "text", new Color(0.75f, 0f, 0f, 1f), FontStyle.Bold);
+		
+		// left side items
+		leftBackground = 		guiUtils.CreatePanel(feedingDisplayMainPanel, new Color(0f, 0f, 0f, 0.4f * 1.3f));
+		
+		// center area
+		centerBackground = 		guiUtils.CreatePanel(feedingDisplayMainPanel, new Color(0f, 0f, 0f, 0.4f * 1.6f));
+			
+		// right side items
+		rightBackground = 		guiUtils.CreatePanel(feedingDisplayMainPanel, new Color(0f, 0f, 0f, 0.4f * 1.3f));
+	
+		initComplete = true;
+	}
+
+
+	void PositionGUIItems(float backgroundOffset = 0f)
+	{
+		if (initComplete == false)
+			return;
+	
+		float feedingDisplayX = (Screen.width / 2) - (Screen.height * 0.6f);
+		float feedingDisplayY = Screen.height * 0.025f;
+		float feedingDisplayWidth = Screen.height * 1.2f;
+		float feedingDisplayHeight = Screen.height * 0.37f;		
+		float fontRef = feedingDisplayHeight * 0.5f;
+
+		// background and title
+		guiUtils.SetItemOffsets(mainBackground, feedingDisplayX, feedingDisplayY + feedingDisplayHeight * 0.06f, feedingDisplayWidth, feedingDisplayHeight * 1.15f - feedingDisplayHeight * 0.06f);
+		guiUtils.SetItemOffsets(upperBackground, feedingDisplayX, feedingDisplayY + feedingDisplayHeight * 0.06f, feedingDisplayWidth, feedingDisplayHeight * 0.17f);
+		guiUtils.SetItemOffsets(titleBackground, feedingDisplayX + feedingDisplayWidth * 0.19f + backgroundOffset, feedingDisplayY + feedingDisplayHeight * 0.1f, feedingDisplayWidth * 0.62f - backgroundOffset*2f, feedingDisplayHeight * 0.11f);
+		guiUtils.SetTextOffsets(titleText, feedingDisplayX + feedingDisplayWidth * 0.3f, feedingDisplayY + feedingDisplayHeight * 0.136f, feedingDisplayWidth * 0.4f, feedingDisplayHeight * 0.03f, (int)(fontRef * 0.18f));
+
+		// left side items
+		guiUtils.SetItemOffsets(leftBackground, feedingDisplayX + feedingDisplayWidth * 0.035f, feedingDisplayY + feedingDisplayHeight * 0.3f, feedingDisplayWidth * 0.3f, feedingDisplayHeight * 0.48f);
+		
+		// center area
+		guiUtils.SetItemOffsets(centerBackground, feedingDisplayX + feedingDisplayWidth * 0.335f - 2f, feedingDisplayY + feedingDisplayHeight * 0.3f, feedingDisplayWidth * 0.33f + 4f, feedingDisplayHeight * 0.16f);
+			
+		// right side items
+		guiUtils.SetItemOffsets(rightBackground, feedingDisplayX + feedingDisplayWidth * 0.665f, feedingDisplayY + feedingDisplayHeight * 0.3f, feedingDisplayWidth * 0.3f, feedingDisplayHeight * 0.48f);
+	
+	}
+
+	
+	public void PrepareGUIItems()
+	{
+		if (initComplete == false)
+			return;
+
+		float feedingDisplayX = (Screen.width / 2) - (Screen.height * 0.6f);
+		float feedingDisplayY = Screen.height * 0.025f;
+		float feedingDisplayWidth = Screen.height * 1.2f;
+		float feedingDisplayHeight = Screen.height * 0.37f;		
+		bool failedHuntFlag = (levelManager.caughtDeer == null) ? true : false;
+		Color titleColor;
+		Color bottomColor1;
+		Color bottomColor2;
+		string titleString;
+		int efficiencyLevel;
+		string bottomString1;
+		string bottomString2;
+		float backgroundOffset = feedingDisplayWidth * 0f;
+
+		float lastKillExpense = scoringSystem.GetLastKillExpense(guiManager.selectedPuma);
+		float lastKillCaloriesEaten = scoringSystem.GetLastKillCaloriesEaten();
+		
+		if (lastKillExpense > 1.2f * lastKillCaloriesEaten)
+			efficiencyLevel = 0;
+		else if (lastKillExpense > lastKillCaloriesEaten)
+			efficiencyLevel = 1;
+		else if (lastKillExpense > 0.8 * lastKillCaloriesEaten)
+			efficiencyLevel = 2;
+		else
+			efficiencyLevel = 3;
+				
+		float calorieChange = lastKillCaloriesEaten - lastKillExpense;
+		if (calorieChange < 0)
+			calorieChange = -calorieChange;
+		calorieChange *= 0;  // temp val for rolling score factor
+		int calorieDisplay = (int)calorieChange;
+
+		switch (efficiencyLevel) {
+		case 0:
+			titleColor = new Color(0.8f, 0f, 0f, 1f);
+			bottomColor1 = new Color(0.8f, 0f, 0f, 1f);
+			bottomColor2 = new Color(0.82f, 0f, 0f, 1f);
+			titleString = failedHuntFlag == true ? "OH NO: Your prey got away!" : "WARNING: Your hunt was very inefficient";
+			bottomString1 = failedHuntFlag == true ? "TOTAL  LOSS !" : "NET  LOSS -";
+			bottomString2 = calorieDisplay.ToString("n0"); // + " calories";
+			backgroundOffset = feedingDisplayWidth * 0.03f;
+			break;
+		
+		case 1:
+			titleColor = new Color(0.83f, 0.78f, 0f, 1f);
+			bottomColor1 = new Color(0.8f, 0f, 0f, 1f);
+			bottomColor2 = new Color(0.85f, 0.80f, 0f, 1f);
+			titleString = "CAREFUL - Your hunt was somewhat inefficient";
+			bottomString1 = "NET  LOSS -";
+			bottomString2 = calorieDisplay.ToString("n0"); // + " calories";
+			break;
+		
+		case 2:
+			titleColor = new Color(0.83f, 0.78f, 0f, 1f);
+			bottomColor1 = new Color(0f, 0.66f, 0f, 1f);
+			bottomColor2 = new Color(0.85f, 0.80f, 0f, 1f);
+			titleString = "WELL DONE - Your hunt was slightly efficient";
+			bottomString1 = "NET  GAIN +";
+			bottomString2 = calorieDisplay.ToString("n0"); // + " calories";
+			backgroundOffset = feedingDisplayWidth * 0.01f;
+			break;
+		
+		default:
+			titleColor = new Color(0f, 0.66f, 0f, 1f);
+			bottomColor1 = new Color(0f, 0.66f, 0f, 1f);
+			bottomColor2 = new Color(0f, 0.70f, 0f, 1f);
+			titleString = "NICE JOB! Your hunt was very efficient";
+			bottomString1 = "NET GAIN +";
+			bottomString2 = calorieDisplay.ToString("n0"); // + " calories";
+			backgroundOffset = feedingDisplayWidth * 0.035f;
+			break;
+		}
+
+		titleText.GetComponent<Text>().text = titleString;
+		titleText.GetComponent<Text>().color = titleColor;
+
+		PositionGUIItems(backgroundOffset);
+	}
+
+	
+	public void UpdateGUIItems(float mainContentOpacity, float rollingScoreFactor, float levelCompleteOpacity, float okButtonOpacity) 
+	{ 
+		if (initComplete == false)
+			return;
+	
+		if (USE_NEW_GUI == true) {
+
+			// check for screen size change
+			if (lastSeenScreenWidth != Screen.width || lastSeenScreenHeight != Screen.height) {
+				lastSeenScreenWidth = Screen.width;
+				lastSeenScreenHeight = Screen.height;
+				PositionGUIItems();
+			}
+
+			// top level enables and opacities
+			feedingDisplayMainPanel.SetActive(mainContentOpacity > 0f ? true : false);
+			feedingDisplayMainPanel.GetComponent<CanvasGroup>().alpha = mainContentOpacity;
+			feedingDisplayLevelComplete.SetActive(levelCompleteOpacity > 0f ? true : false);
+			feedingDisplayLevelComplete.GetComponent<CanvasGroup>().alpha = levelCompleteOpacity;
+			feedingDisplayOkButton.SetActive(okButtonOpacity > 0f ? true : false);
+			feedingDisplayOkButton.GetComponent<CanvasGroup>().alpha = okButtonOpacity;
+			
+			
+			
+			
+		}
+		else {
+			// set enables to 'off'
+			feedingDisplayMainPanel.SetActive(false);
+			feedingDisplayLevelComplete.SetActive(false);
+			feedingDisplayOkButton.SetActive(false);
+		}
+	}
+
+	
 	//===================================
 	//===================================
 	//		DRAW THE FEEDING DISPLAY
@@ -86,14 +315,6 @@ public class FeedingDisplay : MonoBehaviour
 
 	public void Draw(float mainContentOpacity, float rollingScoreFactor, float levelCompleteOpacity, float okButtonOpacity) 
 	{ 
-
-
-
-
-
-	
-	
-
 
 		//if (USE_NEW_GUI == true)
 			//return; 
@@ -111,8 +332,8 @@ public class FeedingDisplay : MonoBehaviour
 		float feedingDisplayX = (Screen.width / 2) - (Screen.height * 0.6f);
 		float feedingDisplayY = Screen.height * 0.025f;
 		float feedingDisplayWidth = Screen.height * 1.2f;
-		float feedingDisplayHeight = Screen.height * 0.37f;
-		
+		float feedingDisplayHeight = Screen.height * 0.37f;		
+
 		bool failedHuntFlag = (levelManager.caughtDeer == null) ? true : false;
 
 		GUIStyle style = new GUIStyle();
@@ -124,23 +345,22 @@ public class FeedingDisplay : MonoBehaviour
 		//********************
 
 		// panel background
-		GUI.color = new Color(1f, 1f, 1f, 0.8f * mainContentOpacity);
-		GUI.Box(new Rect(feedingDisplayX, feedingDisplayY + feedingDisplayHeight * 0.06f, feedingDisplayWidth, feedingDisplayHeight * 1.15f - feedingDisplayHeight * 0.06f), "");
-		GUI.color = new Color(1f, 1f, 1f, 0.3f * mainContentOpacity);
-		GUI.Box(new Rect(feedingDisplayX, feedingDisplayY + feedingDisplayHeight * 0.06f, feedingDisplayWidth, feedingDisplayHeight * 1.15f - feedingDisplayHeight * 0.06f), "");
+		if (USE_NEW_GUI == false) {
+			GUI.color = new Color(1f, 1f, 1f, 0.8f * mainContentOpacity);
+			GUI.Box(new Rect(feedingDisplayX, feedingDisplayY + feedingDisplayHeight * 0.06f, feedingDisplayWidth, feedingDisplayHeight * 1.15f - feedingDisplayHeight * 0.06f), "");
+			GUI.color = new Color(1f, 1f, 1f, 0.3f * mainContentOpacity);
+			GUI.Box(new Rect(feedingDisplayX, feedingDisplayY + feedingDisplayHeight * 0.06f, feedingDisplayWidth, feedingDisplayHeight * 1.15f - feedingDisplayHeight * 0.06f), "");
+		}
 		GUI.color = new Color(1f, 1f, 1f, 1f * mainContentOpacity);
 	
 		// main text
-		Color topColor;
-		Color midColor;
-		Color bottomColor;
-		string topString;
-		string midString;
+		Color titleColor;
+		Color bottomColor1;
+		Color bottomColor2;
+		string titleString;
 		int efficiencyLevel;
 		string bottomString1;
 		string bottomString2;
-		float title1Offset = feedingDisplayWidth * -0.215f;
-		float title2Offset = feedingDisplayWidth * 0.06f;
 		float backgroundOffset = feedingDisplayWidth * 0f;
 
 		float lastKillExpense = scoringSystem.GetLastKillExpense(guiManager.selectedPuma);
@@ -163,53 +383,41 @@ public class FeedingDisplay : MonoBehaviour
 
 		switch (efficiencyLevel) {
 		case 0:
-			topColor = new Color(0.8f, 0f, 0f, 1f);
-			midColor = new Color(0.82f, 0f, 0f, 1f);
-			bottomColor = new Color(0.8f, 0f, 0f, 1f);
-			topString = "WARNING:";
-			midString = failedHuntFlag == true ? "OH NO: Your prey got away!" : "WARNING: Your hunt was very inefficient";
+			titleColor = new Color(0.8f, 0f, 0f, 1f);
+			bottomColor1 = new Color(0.8f, 0f, 0f, 1f);
+			bottomColor2 = new Color(0.82f, 0f, 0f, 1f);
+			titleString = failedHuntFlag == true ? "OH NO: Your prey got away!" : "WARNING: Your hunt was very inefficient";
 			bottomString1 = failedHuntFlag == true ? "TOTAL  LOSS !" : "NET  LOSS -";
 			bottomString2 = calorieDisplay.ToString("n0"); // + " calories";
-			title1Offset = feedingDisplayWidth * -0.163f;
-			title2Offset = feedingDisplayWidth * 0.075f;
 			backgroundOffset = feedingDisplayWidth * 0.03f;
 			break;
 		
 		case 1:
-			topColor = new Color(0.83f, 0.78f, 0f, 1f);
-			midColor = new Color(0.85f, 0.80f, 0f, 1f);
-			bottomColor = new Color(0.8f, 0f, 0f, 1f);
-			topString = "CAREFUL -";
-			midString = "CAREFUL - Your hunt was somewhat inefficient";
+			titleColor = new Color(0.83f, 0.78f, 0f, 1f);
+			bottomColor1 = new Color(0.8f, 0f, 0f, 1f);
+			bottomColor2 = new Color(0.85f, 0.80f, 0f, 1f);
+			titleString = "CAREFUL - Your hunt was somewhat inefficient";
 			bottomString1 = "NET  LOSS -";
 			bottomString2 = calorieDisplay.ToString("n0"); // + " calories";
-			title1Offset = feedingDisplayWidth * -0.195f;
-			title2Offset = feedingDisplayWidth * 0.08f;
 			break;
 		
 		case 2:
-			topColor = new Color(0.83f, 0.78f, 0f, 1f);
-			midColor = new Color(0.85f, 0.80f, 0f, 1f);
-			bottomColor = new Color(0f, 0.66f, 0f, 1f);
-			topString = "WELL DONE -";
-			midString = "WELL DONE - Your hunt was slightly efficient";
+			titleColor = new Color(0.83f, 0.78f, 0f, 1f);
+			bottomColor1 = new Color(0f, 0.66f, 0f, 1f);
+			bottomColor2 = new Color(0.85f, 0.80f, 0f, 1f);
+			titleString = "WELL DONE - Your hunt was slightly efficient";
 			bottomString1 = "NET  GAIN +";
 			bottomString2 = calorieDisplay.ToString("n0"); // + " calories";
-			title1Offset = feedingDisplayWidth * -0.18f;
-			title2Offset = feedingDisplayWidth * 0.09f;
 			backgroundOffset = feedingDisplayWidth * 0.01f;
 			break;
 		
 		default:
-			topColor = new Color(0f, 0.66f, 0f, 1f);
-			midColor = new Color(0f, 0.70f, 0f, 1f);
-			bottomColor = new Color(0f, 0.66f, 0f, 1f);
-			topString = "NICE JOB!";
-			midString = "NICE JOB! Your hunt was very efficient";
+			titleColor = new Color(0f, 0.66f, 0f, 1f);
+			bottomColor1 = new Color(0f, 0.66f, 0f, 1f);
+			bottomColor2 = new Color(0f, 0.70f, 0f, 1f);
+			titleString = "NICE JOB! Your hunt was very efficient";
 			bottomString1 = "NET GAIN +";
 			bottomString2 = calorieDisplay.ToString("n0"); // + " calories";
-			title1Offset = feedingDisplayWidth * -0.158f;
-			title2Offset = feedingDisplayWidth * 0.0845f;
 			backgroundOffset = feedingDisplayWidth * 0.035f;
 			break;
 		}
@@ -220,15 +428,14 @@ public class FeedingDisplay : MonoBehaviour
 		// main title
 
 		GUI.color = new Color(1f, 1f, 1f, 0.8f * mainContentOpacity);
-		GUI.Box(new Rect(feedingDisplayX, feedingDisplayY + feedingDisplayHeight * 0.06f, feedingDisplayWidth, feedingDisplayHeight * 0.17f), "");
+		if (USE_NEW_GUI == false)
+			GUI.Box(new Rect(feedingDisplayX, feedingDisplayY + feedingDisplayHeight * 0.06f, feedingDisplayWidth, feedingDisplayHeight * 0.17f), "");
 		GUI.color = new Color(1f, 1f, 1f, 1f * mainContentOpacity);
 
 		GUI.color = new Color(1f, 1f, 1f, 0.9f * mainContentOpacity);
-		GUI.Box(new Rect(feedingDisplayX + feedingDisplayWidth * 0.19f + backgroundOffset, feedingDisplayY + feedingDisplayHeight * 0.1f, feedingDisplayWidth * 0.62f - backgroundOffset*2f, feedingDisplayHeight * 0.11f), "");
+		if (USE_NEW_GUI == false)
+			GUI.Box(new Rect(feedingDisplayX + feedingDisplayWidth * 0.19f + backgroundOffset, feedingDisplayY + feedingDisplayHeight * 0.1f, feedingDisplayWidth * 0.62f - backgroundOffset*2f, feedingDisplayHeight * 0.11f), "");
 		GUI.color = new Color(1f, 1f, 1f, 1f * mainContentOpacity);
-
-		GUI.color = new Color(1f, 1f, 1f, 0.1f * mainContentOpacity);
-		//GUI.Box(new Rect(feedingDisplayX + feedingDisplayWidth * 0.23f + backgroundOffset, feedingDisplayY + feedingDisplayHeight * 0.1f, feedingDisplayWidth * 0.54f - backgroundOffset * 02f, feedingDisplayHeight * 0.11f), "");
 
 
 		//********************
@@ -238,15 +445,12 @@ public class FeedingDisplay : MonoBehaviour
 		GUI.color = new Color(1f, 1f, 1f, 1f * mainContentOpacity);
 
 		style.fontSize = (int)(fontRef * 0.22f);
-		style.normal.textColor =  topColor;
+		style.normal.textColor =  titleColor;
 		style.fontStyle = FontStyle.Bold;
-		//GUI.Button(new Rect(feedingDisplayX + feedingDisplayWidth * 0.3f + title1Offset, feedingDisplayY + feedingDisplayHeight * 0.135f, feedingDisplayWidth * 0.4f, feedingDisplayHeight * 0.03f), topString, style);
 		style.fontSize = (int)(fontRef * 0.18f);
-		GUI.Button(new Rect(feedingDisplayX + feedingDisplayWidth * 0.3f, feedingDisplayY + feedingDisplayHeight * 0.136f, feedingDisplayWidth * 0.4f, feedingDisplayHeight * 0.03f), midString, style);
+		if (USE_NEW_GUI == false)
+			GUI.Button(new Rect(feedingDisplayX + feedingDisplayWidth * 0.3f, feedingDisplayY + feedingDisplayHeight * 0.136f, feedingDisplayWidth * 0.4f, feedingDisplayHeight * 0.03f), titleString, style);
 
-		style.normal.textColor = midColor;
-		style.fontStyle = FontStyle.BoldAndItalic;
-		//GUI.Button(new Rect(feedingDisplayX + feedingDisplayWidth * 0.25f, feedingDisplayY + feedingDisplayHeight * 0.18f, feedingDisplayWidth * 0.5f, feedingDisplayHeight * 0.03f), midString, style);
 
 		
 		// "main menu" and "hunting tips" buttons
@@ -285,45 +489,35 @@ public class FeedingDisplay : MonoBehaviour
 
 		// center panel
 
-		GUI.color = new Color(1f, 1f, 1f, 0.8f * mainContentOpacity);
-		GUI.Box(new Rect(feedingDisplayX + feedingDisplayWidth * 0.335f, feedingDisplayY + feedingDisplayHeight * 0.3f, feedingDisplayWidth * 0.33f, feedingDisplayHeight * 0.16f), "");
-		GUI.Box(new Rect(feedingDisplayX + feedingDisplayWidth * 0.335f, feedingDisplayY + feedingDisplayHeight * 0.3f, feedingDisplayWidth * 0.33f, feedingDisplayHeight * 0.16f), "");
-		GUI.color = new Color(1f, 1f, 1f, 0.9f * mainContentOpacity);
-		//GUI.Box(new Rect(feedingDisplayX + feedingDisplayWidth * 0.36f, feedingDisplayY + feedingDisplayHeight * 0.32f, feedingDisplayWidth * 0.28f, feedingDisplayHeight * 0.12f), "");
-		//GUI.color = new Color(1f, 1f, 1f, 0.4f * mainContentOpacity);
-		//GUI.Box(new Rect(feedingDisplayX + feedingDisplayWidth * 0.43f, feedingDisplayY + feedingDisplayHeight * 0.43f, feedingDisplayWidth * 0.14f, feedingDisplayHeight * 0.127f), "");
+		if (USE_NEW_GUI == false) {
+			GUI.color = new Color(1f, 1f, 1f, 0.8f * mainContentOpacity);
+			GUI.Box(new Rect(feedingDisplayX + feedingDisplayWidth * 0.335f, feedingDisplayY + feedingDisplayHeight * 0.3f, feedingDisplayWidth * 0.33f, feedingDisplayHeight * 0.16f), "");
+			GUI.Box(new Rect(feedingDisplayX + feedingDisplayWidth * 0.335f, feedingDisplayY + feedingDisplayHeight * 0.3f, feedingDisplayWidth * 0.33f, feedingDisplayHeight * 0.16f), "");
+		}
 
 		style.fontSize = (int)(fontRef * 0.15f);
 		style.normal.textColor = new Color(0.90f, 0.65f, 0f, 1f);
-		style.normal.textColor =  bottomColor;
+		style.normal.textColor =  bottomColor1;
 		GUI.color = new Color(1f, 1f, 1f, 1f * mainContentOpacity);
 		GUI.Button(new Rect(feedingDisplayX + feedingDisplayWidth * 0.31f, feedingDisplayY + feedingDisplayHeight * 0.366f, feedingDisplayWidth * 0.5f, feedingDisplayHeight * 0.03f), bottomString1, style);
 
 		style.fontSize = (int)(fontRef * 0.19f);
 		style.normal.textColor = new Color(0.90f, 0.65f, 0f, 1f);
-		style.normal.textColor =  midColor;
+		style.normal.textColor =  bottomColor2;
 		GUI.Button(new Rect(feedingDisplayX + feedingDisplayWidth * 0.18f, feedingDisplayY + feedingDisplayHeight * 0.36f, feedingDisplayWidth * 0.5f, feedingDisplayHeight * 0.03f), bottomString2, style);
 		
 		// deer head & status info
 		
 		float panelOffsetY = -0.1f;
 
-		GUI.color = new Color(1f, 1f, 1f, 0.8f * mainContentOpacity);
-		GUI.Box(new Rect(feedingDisplayX + feedingDisplayWidth * 0.035f, feedingDisplayY + feedingDisplayHeight * 0.3f, feedingDisplayWidth * 0.3f, feedingDisplayHeight * 0.48f), "");
-		GUI.color = new Color(1f, 1f, 1f, 0.5f * mainContentOpacity);
-		GUI.Box(new Rect(feedingDisplayX + feedingDisplayWidth * 0.035f, feedingDisplayY + feedingDisplayHeight * 0.3f, feedingDisplayWidth * 0.3f, feedingDisplayHeight * 0.48f), "");
+		if (USE_NEW_GUI == false) {
+			GUI.color = new Color(1f, 1f, 1f, 0.8f * mainContentOpacity);
+			GUI.Box(new Rect(feedingDisplayX + feedingDisplayWidth * 0.035f, feedingDisplayY + feedingDisplayHeight * 0.3f, feedingDisplayWidth * 0.3f, feedingDisplayHeight * 0.48f), "");
+			GUI.color = new Color(1f, 1f, 1f, 0.5f * mainContentOpacity);
+			GUI.Box(new Rect(feedingDisplayX + feedingDisplayWidth * 0.035f, feedingDisplayY + feedingDisplayHeight * 0.3f, feedingDisplayWidth * 0.3f, feedingDisplayHeight * 0.48f), "");
+		}
 		GUI.color = new Color(1f, 1f, 1f, 1f * mainContentOpacity);
 
-		//style.fontSize = (int)(fontRef * 0.28f);
-		//style.normal.textColor = new Color(0.99f, 0.63f, 0f, 0.95f);
-		//GUI.Button(new Rect(feedingDisplayX + feedingDisplayWidth * 0.15f, feedingDisplayY + feedingDisplayHeight * 0.6f, feedingDisplayWidth * 0.1f, feedingDisplayHeight * 0.03f), "|", style);
-		//style.normal.textColor = new Color(0.90f, 0.65f, 0f, 1f);
-		style.normal.textColor = new Color(0.90f, 0.65f, 0f,  0.8f);
-		int meatJustEaten = (int)scoringSystem.GetLastKillMeatEaten();
-		style.fontSize = (int)(fontRef * 0.16f);
-		//GUI.Button(new Rect(feedingDisplayX + feedingDisplayWidth * 0.200f, feedingDisplayY + feedingDisplayHeight * (0.705f + panelOffsetY), feedingDisplayWidth * 0.1f, feedingDisplayHeight * 0.03f), "meat", style);
-		style.fontSize = (int)(fontRef * 0.125f);
-		//GUI.Button(new Rect(feedingDisplayX + feedingDisplayWidth * 0.200f, feedingDisplayY + feedingDisplayHeight * (0.784f + panelOffsetY), feedingDisplayWidth * 0.1f, feedingDisplayHeight * 0.03f), meatJustEaten.ToString() + " lbs", style);
 
 		Texture2D displayHeadTexture = buckHeadTexture;
 		string displayHeadLabel = "-- -- -- --";
@@ -362,35 +556,24 @@ public class FeedingDisplay : MonoBehaviour
 		style.fontSize = (int)(fontRef * 0.13f);
 		GUI.Button(new Rect(feedingDisplayX + feedingDisplayWidth * 0.087f, feedingDisplayY + feedingDisplayHeight * (0.78f + panelOffsetY), feedingDisplayWidth * 0.1f, feedingDisplayHeight * 0.03f), displayHeadLabel, style);
 
-		//style.fontSize = (int)(fontRef * 0.28f);
-		//style.normal.textColor = new Color(0.99f, 0.63f, 0f, 0.95f);
-		//GUI.Button(new Rect(feedingDisplayX + feedingDisplayWidth * 0.35f, feedingDisplayY + feedingDisplayHeight * 0.6f, feedingDisplayWidth * 0.1f, feedingDisplayHeight * 0.03f), "|", style);
-		//style.normal.textColor = new Color(0.90f, 0.65f, 0f, 1f);
 		style.normal.textColor = failedHuntFlag == true ? failedHuntTextColor : new Color(0.1f, 0.67f, 0.1f, 1f);
-		//style.fontSize = (int)(fontRef * 0.33f);
-		//GUI.Button(new Rect(feedingDisplayX + feedingDisplayWidth * 0.30f, feedingDisplayY + feedingDisplayHeight * 0.50f, feedingDisplayWidth * 0.1f, feedingDisplayHeight * 0.03f), "+", style);
 		style.fontSize = (int)(fontRef * 0.18f);
 		int caloriesGained = (int)scoringSystem.GetLastKillCaloriesEaten();
 		GUI.Button(new Rect(feedingDisplayX + feedingDisplayWidth * 0.203f, feedingDisplayY + feedingDisplayHeight * (0.60f + panelOffsetY), feedingDisplayWidth * 0.1f, feedingDisplayHeight * 0.03f), (failedHuntFlag == false) ? caloriesGained.ToString("n0") : "-- --", style);
 		style.fontSize = (int)(fontRef * 0.12f);
 		GUI.Button(new Rect(feedingDisplayX + feedingDisplayWidth * 0.205f, feedingDisplayY + feedingDisplayHeight * (0.68f + panelOffsetY), feedingDisplayWidth * 0.1f, feedingDisplayHeight * 0.03f), "calories +", style);
 		
-		//guiComponents.DrawMeatBar(mainContentOpacity, feedingDisplayX + feedingDisplayWidth * 0.040f + feedingDisplayHeight * 0.03f, feedingDisplayY + feedingDisplayHeight * 0.77f, feedingDisplayWidth * 0.29f - feedingDisplayHeight * 0.06f, feedingDisplayHeight * 0.12f);
 		
 		// puma head & status info
 
 		
-		GUI.color = new Color(1f, 1f, 1f, 0.8f * mainContentOpacity);
-		GUI.Box(new Rect(feedingDisplayX + feedingDisplayWidth * 0.665f, feedingDisplayY + feedingDisplayHeight * 0.3f, feedingDisplayWidth * 0.3f, feedingDisplayHeight * 0.48f), "");
-		GUI.color = new Color(1f, 1f, 1f, 0.5f * mainContentOpacity);
-		GUI.Box(new Rect(feedingDisplayX + feedingDisplayWidth * 0.665f, feedingDisplayY + feedingDisplayHeight * 0.3f, feedingDisplayWidth * 0.3f, feedingDisplayHeight * 0.48f), "");
+		if (USE_NEW_GUI == false) {
+			GUI.color = new Color(1f, 1f, 1f, 0.8f * mainContentOpacity);
+			GUI.Box(new Rect(feedingDisplayX + feedingDisplayWidth * 0.665f, feedingDisplayY + feedingDisplayHeight * 0.3f, feedingDisplayWidth * 0.3f, feedingDisplayHeight * 0.48f), "");
+			GUI.color = new Color(1f, 1f, 1f, 0.5f * mainContentOpacity);
+			GUI.Box(new Rect(feedingDisplayX + feedingDisplayWidth * 0.665f, feedingDisplayY + feedingDisplayHeight * 0.3f, feedingDisplayWidth * 0.3f, feedingDisplayHeight * 0.48f), "");
+		}
 		GUI.color = new Color(1f, 1f, 1f, 1f * mainContentOpacity);
-
-		style.normal.textColor = new Color(0.90f, 0.65f, 0f, 0.8f);
-		style.fontSize = (int)(fontRef * 0.14f);
-		//GUI.Button(new Rect(feedingDisplayX + feedingDisplayWidth * 0.683f, feedingDisplayY + feedingDisplayHeight * (0.705f + panelOffsetY), feedingDisplayWidth * 0.1f, feedingDisplayHeight * 0.03f), "hunting", style);
-		style.fontSize = (int)(fontRef * 0.13f);
-		//GUI.Button(new Rect(feedingDisplayX + feedingDisplayWidth * 0.683f, feedingDisplayY + feedingDisplayHeight * (0.778f + panelOffsetY), feedingDisplayWidth * 0.1f, feedingDisplayHeight * 0.03f), "effort", style);
 
 
 		// puma identity
@@ -425,35 +608,25 @@ public class FeedingDisplay : MonoBehaviour
 
 
 		// puma head
-		//float statusPanelOpacityDrop = 1f - statusPanelOpacity;
-		//mainContentOpacity = 1f - (statusPanelOpacityDrop * 0.25f);
-		//GUI.color = new Color(1f, 1f, 1f, 1f * mainContentOpacity);
 		textureX = feedingDisplayX + feedingDisplayWidth * 0.81f;
 		textureY = feedingDisplayY + feedingDisplayHeight * (0.42f + panelOffsetY);
 		textureWidth = feedingDisplayHeight * 0.39f;
 		textureHeight = headshotTexture.height * (textureWidth / headshotTexture.width);
 		GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), headshotTexture);
-		//mainContentOpacity = mainContentOpacity * statusPanelOpacity;
-		//GUI.color = new Color(1f, 1f, 1f, 1f * mainContentOpacity);
 
 		// puma name
-		//mainContentOpacity = 1f - (statusPanelOpacityDrop * 0.75f);
-		//GUI.color = new Color(1f, 1f, 1f, 1f * mainContentOpacity);
 		style.normal.textColor = new Color(0.99f * 0.9f, 0.63f * 0.8f, 0f, 1f);
 		style.fontSize = (int)(fontRef * 0.13f);
 		GUI.Button(new Rect(feedingDisplayX + feedingDisplayWidth * 0.817f, feedingDisplayY + feedingDisplayHeight * (0.78f + panelOffsetY), feedingDisplayWidth * 0.1f, feedingDisplayHeight * 0.03f), pumaName, style);
-		//mainContentOpacity = mainContentOpacity * statusPanelOpacity;
-		//GUI.color = new Color(1f, 1f, 1f, 1f * mainContentOpacity);
 
-		
+		// effort
 		style.normal.textColor = new Color(0.65f, 0f, 0f, 1f);
-		//style.fontSize = (int)(fontRef * 0.12f);
-		//GUI.Button(new Rect(feedingDisplayX + feedingDisplayWidth * 0.85f, feedingDisplayY + feedingDisplayHeight * 0.51f, feedingDisplayWidth * 0.1f, feedingDisplayHeight * 0.03f), "minus", style);
 		style.fontSize = (int)(fontRef * 0.18f);
 		int caloriesExpended = (int)scoringSystem.GetLastKillExpense(guiManager.selectedPuma);
 		GUI.Button(new Rect(feedingDisplayX + feedingDisplayWidth * 0.685f, feedingDisplayY + feedingDisplayHeight * (0.60f + panelOffsetY), feedingDisplayWidth * 0.1f, feedingDisplayHeight * 0.03f), caloriesExpended.ToString("n0"), style);
 		style.fontSize = (int)(fontRef * 0.125f);
 		GUI.Button(new Rect(feedingDisplayX + feedingDisplayWidth * 0.69f, feedingDisplayY + feedingDisplayHeight * (0.68f + panelOffsetY), feedingDisplayWidth * 0.1f, feedingDisplayHeight * 0.03f), "effort -", style);
+
 
 		
 		// population bar
@@ -465,8 +638,6 @@ public class FeedingDisplay : MonoBehaviour
 		GUI.color = new Color(1f, 1f, 1f, 0.4f * mainContentOpacity);
 		GUI.Box(new Rect(feedingDisplayX + feedingDisplayWidth * 0.37f, feedingDisplayY + feedingDisplayHeight * 0.59f, feedingDisplayWidth * 0.26f, feedingDisplayHeight * 0.34f), "");
 	
-		GUI.color = new Color(1f, 1f, 1f, 0.4f * mainContentOpacity);
-		GUI.Box(new Rect(feedingDisplayX + feedingDisplayWidth * 0.035f, feedingDisplayY + feedingDisplayHeight * 0.99f, feedingDisplayWidth * 0.93f, feedingDisplayHeight * 0.145f), "");
 		GUI.color = new Color(1f, 1f, 1f, 1f * mainContentOpacity);
 		guiComponents.DrawPopulationHealthBar(mainContentOpacity, feedingDisplayX + feedingDisplayWidth * 0.035f, feedingDisplayY + feedingDisplayHeight * 0.93f, feedingDisplayWidth * 0.93f, feedingDisplayHeight * 0.145f, true, true);
 		

@@ -453,10 +453,8 @@ public class GuiManager : MonoBehaviour
 			// pause during attack on deer
 			guiStateDuration = (levelManager.caughtDeer != null) ? 2f : (levelManager.gameState == "gameStateTree1a" || levelManager.gameState == "gameStateTree2a") ?  1.8f : 0.7f;
 			if (Time.time - guiStateStartTime > guiStateDuration) {
-				//if (SelectedPumaIsFullHealth() == true)
-					//SetGuiState("guiStatePumaDone3");
-				//else
-					SetGuiState("guiStateFeeding3");
+				feedingDisplay.PrepareGUIItems();
+				SetGuiState("guiStateFeeding3");
 			}
 			break;
 
@@ -765,8 +763,10 @@ public class GuiManager : MonoBehaviour
 		case "guiStatePumaDone2":
 			// pause for a bit of space
 			guiStateDuration = 2f;
-			if (Time.time - guiStateStartTime > guiStateDuration)
+			if (Time.time - guiStateStartTime > guiStateDuration) {
+				pumaDoneDisplay.UpdateGUIItems(levelManager.CheckStarvation() == true ? "threatTypeStarvation" : "threatTypeVehicle");		
 				SetGuiState("guiStatePumaDone3");
+			}
 			break;
 
 		case "guiStatePumaDone3":
@@ -832,6 +832,8 @@ public class GuiManager : MonoBehaviour
 			Debug.Log("ERROR - GuiManager.Update() got bad state: " + guiState);
 			break;
 		}
+		
+		UpdateGUIItems();  // replaces OnGUI() in the old GUI system
 	}
 
 
@@ -957,6 +959,329 @@ public class GuiManager : MonoBehaviour
 		guiOpacity =  1f - guiFadePercentComplete;
 	}
 
+
+	//===============================================
+	//
+	//	UpdateGUIItems() - DRAW THE USER INTERFACE
+	//
+	//	This function is the top level
+	//	draw routine for rendering the UI;
+	//	it replaces OnGUI from the old interface
+	//
+	//===============================================
+	
+	void UpdateGUIItems()
+	{	
+		// initially clear the gameplay input rects
+		// if the rects are active, these values will be filled in during gameplayDisplay.Draw call below
+		inputControls.SetRectLeftButton(new Rect(0f, 0f, 0f, 0f)); 
+		inputControls.SetRectRightButton(new Rect(0f, 0f, 0f, 0f)); 
+
+		if (infoPanelVisible == false || Time.time - infoPanelTransStart < infoPanelTransTime) {
+		
+			float infoPanelOpacityComplement = 1f;
+			float infoPanelElapsedTime = Time.time - infoPanelTransStart;
+		
+			if (infoPanelVisible == true && infoPanelElapsedTime < infoPanelTransTime) {
+				// fading in
+				infoPanelOpacityComplement = 1f - infoPanelElapsedTime / infoPanelTransTime;			
+			}
+			else if (infoPanelVisible == false && infoPanelElapsedTime < infoPanelTransTime) {
+				// fading out		
+				infoPanelOpacityComplement = infoPanelElapsedTime / infoPanelTransTime;
+			}		
+			
+			// DRAW SOMETHING - info panel is either not showing, or is fading in or out
+
+			switch (guiState) {
+		
+			//-----------------------
+			// Overlay States
+			//
+			// entering, viewing and
+			// leaving the main GUI
+			//-----------------------
+
+			case "guiStateEnteringOverlay":
+			case "guiStateOverlay":
+			case "guiStateLeavingOverlay":
+				overlayPanel.UpdateGUIItems(guiOpacity * infoPanelOpacityComplement);
+				break;
+							
+			//-----------------------
+			// Gameplay States
+			//
+			// entering, viewing and
+			// leaving the 3D world
+			//-----------------------
+
+			case "guiStateEnteringGameplay1":
+				// no GUI during initial camera zoom
+				break;
+				
+			case "guiStateEnteringGameplay2":
+				// fade-in of position indicator backgrounds
+				gameplayDisplay.UpdateGUIItems(0f, guiOpacity, 0f, 0f, 0f);
+				break;
+				
+			case "guiStateEnteringGameplay2a":
+				// fade-in of position indicators
+				gameplayDisplay.UpdateGUIItems(0f, 1f, guiOpacity, 0f, 0f);
+				break;
+				
+			case "guiStateEnteringGameplay3":
+				// zoom the indicators to screen edges
+				gameplayDisplay.UpdateGUIItems(0f, 1f, 1f, guiOpacity, 0f);
+				break;
+				
+			case "guiStateEnteringGameplay4":
+				// fade-in of movement controls
+				gameplayDisplay.UpdateGUIItems(guiOpacity, 1f, 1f, 1f, 0f);
+				break;
+				
+			case "guiStateEnteringGameplay5":
+				// fade-in of status displays
+				gameplayDisplay.UpdateGUIItems(1f, 1f, 1f, 1f, guiOpacity);
+				break;
+				
+			case "guiStateGameplay":
+				// ongoing game-play state
+				gameplayDisplay.UpdateGUIItems(1f, 1f, 1f, 1f, 1f);
+				break;
+				
+			case "guiStateLeavingGameplay":
+				// fade-out of game-play controls
+				gameplayDisplay.UpdateGUIItems(guiOpacity, guiOpacity, guiOpacity, 1f, guiOpacity);
+				break;
+			
+			case "guiStateLeavingFeeding":
+				// fade-out of feeding display
+				feedingDisplay.UpdateGUIItems(guiOpacity, 1f, guiOpacity, guiOpacity);
+				break;
+			
+			//------------------------------
+			// Feeding States
+			//
+			// entering, viewing and
+			// leaving the feeding display
+			//------------------------------
+
+			case "guiStateFeeding1":
+				// fade-out of game-play controls
+				gameplayDisplay.UpdateGUIItems(guiOpacity, guiOpacity, guiOpacity, 1f, guiOpacity);
+				break;
+
+			case "guiStateFeeding2":
+				// no GUI display during attack on deer
+				break;
+
+			case "guiStateFeeding3":
+				// fade-in of feeding display main panel
+				feedingDisplay.UpdateGUIItems(guiOpacity, 0f, 0f, 0f);
+				break;
+
+			case "guiStateFeeding3a":
+				// brief pause for rolling score
+				feedingDisplay.UpdateGUIItems(1f, guiOpacity, 0f, 0f);
+				break;
+
+			case "guiStateFeeding4":
+				// fade-in of level display
+				feedingDisplay.UpdateGUIItems(1f, 1f, guiOpacity, 0f);
+				break;
+
+			case "guiStateFeeding4a":
+				// brief pause
+				feedingDisplay.UpdateGUIItems(1f, 1f, 1f, 0f);
+				break;
+
+			case "guiStateFeeding5":
+				// fade-in of feeding display 'ok' button
+				feedingDisplay.UpdateGUIItems(1f, 1f, 1f, guiOpacity);
+				break;
+
+			case "guiStateFeeding6":
+				// ongoing view of feeding display
+				feedingDisplay.UpdateGUIItems(1f, 1f, 1f, 1f);
+				break;
+
+			case "guiStateFeeding7":
+				// fade-out of feeding display
+				feedingDisplay.UpdateGUIItems(guiOpacity, 1f, guiOpacity, guiOpacity);
+				break;
+
+			case "guiStateFeeding8":
+				// fade-in of position indicator backgrounds
+				gameplayDisplay.UpdateGUIItems(0f, guiOpacity, 0f, 0f, 0f);
+				break;
+				
+			case "guiStateFeeding8a":
+				// fade-in of position indicators
+				gameplayDisplay.UpdateGUIItems(0f, 1f, guiOpacity, 0f, 0f);
+				break;
+				
+			case "guiStateFeeding9":
+				// zoom the indicators to screen edges
+				gameplayDisplay.UpdateGUIItems(0f, 1f, 1f, guiOpacity, 0f);
+				break;
+				
+			case "guiStateFeeding10":
+				// fade-in of movement controls
+				gameplayDisplay.UpdateGUIItems(guiOpacity, 1f, 1f, 1f, 0f);
+				break;
+				
+			case "guiStateFeeding11":
+				// fade-in of status indicators
+				gameplayDisplay.UpdateGUIItems(1f, 1f, 1f, 1f, guiOpacity);
+				break;
+				
+			//------------------------------
+			// Next Level
+			//
+			// progress to next level
+			//------------------------------
+
+			case "guiStateNextLevel1":
+				// fade-out of feeding display
+				feedingDisplay.UpdateGUIItems(guiOpacity, 1f, guiOpacity, guiOpacity);
+				break;
+
+			//------------------------------
+			// Puma Done
+			//
+			// starvation or
+			// collision with car
+			// or reaching full health
+			//------------------------------
+
+			case "guiStatePumaDone1":
+				// fade-out of game-play controls
+				gameplayDisplay.UpdateGUIItems(guiOpacity, guiOpacity, guiOpacity, 1f, guiOpacity);
+				break;
+
+			case "guiStatePumaDone2":
+				// pause for a bit of space
+				break;
+
+			case "guiStatePumaDone3":
+				// fade-in of puma done display main panel
+				if (levelManager.CheckCarCollision() == true)
+					pumaDoneDisplay.UpdateGUIItems(guiOpacity, "threatTypeVehicle", 0f);
+				else if (levelManager.CheckStarvation() == true)
+					pumaDoneDisplay.UpdateGUIItems(guiOpacity, "threatTypeStarvation", 0f);	
+				break;
+
+			case "guiStatePumaDone4":
+				// brief pause
+				if (levelManager.CheckCarCollision() == true)
+					pumaDoneDisplay.UpdateGUIItems(1f, "threatTypeVehicle", 0f);
+				else if (levelManager.CheckStarvation() == true)
+					pumaDoneDisplay.UpdateGUIItems(1f, "threatTypeStarvation", 0f);
+				break;
+
+			case "guiStatePumaDone5":
+				// fade-in of puma done display 'ok' button
+				if (levelManager.CheckCarCollision() == true)
+					pumaDoneDisplay.UpdateGUIItems(1f * infoPanelOpacityComplement, "threatTypeVehicle", guiOpacity * infoPanelOpacityComplement);
+				else if (levelManager.CheckStarvation() == true)
+					pumaDoneDisplay.UpdateGUIItems(1f * infoPanelOpacityComplement, "threatTypeStarvation", guiOpacity * infoPanelOpacityComplement);
+				break;
+
+			case "guiStatePumaDone6":
+				// ongoing view of puma done display
+				if (levelManager.CheckCarCollision() == true)
+					pumaDoneDisplay.UpdateGUIItems(1f * infoPanelOpacityComplement, "threatTypeVehicle", 1f * infoPanelOpacityComplement);
+				else if (levelManager.CheckStarvation() == true)
+					pumaDoneDisplay.UpdateGUIItems(1f * infoPanelOpacityComplement, "threatTypeStarvation", 1f * infoPanelOpacityComplement);
+				break;
+
+			case "guiStateLeavingPumaDone":
+				// fade-out of puma done display
+				if (levelManager.CheckCarCollision() == true)
+					pumaDoneDisplay.UpdateGUIItems(guiOpacity, "threatTypeVehicle", guiOpacity);
+				else if (levelManager.CheckStarvation() == true)
+					pumaDoneDisplay.UpdateGUIItems(guiOpacity, "threatTypeStarvation", guiOpacity);
+				break;
+			}
+		}
+
+		//------------------------------
+		// Draw Info Panel
+		//------------------------------
+				
+		float elapsedTime = Time.time - infoPanelTransStart;
+		float percentVisible = 0f;
+		float backRectOpacity = 0f;
+		float goButtonOpacity = 1f;
+
+		if (guiState == "guiStateNextLevel3")
+			backRectOpacity = guiOpacity;
+		if (guiState == "guiStateNextLevel4" || guiState == "guiStateNextLevel5" || guiState == "guiStateNextLevel6" || guiState == "guiStateFinalScreen1")
+			backRectOpacity = 1f;
+		else if (guiState == "guiStateNextLevel7")
+			backRectOpacity = guiOpacity;
+		else if (guiState == "guiStateFinalScreen2")
+			backRectOpacity = 0.5f + (guiOpacity * 0.5f);
+		else if (guiState == "guiStateFinalScreen3" || guiState == "guiStateFinalScreen4" || guiState == "guiStateFinalScreen5" || guiState == "guiStateFinalScreen6" || guiState == "guiStateFinalScreen7" || guiState == "guiStateFinalScreen8")
+			backRectOpacity = 0.5f;
+		else if (guiState == "guiStateFinalScreen9")
+			backRectOpacity = guiOpacity * 0.5f;
+			
+			
+		if (guiState == "guiStateNextLevel3" || guiState == "guiStateNextLevel4" || guiState == "guiStateNextLevel5" || guiState == "guiStateNextLevel6" || guiState == "guiStateNextLevel7" || guiState == "guiStateFinalScreen1" || guiState == "guiStateFinalScreen2" || guiState == "guiStateFinalScreen6")  
+			goButtonOpacity = 0f;
+		else if (guiState == "guiStateNextLevel8" || guiState == "guiStateFinalScreen3" || guiState == "guiStateFinalScreen7")
+			goButtonOpacity = guiOpacity;	
+
+			
+		if (guiState == "guiStateNextLevel3" || guiState == "guiStateNextLevel4") {
+			infoPanel.UpdateGUIItems(0f, backRectOpacity, goButtonOpacity);
+		}
+		else if (guiState == "guiStateNextLevel5") {
+			infoPanel.UpdateGUIItems(guiOpacity, backRectOpacity, goButtonOpacity);
+		}
+		else if (infoPanelVisible == true && elapsedTime < infoPanelTransTime) {
+			// fading in
+			percentVisible = elapsedTime / infoPanelTransTime;			
+			infoPanel.UpdateGUIItems(percentVisible, backRectOpacity, goButtonOpacity);
+		}
+		else if (infoPanelVisible == true) {
+			// fully visible
+			if (guiState == "guiStateEnterApp1")
+				infoPanel.UpdateGUIItems(1f, backRectOpacity, goButtonOpacity, 1f);
+			else if (guiState == "guiStateEnterApp2")
+				infoPanel.UpdateGUIItems(1f, backRectOpacity, goButtonOpacity, guiOpacity);
+			else
+				infoPanel.UpdateGUIItems(1f, backRectOpacity, goButtonOpacity);
+		}
+		else if (elapsedTime < infoPanelTransTime) {
+			// fading out		
+			percentVisible = 1f - elapsedTime / infoPanelTransTime;
+			infoPanel.UpdateGUIItems(percentVisible, backRectOpacity, goButtonOpacity);
+		}
+		else if (guiState == "guiStateFinalScreen5") {
+			// after last level: background of panel is retained during screen swap
+			infoPanel.UpdateGUIItems(0f, backRectOpacity, 0f);
+		}
+		else if (guiState == "guiStateFinalScreen9") {
+			// ... and during final fadeout
+			infoPanel.UpdateGUIItems(0f, backRectOpacity, 0f);
+		}
+		else if (elapsedTime >= infoPanelTransTime) {
+			// shut it off
+			infoPanel.UpdateGUIItems(0f, 0f, 0f);			
+		}
+		
+		
+		///////////////////////////////////////
+		// NOTE: STILL NEEDS DEBUG PANELS!!!
+		///////////////////////////////////////
+
+		
+		
+	}
+
+
 	//======================================
 	//
 	//	OnGUI() - DRAW THE USER INTERFACE
@@ -972,8 +1297,11 @@ public class GuiManager : MonoBehaviour
 	{	
 		// initially clear the gameplay input rects
 		// if the rects are active, these values will be filled in during gameplayDisplay.Draw call below
-		inputControls.SetRectLeftButton(new Rect(0f, 0f, 0f, 0f)); 
-		inputControls.SetRectRightButton(new Rect(0f, 0f, 0f, 0f)); 
+		//inputControls.SetRectLeftButton(new Rect(0f, 0f, 0f, 0f)); 
+		//inputControls.SetRectRightButton(new Rect(0f, 0f, 0f, 0f)); 
+		//
+		// -- this was MOVED TO UpdateGUIItems() to avoid double-clear
+		//
 
 		if (infoPanelVisible == false || Time.time - infoPanelTransStart < infoPanelTransTime) {
 		
@@ -1162,43 +1490,43 @@ public class GuiManager : MonoBehaviour
 				break;
 
 			case "guiStatePumaDone3":
-				// fade-in of feeding display main panel
+				// fade-in of puma done display main panel
 				if (levelManager.CheckCarCollision() == true)
-					pumaDoneDisplay.Draw(guiOpacity, guiOpacity, 0f, 0f);
+					pumaDoneDisplay.Draw(guiOpacity, "threatTypeVehicle", 0f);
 				else if (levelManager.CheckStarvation() == true)
-					pumaDoneDisplay.Draw(guiOpacity, 0f, guiOpacity, 0f);	
+					pumaDoneDisplay.Draw(guiOpacity, "threatTypeStarvation", 0f);	
 				break;
 
 			case "guiStatePumaDone4":
 				// brief pause
 				if (levelManager.CheckCarCollision() == true)
-					pumaDoneDisplay.Draw(1f, 1f, 0f, 0f);
+					pumaDoneDisplay.Draw(1f, "threatTypeVehicle", 0f);
 				else if (levelManager.CheckStarvation() == true)
-					pumaDoneDisplay.Draw(1f, 0f, 1f, 0f);
+					pumaDoneDisplay.Draw(1f, "threatTypeStarvation", 0f);
 				break;
 
 			case "guiStatePumaDone5":
-				// fade-in of mortality display 'ok' button
+				// fade-in of puma done display 'ok' button
 				if (levelManager.CheckCarCollision() == true)
-					pumaDoneDisplay.Draw(1f * infoPanelOpacityComplement, 1f * infoPanelOpacityComplement, 0f, guiOpacity * infoPanelOpacityComplement);
+					pumaDoneDisplay.Draw(1f * infoPanelOpacityComplement, "threatTypeVehicle", guiOpacity * infoPanelOpacityComplement);
 				else if (levelManager.CheckStarvation() == true)
-					pumaDoneDisplay.Draw(1f * infoPanelOpacityComplement, 0f, 1f * infoPanelOpacityComplement, guiOpacity * infoPanelOpacityComplement);
+					pumaDoneDisplay.Draw(1f * infoPanelOpacityComplement, "threatTypeStarvation", guiOpacity * infoPanelOpacityComplement);
 				break;
 
 			case "guiStatePumaDone6":
-				// ongoing view of mortality display
+				// ongoing view of puma done display
 				if (levelManager.CheckCarCollision() == true)
-					pumaDoneDisplay.Draw(1f * infoPanelOpacityComplement, 1f * infoPanelOpacityComplement, 0f, 1f * infoPanelOpacityComplement);
+					pumaDoneDisplay.Draw(1f * infoPanelOpacityComplement, "threatTypeVehicle", 1f * infoPanelOpacityComplement);
 				else if (levelManager.CheckStarvation() == true)
-					pumaDoneDisplay.Draw(1f * infoPanelOpacityComplement, 0f, 1f * infoPanelOpacityComplement, 1f * infoPanelOpacityComplement);
+					pumaDoneDisplay.Draw(1f * infoPanelOpacityComplement, "threatTypeStarvation", 1f * infoPanelOpacityComplement);
 				break;
 
 			case "guiStateLeavingPumaDone":
-				// fade-out of mortality display
+				// fade-out of puma done display
 				if (levelManager.CheckCarCollision() == true)
-					pumaDoneDisplay.Draw(guiOpacity, guiOpacity, 0f, guiOpacity);
+					pumaDoneDisplay.Draw(guiOpacity, "threatTypeVehicle", guiOpacity);
 				else if (levelManager.CheckStarvation() == true)
-					pumaDoneDisplay.Draw(guiOpacity, 0f, guiOpacity, guiOpacity);
+					pumaDoneDisplay.Draw(guiOpacity, "threatTypeStarvation", guiOpacity);
 				break;
 			}
 		}

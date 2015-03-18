@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
 /// GuiComponents
@@ -12,6 +13,8 @@ public class GuiComponents : MonoBehaviour
 	//===================================
 	//===================================
 
+	bool initFlag = false;
+	
 	// textures based on bitmap files
 	private Texture2D pumaIconTexture;
 	private Texture2D pumaIconShadowTexture;
@@ -27,6 +30,16 @@ public class GuiComponents : MonoBehaviour
 	private Texture2D closeup5Texture;
 	private Texture2D closeup6Texture;
 	
+	// prefab gui components
+	public GameObject uiPanel;
+	public GameObject uiSubPanel;
+	public GameObject uiRect;
+	public GameObject uiText;
+	public GameObject uiRawImage;
+	public GameObject uiButton;
+	public GameObject uiButtonSeeThru;
+	public GameObject uiImageButton;
+		
 	// placeholder for level selector; used only in display
 	private int currentLevel = 1;
 
@@ -43,6 +56,9 @@ public class GuiComponents : MonoBehaviour
 
 	void Start() 
 	{	
+		if (initFlag == true)
+			return;
+	
 		// connect to external modules
 		guiManager = GetComponent<GuiManager>();
 		guiUtils = GetComponent<GuiUtils>();
@@ -62,11 +78,15 @@ public class GuiComponents : MonoBehaviour
 		closeup4Texture = guiManager.closeup4Texture;
 		closeup5Texture = guiManager.closeup5Texture;
 		closeup6Texture = guiManager.closeup6Texture;
+		
+		initFlag = true;
 	}
 
+	
+	
 	//===================================
 	//===================================
-	//		DRAW THE LEVEL PANEL
+	//		LEVEL PANEL
 	//===================================
 	//===================================
 
@@ -205,9 +225,11 @@ public class GuiComponents : MonoBehaviour
 
 	}
 
+	
+	
 	//===================================
 	//===================================
-	//		DRAW THE STATUS PANEL
+	//		STATUS PANEL
 	//===================================
 	//===================================
 	
@@ -461,9 +483,11 @@ public class GuiComponents : MonoBehaviour
 
 	}
 
+	
+	
 	//===================================
 	//===================================
-	//		DRAW THE MEAT BAR
+	//		MEAT BAR
 	//===================================
 	//===================================
 
@@ -548,11 +572,272 @@ public class GuiComponents : MonoBehaviour
 
 	}
 
+	
+	
 	//===================================
 	//===================================
-	//	   DRAW THE PUMA HEALTH BAR
+	//	   PUMA HEALTH BAR
 	//===================================
 	//===================================
+
+	public GameObject CreatePumaHealthBar(GameObject parentObj) 
+	{ 
+		if (initFlag == false)
+			Start();
+
+		GameObject healthBar;	
+		GameObject mainBackground;	
+		GameObject crossbones;
+		GameObject greenHeart;
+		GameObject meterBackground;
+		GameObject meterCenter;
+		GameObject meterBar;
+		GameObject statBackground;
+		GameObject statText;
+				
+		
+		// invisible panel to hold items
+		healthBar = (GameObject)Instantiate(uiSubPanel);
+		healthBar.GetComponent<RectTransform>().SetParent(parentObj.GetComponent<RectTransform>(), false);
+		
+		// background
+		mainBackground = guiUtils.CreatePanel(healthBar, new Color(0f, 0f, 0f, 0.45f));
+		mainBackground.name = "MainBackground";
+		
+		// crossbones
+		crossbones = guiUtils.CreateImage(healthBar, pumaCrossbonesDarkRedTexture, new Color(1f, 1f, 1f, 1f));
+		crossbones.name = "Crossbones";
+		
+		// green heart
+		greenHeart = guiUtils.CreateImage(healthBar, greenHeartTexture, new Color(1f, 1f, 1f, 1f));
+		greenHeart.name = "GreenHeart";
+		
+		// health meter
+		meterBackground = guiUtils.CreatePanel(healthBar, new Color(0f, 0f, 0f, 0.4f * 2f));
+		meterBackground.name = "MeterBackground";
+		meterCenter = guiUtils.CreateRect(healthBar, new Color(0f, 0f, 0f, 1f));
+		meterCenter.name = "MeterCenter";
+		meterBar = guiUtils.CreateRect(healthBar, new Color(0f, 0f, 0f, 1f));
+		meterBar.name = "MeterBar";
+		
+		// stat display (health percent)
+		statBackground = guiUtils.CreatePanel(healthBar, new Color(0f, 0f, 0f, 0.5f));
+		statBackground.name = "StatBackground";
+		statText = guiUtils.CreateText(healthBar, "stat", new Color(0f, 0f, 0f, 0.45f), FontStyle.Bold);
+		statText.name = "StatText";
+		
+		return healthBar;
+	}
+
+
+	public void PositionPumaHealthBar(GameObject pumaHealthBar, int pumaNum, float healthBarX, float healthBarY, float healthBarWidth, float healthBarHeight, bool hideStatFlag = false, bool shiftStatFlag = false) 
+	{ 
+		if (initFlag == false)
+			Start();
+
+		float health = scoringSystem.GetPumaHealth(pumaNum); 
+		float textureX;
+		float textureY;
+		float textureWidth;
+		float textureHeight;
+		GameObject mainBackground;	
+		GameObject crossbones;
+		GameObject greenHeart;
+		GameObject meterBackground;
+		GameObject meterCenter;
+		GameObject meterBar;
+		GameObject statBackground;
+		GameObject statText;
+	
+		// background
+		mainBackground = pumaHealthBar.GetComponent<RectTransform>().FindChild("MainBackground").gameObject;
+		guiUtils.SetItemOffsets(mainBackground, healthBarX, healthBarY, healthBarWidth, healthBarHeight);
+		
+		// crossbones
+		crossbones = pumaHealthBar.GetComponent<RectTransform>().FindChild("Crossbones").gameObject;
+		if (health < 1f) {
+			crossbones.SetActive(true);
+			Texture2D crossbonesTexture = (health > 0.66f || health < 0f) ? pumaCrossbonesDarkRedTexture : (health > 0.33 ? pumaCrossbonesDarkRedTexture : pumaCrossbonesRedTexture);
+			textureX = healthBarX + healthBarWidth * 0.053f;
+			textureY = healthBarY + healthBarHeight * 0.15f;
+			textureWidth = healthBarHeight * .8f;
+			textureHeight = crossbonesTexture.height * (textureWidth / crossbonesTexture.width) * 1f;
+			crossbones.GetComponent<RawImage>().texture = crossbonesTexture;
+			Color crossbonesColor = new Color(1f, 1f, 1f, ((health > 0.66f || health < 0f) ? 0.9f : (health > 0.33f ? 0.975f : 1f)));
+			crossbones.GetComponent<RawImage>().color = crossbonesColor;
+			guiUtils.SetItemOffsets(crossbones, textureX, textureY, textureWidth, textureHeight);
+		}
+		else {
+			crossbones.SetActive(false);
+		}
+		
+		// green heart
+		greenHeart = pumaHealthBar.GetComponent<RectTransform>().FindChild("GreenHeart").gameObject;
+		if (health > 0f) {
+			greenHeart.SetActive(true);
+			textureX = healthBarX + healthBarWidth * 0.86f;
+			textureY = healthBarY + healthBarHeight * 0.19f;
+			textureWidth = healthBarHeight * 0.64f;
+			textureHeight = greenHeartTexture.height * (textureWidth / greenHeartTexture.width) * 1f;
+			Color greenHeartColor = new Color(1f, 1f, 1f, (health > 0.66f ? 0.8f : (health > 0.33f ? 0.68f : 0.5f)));
+			if (health >= 1f)
+				greenHeartColor = new Color(1f, 1f, 1f, 0.9f);
+			greenHeart.GetComponent<RawImage>().color = greenHeartColor;
+			guiUtils.SetItemOffsets(greenHeart, textureX, textureY, textureWidth, textureHeight);
+		}
+		else {
+			greenHeart.SetActive(false);
+		}
+		
+		// health meter
+		Color labelColor;
+		Color barColor;
+		string displayString;
+		
+		if (health < 0.2f) {
+			labelColor = new Color(0.9f, 0f, 0f, 1f);
+			barColor = new Color(0.86f, 0f, 0f, 1f);
+		}
+		else if (health < 0.4f) {
+			labelColor = new Color(0.99f, 0.40f, 0f, 1f);
+			barColor = new Color(0.99f, 0.40f, 0f, 1f);
+		}
+		else if (health < 0.6f) {
+			labelColor = new Color(0.85f * 1f, 0.80f * 1f, 0f, 1f);
+			barColor = new Color(0.85f * 0.85f, 0.80f * 0.85f, 0f, 1f);
+		}
+		else if (health < 0.8f) {
+			labelColor = new Color(0.5f * 1.4f, 0.7f * 1.4f, 0f, 1f);
+			barColor = new Color(0.5f * 1.04f, 0.7f * 1.04f, 0f, 1f);
+		}
+		else {
+			labelColor = new Color(0f, 0.85f, 0f, 1f);
+			barColor = (health >= 1f) ? new Color(0f, 0.75f, 0f, 0.95f) : new Color(0f, 0.75f, 0f, 0.95f);
+		}			
+
+		float fontRef = healthBarHeight * 2f;
+		float meterLeft = 0.17f;
+		float meterRight = 0.17f;
+		float meterTop = 0.27f;		
+		float meterX = healthBarX + healthBarWidth * meterLeft;
+		float meterY = healthBarY + healthBarHeight * meterTop;
+		float meterHeight = healthBarHeight - healthBarHeight * meterTop * 2;
+		float meterWidth = healthBarWidth - healthBarWidth * (meterLeft + meterRight);
+
+		meterBackground = pumaHealthBar.GetComponent<RectTransform>().FindChild("MeterBackground").gameObject;
+		guiUtils.SetItemOffsets(meterBackground, meterX, meterY, meterWidth, meterHeight);
+		
+		meterLeft += 0.012f;
+		meterRight += 0.012f;
+		meterTop += 0.12f;		
+		meterX = healthBarX + healthBarWidth * meterLeft;
+		meterWidth = healthBarWidth - healthBarWidth * (meterLeft + meterRight);
+		float meterStatWidth = hideStatFlag == true ? 0f : (meterWidth * (health == 1f ? 0.28f : 0.24f));
+		meterY = healthBarY + healthBarHeight * meterTop;
+		meterHeight = healthBarHeight - healthBarHeight * meterTop * 2;
+
+		meterCenter = pumaHealthBar.GetComponent<RectTransform>().FindChild("MeterCenter").gameObject;
+		meterBar = pumaHealthBar.GetComponent<RectTransform>().FindChild("MeterBar").gameObject;
+
+		if (health > 0) {
+			meterCenter.GetComponent<Image>().color = new Color(0.47f, 0.5f, 0.45f, 0.5f);
+			guiUtils.SetItemOffsets(meterCenter, meterX, meterY, meterWidth, meterHeight);
+			meterBar.SetActive(true);
+			meterBar.GetComponent<Image>().color = barColor;
+			guiUtils.SetItemOffsets(meterBar, meterX, meterY, (meterWidth - meterStatWidth) * health, meterHeight);
+		}
+		else {
+			meterCenter.GetComponent<Image>().color = new Color(0.47f, 0.5f, 0.45f, 0.25f);
+			guiUtils.SetItemOffsets(meterCenter, meterX, meterY, meterWidth, meterHeight);
+			meterBar.SetActive(false);
+		}
+
+		
+		// stat display on health meter
+
+		statBackground = pumaHealthBar.GetComponent<RectTransform>().FindChild("StatBackground").gameObject;
+		statText = pumaHealthBar.GetComponent<RectTransform>().FindChild("StatText").gameObject;
+		
+		if (hideStatFlag == false && health >= 0f) {
+			// display current value 
+			statBackground.SetActive(true);
+			statText.SetActive(true);
+			meterTop -= 0.12f;		
+			meterY = healthBarY + healthBarHeight * meterTop;
+			meterHeight = healthBarHeight - healthBarHeight * meterTop * 2;
+			int healthPercent = (int)(health * 100f);
+			float meterStatX = meterX + (meterWidth - meterStatWidth) * health;
+			guiUtils.SetItemOffsets(statBackground, meterStatX, meterY - meterHeight * 0.3f, meterStatWidth, meterHeight + meterHeight * 0.6f);
+			statText.GetComponent<Text>().text = healthPercent.ToString() + "%";
+			statText.GetComponent<Text>().color = labelColor;
+			guiUtils.SetTextOffsets(statText, meterStatX - (meterStatWidth * (health == 1f ? -0.0f : 0.025f)), meterY, meterStatWidth, meterHeight, (int)(fontRef * 0.28f));
+		}
+		else {
+			statBackground.SetActive(false);
+			statText.SetActive(false);
+		}
+
+
+		
+		
+/*		
+				
+		if (hideStatFlag == true && shiftStatFlag == true) {
+			// display current value above the bar and extra large
+			meterStatWidth = (meterWidth * (health == 1f ? 0.68f : 0.64f));
+			meterTop -= 0.12f;		
+			meterY = healthBarY - healthBarHeight * 1.37f;
+			meterHeight = healthBarHeight * 1f;
+			int healthPercent = (int)(health * 100f);
+			float meterStatX = meterX + meterWidth * 0.5f - meterStatWidth * 0.5f;
+			if (health <= 0f || health >= 1f) {
+				meterStatX = healthBarX + healthBarWidth * 0.05f;
+				meterStatWidth = healthBarWidth * 0.9f;
+			}
+			GUI.Box(new Rect(meterStatX, meterY - meterHeight * 0.13f, meterStatWidth, meterHeight + meterHeight * 0.3f), "");
+			GUI.Box(new Rect(meterStatX, meterY - meterHeight * 0.13f, meterStatWidth, meterHeight + meterHeight * 0.3f), "");
+
+			float textLeftShift = health >= 1f ? meterStatWidth*0.04f : 0f;
+
+			if (health <= 0f) {
+				displayString = scoringSystem.WasKilledByCar(pumaNum) ? "VEHICLE" : "STARVED";
+				style.fontStyle = FontStyle.BoldAndItalic;
+				style.fontSize = (int)(fontRef * 0.37f);
+				style.normal.textColor = new Color(0.64f, 0.02f, 0f, 0.99f);
+			}
+			else if (health >= 1f) {
+				displayString = "Full Health";
+				style.fontStyle = FontStyle.BoldAndItalic;
+				style.fontSize = (int)(fontRef * 0.37f);
+				style.normal.textColor = new Color(0.05f, 0.68f, 0f, 0.99f);			
+				float checkMarkWidth = meterStatWidth * 0.2f;
+				float checkMarkHeight = greenCheckTexture.height * (checkMarkWidth / greenCheckTexture.width);
+				float checkMarkX = meterStatX + meterStatWidth * 0.8f;
+				float checkMarkY = meterY - meterHeight * 0.2f;
+				GUI.color = new Color(1f, 1f, 1f, 0.75f * healthBarOpacity);
+				GUI.DrawTexture(new Rect(checkMarkX, checkMarkY, checkMarkWidth, checkMarkHeight), greenCheckTexture);
+				GUI.color = new Color(1f, 1f, 1f, 1f * healthBarOpacity);
+			}
+			else {
+				displayString = healthPercent.ToString() + "%";
+				style.fontStyle = FontStyle.Bold;
+				style.fontSize = (int)(fontRef * 0.48f);
+				style.normal.textColor = labelColor;
+			}
+			style.alignment = TextAnchor.MiddleCenter;
+			GUI.Button(new Rect(meterStatX - (meterStatWidth * (health == 1f ? -0.0f : 0.025f)) - textLeftShift, meterY, meterStatWidth, meterHeight), displayString, style);
+		}
+		
+*/		
+		
+		
+		
+		
+		
+		
+		
+	}
+
 
 	public void DrawPumaHealthBar(int pumaNum, float healthBarOpacity, float healthBarX, float healthBarY, float healthBarWidth, float healthBarHeight, bool hideStatFlag = false, bool shiftStatFlag = false) 
 	{ 
@@ -587,8 +872,6 @@ public class GuiComponents : MonoBehaviour
 		Color labelColor;
 		Color barColor;
 		string displayString;
-		
-		//health = 0.7f;
 
 		if (health < 0.2f) {
 			labelColor = new Color(0.9f, 0f, 0f, 1f);
@@ -670,9 +953,8 @@ public class GuiComponents : MonoBehaviour
 			}
 			GUI.Box(new Rect(meterStatX, meterY - meterHeight * 0.13f, meterStatWidth, meterHeight + meterHeight * 0.3f), "");
 			GUI.Box(new Rect(meterStatX, meterY - meterHeight * 0.13f, meterStatWidth, meterHeight + meterHeight * 0.3f), "");
-			//guiUtils.DrawRect(new Rect(meterStatX, meterY - meterHeight * 0.3f, meterStatWidth, meterHeight + meterHeight * 0.6f), new Color(0f, 0f, 0f, 1f));	
 
-			float textLeftShift = 0f;
+			float textLeftShift = health >= 1f ? meterStatWidth*0.04f : 0f;
 
 			if (health <= 0f) {
 				displayString = scoringSystem.WasKilledByCar(pumaNum) ? "VEHICLE" : "STARVED";
@@ -692,7 +974,6 @@ public class GuiComponents : MonoBehaviour
 				GUI.color = new Color(1f, 1f, 1f, 0.75f * healthBarOpacity);
 				GUI.DrawTexture(new Rect(checkMarkX, checkMarkY, checkMarkWidth, checkMarkHeight), greenCheckTexture);
 				GUI.color = new Color(1f, 1f, 1f, 1f * healthBarOpacity);
-				textLeftShift = meterStatWidth * 0.04f;
 			}
 			else {
 				displayString = healthPercent.ToString() + "%";
@@ -717,10 +998,12 @@ public class GuiComponents : MonoBehaviour
 			GUI.color = new Color(1f, 1f, 1f, 1f * healthBarOpacity);
 		}
 	}
+
+
 	
 	//===================================
 	//===================================
-	//	DRAW THE POPULATION HEALTH BAR
+	//	POPULATION HEALTH BAR
 	//===================================
 	//===================================
 

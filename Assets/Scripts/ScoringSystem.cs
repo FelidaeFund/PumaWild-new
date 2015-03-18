@@ -256,7 +256,8 @@ public class ScoringSystem : MonoBehaviour
 		//healthPoints = new float[] {defaultMaxHealth * 0.5f, defaultMaxHealth * 0.5f, defaultMaxHealth * 0.5f, defaultMaxHealth * 0.5f, defaultMaxHealth * 0.5f, defaultMaxHealth * 0.5f};
 		//healthPoints = new float[] {defaultMaxHealth * 0.3f, defaultMaxHealth * 0.3f, defaultMaxHealth * 0.3f, defaultMaxHealth * 0.3f, defaultMaxHealth * 0.3f, defaultMaxHealth * 0.3f};
 		//healthPoints = new float[] {defaultMaxHealth * 0.1f, defaultMaxHealth * 0.1f, defaultMaxHealth * 0.1f, defaultMaxHealth * 0.1f, defaultMaxHealth * 0.1f, defaultMaxHealth * 0.1f};
-		healthPoints = new float[] {defaultMaxHealth * 0.01f, defaultMaxHealth * 0f, defaultMaxHealth * 0f, defaultMaxHealth * 0f, defaultMaxHealth * 0f, defaultMaxHealth * 0f};
+		healthPoints = new float[] {defaultMaxHealth * 0.1f, defaultMaxHealth * 0.01f, defaultMaxHealth * 0.01f, defaultMaxHealth * 0f, defaultMaxHealth * 0f, defaultMaxHealth * 0f};
+		//healthPoints = new float[] {defaultMaxHealth * 0.01f, defaultMaxHealth * 0f, defaultMaxHealth * 0f, defaultMaxHealth * 0f, defaultMaxHealth * 0f, defaultMaxHealth * 0f};
 
 
 		maxHealthPoints = new float[] {defaultMaxHealth, defaultMaxHealth, defaultMaxHealth, defaultMaxHealth, defaultMaxHealth, defaultMaxHealth};

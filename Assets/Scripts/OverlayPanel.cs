@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
 /// OverlayPanel
@@ -13,6 +14,9 @@ public class OverlayPanel : MonoBehaviour
 	//===================================
 
 	private bool USE_NEW_GUI = true;	
+	private bool initComplete = false;
+	private float lastSeenScreenWidth;
+	private float lastSeenScreenHeight;
 
 	private Rect overlayRect;
 	private int currentScreen;
@@ -191,9 +195,79 @@ public class OverlayPanel : MonoBehaviour
 		soundEnable = 1;
 		soundVolume = 0.5f;
 		pawRightFlag = 1;
+		
+		// create and position GUI elements
+		CreateGUIItems();
+		PositionGUIItems();
+		lastSeenScreenWidth = Screen.width;
+		lastSeenScreenHeight = Screen.height;
 	}
+
+
+	//===========================
+	//===========================
+	//	  GUI ELEMENTS
+	//===========================
+	//===========================
+	
+	public GameObject overlayMainPanel;
+
+	// prefab gui components
+	public GameObject uiPanel;
+	public GameObject uiSubPanel;
+	public GameObject uiRect;
+	public GameObject uiText;
+	public GameObject uiRawImage;
+	public GameObject uiButton;
+	public GameObject uiButtonSeeThru;
+	public GameObject uiImageButton;
+		
+	// programatically created items 
+	private GameObject obj;
+	
+	
+	void CreateGUIItems()
+	{
+		// set enable to 'off' before populating sub-items
+		overlayMainPanel.SetActive(false);
+
+		initComplete = true;
+	}
+
+
+	void PositionGUIItems()
+	{
+		if (initComplete == false)
+			return;
 	
 
+	}
+	
+	public void UpdateGUIItems(float overlayPanelOpacity) 
+	{ 
+		if (initComplete == false)
+			return;
+	
+		if (USE_NEW_GUI == true) {
+
+			// check for screen size change
+			if (lastSeenScreenWidth != Screen.width || lastSeenScreenHeight != Screen.height) {
+				lastSeenScreenWidth = Screen.width;
+				lastSeenScreenHeight = Screen.height;
+				PositionGUIItems();
+			}
+
+			// top level enable and opacity
+			overlayMainPanel.SetActive(overlayPanelOpacity > 0f ? true : false);
+			overlayMainPanel.GetComponent<CanvasGroup>().alpha = overlayPanelOpacity;
+		}
+		else {
+			// set enable to 'off'
+			overlayMainPanel.SetActive(false);
+		}
+	}
+	
+	
 	//===================================
 	//===================================
 	//	  DRAW THE OVERLAY PANEL
@@ -202,14 +276,6 @@ public class OverlayPanel : MonoBehaviour
 	
 	public void Draw(float overlayPanelOpacity) 
 	{ 
-
-
-
-
-
-	
-	
-
 
 		//if (USE_NEW_GUI == true)
 			//return; 
