@@ -357,7 +357,7 @@ public class PumaDoneDisplay : MonoBehaviour
 	}
 	
 	
-	public void UpdateGUIItems(string threatType)  // called once per showing, right before panel fades in
+	public void PrepareGUIItems(string threatType)  // called once per showing, right before panel fades in
 	{
 		if (initComplete == false)
 			return;
@@ -402,8 +402,8 @@ public class PumaDoneDisplay : MonoBehaviour
 			// starvation
 			leftText1.SetActive(true);
 			leftTextGameOver.SetActive(false);
-			leftText1.GetComponent<Text>().text = "Deer = up to 80%";
-			leftText2.GetComponent<Text>().text = "of the puma diet";
+			leftText1.GetComponent<Text>().text = "Deer provide the";
+			leftText2.GetComponent<Text>().text = "main puma prey";
 			leftText3.GetComponent<Text>().text = "in North America";
 			leftText4.GetComponent<Text>().text = "Pumas help limit";
 			leftText5.GetComponent<Text>().text = "deer populations";
@@ -924,6 +924,10 @@ public class PumaDoneDisplay : MonoBehaviour
 			}
 		}		
 
+
+		//**************************
+		// END OF POPULATION CONTENT
+		//**************************
 
 		if (scoringSystem.GetPopulationHealth() == 0f) {
 			// end of population

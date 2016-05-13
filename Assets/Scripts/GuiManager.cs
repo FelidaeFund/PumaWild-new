@@ -764,7 +764,7 @@ public class GuiManager : MonoBehaviour
 			// pause for a bit of space
 			guiStateDuration = 2f;
 			if (Time.time - guiStateStartTime > guiStateDuration) {
-				pumaDoneDisplay.UpdateGUIItems(levelManager.CheckStarvation() == true ? "threatTypeStarvation" : "threatTypeVehicle");		
+				pumaDoneDisplay.PrepareGUIItems(levelManager.CheckStarvation() == true ? "threatTypeStarvation" : "threatTypeVehicle");		
 				SetGuiState("guiStatePumaDone3");
 			}
 			break;

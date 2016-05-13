@@ -119,6 +119,8 @@ public class FeedingDisplay : MonoBehaviour
 	
 	// left side items
 	private GameObject leftBackground;
+	private GameObject leftDeerImage;
+	private GameObject leftDeerText;
 	
 	
 	// center area
@@ -134,6 +136,9 @@ public class FeedingDisplay : MonoBehaviour
 	
 	void CreateGUIItems()
 	{
+		//return;
+	
+	
 		// set enables to 'off' before populating sub-items
 		feedingDisplayMainPanel.SetActive(false);
 		feedingDisplayLevelComplete.SetActive(false);
@@ -147,6 +152,8 @@ public class FeedingDisplay : MonoBehaviour
 		
 		// left side items
 		leftBackground = 		guiUtils.CreatePanel(feedingDisplayMainPanel, new Color(0f, 0f, 0f, 0.4f * 1.3f));
+		leftDeerImage = 		guiUtils.CreateImage(feedingDisplayMainPanel, closeup1Texture, new Color(1f, 1f, 1f, 1f));
+		leftDeerText = 			guiUtils.CreateText(feedingDisplayMainPanel, "text", new Color(0.75f, 0f, 0f, 1f), FontStyle.Bold);
 		
 		// center area
 		centerBackground = 		guiUtils.CreatePanel(feedingDisplayMainPanel, new Color(0f, 0f, 0f, 0.4f * 1.6f));
@@ -208,7 +215,7 @@ public class FeedingDisplay : MonoBehaviour
 
 		float lastKillExpense = scoringSystem.GetLastKillExpense(guiManager.selectedPuma);
 		float lastKillCaloriesEaten = scoringSystem.GetLastKillCaloriesEaten();
-		
+
 		if (lastKillExpense > 1.2f * lastKillCaloriesEaten)
 			efficiencyLevel = 0;
 		else if (lastKillExpense > lastKillCaloriesEaten)
@@ -217,7 +224,7 @@ public class FeedingDisplay : MonoBehaviour
 			efficiencyLevel = 2;
 		else
 			efficiencyLevel = 3;
-				
+
 		float calorieChange = lastKillCaloriesEaten - lastKillExpense;
 		if (calorieChange < 0)
 			calorieChange = -calorieChange;
@@ -267,6 +274,33 @@ public class FeedingDisplay : MonoBehaviour
 
 		titleText.GetComponent<Text>().text = titleString;
 		titleText.GetComponent<Text>().color = titleColor;
+		
+		// left side
+		
+		Texture2D displayHeadTexture = buckHeadTexture;
+		string displayHeadLabel = "-- -- -- --";
+		
+		switch (scoringSystem.GetLastKillDeerType()) {
+			case "Buck":
+				displayHeadTexture = buckHeadTexture;
+				displayHeadLabel = "Buck";
+				break;
+			case "Doe":
+				displayHeadTexture = doeHeadTexture;
+				displayHeadLabel = "Doe";
+				break;
+			case "Fawn":
+				displayHeadTexture = fawnHeadTexture;
+				displayHeadLabel = "Fawn";
+				break;	
+		}
+
+		
+		
+		
+		
+		
+		
 
 		PositionGUIItems(backgroundOffset);
 	}
@@ -293,10 +327,9 @@ public class FeedingDisplay : MonoBehaviour
 			feedingDisplayLevelComplete.GetComponent<CanvasGroup>().alpha = levelCompleteOpacity;
 			feedingDisplayOkButton.SetActive(okButtonOpacity > 0f ? true : false);
 			feedingDisplayOkButton.GetComponent<CanvasGroup>().alpha = okButtonOpacity;
-			
-			
-			
-			
+
+
+
 		}
 		else {
 			// set enables to 'off'
@@ -542,12 +575,14 @@ public class FeedingDisplay : MonoBehaviour
 		float textureWidth = feedingDisplayHeight * 0.4f;
 		float textureHeight = displayHeadTexture.height * (textureWidth / displayHeadTexture.width);
 		float textureY = feedingDisplayY + feedingDisplayHeight * (0.32f + panelOffsetY);
-		if (failedHuntFlag == false)
-			GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), displayHeadTexture);
-		else {
-			GUI.color = new Color(0.02f, 0.02f, 0.02f, 1f * mainContentOpacity);	
-			GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), displayHeadTexture);
-			GUI.color = new Color(1f, 1f, 1f, 1f * mainContentOpacity);
+		if (USE_NEW_GUI == false) {
+			if (failedHuntFlag == false)
+				GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), displayHeadTexture);
+			else {
+				GUI.color = new Color(0.02f, 0.02f, 0.02f, 1f * mainContentOpacity);	
+				GUI.DrawTexture(new Rect(textureX, textureY, textureWidth, textureHeight), displayHeadTexture);
+				GUI.color = new Color(1f, 1f, 1f, 1f * mainContentOpacity);
+			}
 		}
 
 		Color failedHuntTextColor = new Color(0f, 0f, 0f, 1f);
