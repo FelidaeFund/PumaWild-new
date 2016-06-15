@@ -153,7 +153,7 @@ public class FeedingDisplay : MonoBehaviour
 		// left side items
 		leftBackground = 		guiUtils.CreatePanel(feedingDisplayMainPanel, new Color(0f, 0f, 0f, 0.4f * 1.3f));
 		leftDeerImage = 		guiUtils.CreateImage(feedingDisplayMainPanel, closeup1Texture, new Color(1f, 1f, 1f, 1f));
-		leftDeerText = 			guiUtils.CreateText(feedingDisplayMainPanel, "text", new Color(0.75f, 0f, 0f, 1f), FontStyle.Bold);
+		leftDeerText = 			guiUtils.CreateText(feedingDisplayMainPanel, "text", new Color(0f, 0f, 0f, 1f), FontStyle.Bold);
 		
 		// center area
 		centerBackground = 		guiUtils.CreatePanel(feedingDisplayMainPanel, new Color(0f, 0f, 0f, 0.4f * 1.6f));
@@ -175,6 +175,11 @@ public class FeedingDisplay : MonoBehaviour
 		float feedingDisplayWidth = Screen.height * 1.2f;
 		float feedingDisplayHeight = Screen.height * 0.37f;		
 		float fontRef = feedingDisplayHeight * 0.5f;
+		float panelOffsetY = -0.1f;
+		float textureX;
+		float textureY;
+		float textureWidth;
+		float textureHeight;
 
 		// background and title
 		guiUtils.SetItemOffsets(mainBackground, feedingDisplayX, feedingDisplayY + feedingDisplayHeight * 0.06f, feedingDisplayWidth, feedingDisplayHeight * 1.15f - feedingDisplayHeight * 0.06f);
@@ -184,6 +189,16 @@ public class FeedingDisplay : MonoBehaviour
 
 		// left side items
 		guiUtils.SetItemOffsets(leftBackground, feedingDisplayX + feedingDisplayWidth * 0.035f, feedingDisplayY + feedingDisplayHeight * 0.3f, feedingDisplayWidth * 0.3f, feedingDisplayHeight * 0.48f);
+		textureX = feedingDisplayX + feedingDisplayWidth * 0.075f;
+		textureWidth = feedingDisplayHeight * 0.4f;
+		textureHeight = leftDeerImage.GetComponent<RawImage>().texture.height * (textureWidth / leftDeerImage.GetComponent<RawImage>().texture.width);
+		textureY = feedingDisplayY + feedingDisplayHeight * (0.32f + panelOffsetY);
+		guiUtils.SetItemOffsets(leftDeerImage, textureX, textureY, textureWidth, textureHeight);
+		guiUtils.SetTextOffsets(leftDeerText, feedingDisplayX + feedingDisplayWidth * 0.087f, feedingDisplayY + feedingDisplayHeight * (0.78f + panelOffsetY), feedingDisplayWidth * 0.1f, feedingDisplayHeight * 0.03f, (int)(fontRef * 0.13f));
+
+
+
+
 		
 		// center area
 		guiUtils.SetItemOffsets(centerBackground, feedingDisplayX + feedingDisplayWidth * 0.335f - 2f, feedingDisplayY + feedingDisplayHeight * 0.3f, feedingDisplayWidth * 0.33f + 4f, feedingDisplayHeight * 0.16f);
@@ -295,13 +310,16 @@ public class FeedingDisplay : MonoBehaviour
 				break;	
 		}
 
-		
-		
-		
-		
-		
-		
+		leftDeerImage.GetComponent<RawImage>().texture = displayHeadTexture;
+		leftDeerImage.GetComponent<RawImage>().color = failedHuntFlag == true ? new Color(0.02f, 0.02f, 0.02f, 1f) : new Color(1f, 1f, 1f, 1f);
 
+		leftDeerText.GetComponent<Text>().text = displayHeadLabel;
+		leftDeerText.GetComponent<Text>().color = failedHuntFlag == true ? new Color(0f, 0f, 0f, 1f) : new Color(0.99f * 0.9f, 0.63f * 0.8f, 0f, 1f);
+
+
+		
+		
+		
 		PositionGUIItems(backgroundOffset);
 	}
 
@@ -586,10 +604,12 @@ public class FeedingDisplay : MonoBehaviour
 		}
 
 		Color failedHuntTextColor = new Color(0f, 0f, 0f, 1f);
-	
-		style.normal.textColor = failedHuntFlag == true ? failedHuntTextColor : new Color(0.99f * 0.9f, 0.63f * 0.8f, 0f, 1f);
-		style.fontSize = (int)(fontRef * 0.13f);
-		GUI.Button(new Rect(feedingDisplayX + feedingDisplayWidth * 0.087f, feedingDisplayY + feedingDisplayHeight * (0.78f + panelOffsetY), feedingDisplayWidth * 0.1f, feedingDisplayHeight * 0.03f), displayHeadLabel, style);
+
+		if (USE_NEW_GUI == false) {	
+			style.normal.textColor = failedHuntFlag == true ? failedHuntTextColor : new Color(0.99f * 0.9f, 0.63f * 0.8f, 0f, 1f);
+			style.fontSize = (int)(fontRef * 0.13f);
+			GUI.Button(new Rect(feedingDisplayX + feedingDisplayWidth * 0.087f, feedingDisplayY + feedingDisplayHeight * (0.78f + panelOffsetY), feedingDisplayWidth * 0.1f, feedingDisplayHeight * 0.03f), displayHeadLabel, style);
+		}
 
 		style.normal.textColor = failedHuntFlag == true ? failedHuntTextColor : new Color(0.1f, 0.67f, 0.1f, 1f);
 		style.fontSize = (int)(fontRef * 0.18f);
@@ -597,6 +617,7 @@ public class FeedingDisplay : MonoBehaviour
 		GUI.Button(new Rect(feedingDisplayX + feedingDisplayWidth * 0.203f, feedingDisplayY + feedingDisplayHeight * (0.60f + panelOffsetY), feedingDisplayWidth * 0.1f, feedingDisplayHeight * 0.03f), (failedHuntFlag == false) ? caloriesGained.ToString("n0") : "-- --", style);
 		style.fontSize = (int)(fontRef * 0.12f);
 		GUI.Button(new Rect(feedingDisplayX + feedingDisplayWidth * 0.205f, feedingDisplayY + feedingDisplayHeight * (0.68f + panelOffsetY), feedingDisplayWidth * 0.1f, feedingDisplayHeight * 0.03f), "calories +", style);
+
 		
 		
 		// puma head & status info
